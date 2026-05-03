@@ -24,14 +24,19 @@ const io = new Server(server, {
 
 connectDB();
 
-app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5000' }));
+app.set('trust proxy', 1);
+app.use(cors({ origin: true, credentials: true }));
 
 // Stripe webhook requires raw body — must be registered BEFORE express.json()
 app.use('/api/billing/webhook', express.raw({ type: 'application/json' }));
 
 app.use(express.json());
 
-const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100 });
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  validate: { xForwardedForHeader: false },
+});
 app.use('/api/', limiter);
 
 app.use('/api/auth', authRoutes);
