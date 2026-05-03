@@ -11,6 +11,7 @@ import userRoutes from './routes/user.js';
 import creditsRoutes from './routes/credits.js';
 import paymentRoutes from './routes/payment.js';
 import historyRoutes from './routes/history.js';
+import contextRoutes from './routes/context.js';
 import errorHandler from './middleware/errorHandler.js';
 
 const app = express();
@@ -33,6 +34,7 @@ app.use('/api/user', userRoutes);
 app.use('/api/credits', creditsRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/history', historyRoutes);
+app.use('/api/context', contextRoutes);
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
