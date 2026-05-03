@@ -1,0 +1,41 @@
+We need to add an Admin Dashboard and a Stripe Payment / Billing system to our application. Please create and update the following backend and frontend files to implement this functionality:
+
+### 1. Database Model Updates
+
+- Update the User Schema (`server/models/User.js`):
+  - Add an `isAdmin` field (Boolean, default: false).
+  - Add a `credits` field (Number, default: 10).
+  - Add a `stripeCustomerId` field (String, optional).
+
+### 2. Admin Dashboard Backend (`server/routes/admin.js`)
+
+- Create an Admin Router that is protected by a new `isAdmin` middleware.
+- Create a GET route `/api/admin/users`:
+  - It must fetch all users from the database.
+  - Return their name, email, credits, and registration date (`createdAt`).
+- Create a PUT route `/api/admin/users/:id/credits`:
+  - Allows an admin to manually update or add credits to a specific user's account.
+
+### 3. Stripe Billing Backend (`server/routes/billing.js`)
+
+- Create a POST route `/api/billing/checkout`:
+  - Accepts a `priceId` or `amount` (e.g., $10 for 50 credits).
+  - Creates a Stripe Checkout Session.
+  - Includes the `userId` in the checkout session metadata.
+- Create a POST route `/api/billing/webhook`:
+  - Uses `express.raw()` middleware to listen for Stripe webhooks (`checkout.session.completed`).
+  - When a payment is successful, read the `userId` from the metadata and increase their credits in the database by the purchased amount (e.g., +50 credits).
+
+### 4. Frontend Admin Panel (`client/src/pages/Admin.jsx`)
+
+- Create a new Admin Dashboard page that is only visible if the logged-in user has `isAdmin === true`.
+- Display a clean data table containing:
+  - User Name, Email, Available Credits, and Registration Date.
+- Include an "Edit" button next to each user that opens a modal or input to adjust their credits manually.
+
+### 5. Frontend Billing / Pricing Page (`client/src/pages/Pricing.jsx`)
+
+- Create a Pricing Page displaying different tiers (e.g., Starter: 10 Credits (Free), Pro: 100 Credits ($10), Enterprise: 500 Credits ($40)).
+- Add a "Buy Now" button on the paid tiers that calls the `/api/billing/checkout` endpoint and redirects the user to the Stripe Checkout page.
+
+Please wire up these routes in `server/server.js` and add the corresponding routes to the frontend React application.

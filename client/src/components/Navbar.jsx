@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.js';
 import { useCredits } from '../context/CreditContext.js';
-import { FiZap, FiLogOut, FiUser } from 'react-icons/fi';
+import { FiZap, FiLogOut, FiUser, FiShield } from 'react-icons/fi';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -21,6 +21,9 @@ export default function Navbar() {
           {user ? (
             <>
               <Link to="/dashboard" className="text-gray-600 hover:text-indigo-600 text-sm font-medium flex items-center gap-1"><FiUser /> Dashboard</Link>
+              {user.isAdmin && (
+                <Link to="/admin" className="text-purple-600 hover:text-purple-800 text-sm font-medium flex items-center gap-1"><FiShield size={14} /> Admin</Link>
+              )}
               <span className="text-sm bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full font-medium">{credits ?? user.credits} credits</span>
               <button onClick={handleLogout} className="text-gray-500 hover:text-red-500 flex items-center gap-1 text-sm"><FiLogOut /> Logout</button>
             </>

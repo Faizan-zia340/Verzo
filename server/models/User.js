@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema({
   credits: { type: Number, default: 10 },
   subscription: { type: String, enum: ['free', 'basic', 'pro'], default: 'free' },
   stripeCustomerId: { type: String },
+  isAdmin: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
 });
 
