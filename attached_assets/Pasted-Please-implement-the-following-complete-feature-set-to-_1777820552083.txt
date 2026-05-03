@@ -1,0 +1,48 @@
+Please implement the following complete feature set to turn our application into a professional, commercial-ready AI SaaS platform. Update and create the necessary files in both backend and frontend as described below:
+
+---
+
+### 1. Advanced User Dashboard & Content Generation
+- **Typewriter Effect (Streaming):** Update the OpenAI generation logic (`server/controllers/generatorController.js`) to use the Streaming API. The frontend (`client/src/pages/Dashboard.jsx`) should display the AI's response in real-time.
+- **Pre-built Prompt Templates:** Add 3 quick-clickable cards on the user dashboard: 
+  - "Real Estate Blog"
+  - "Social Media Post"
+  - "Cold Email"
+  When clicked, these should pre-fill the prompt input box with a highly optimized, human-sounding prompt structure.
+- **Output Tuning Buttons:** Below the generated text, add 3 quick action buttons: "Shorten", "More Engaging", and "Professional Tone". Clicking a button sends the existing text back to the backend to rewrite it instantly.
+- **Multi-Language Selector:** Add a dropdown menu for "Output Language" with choices for English, Roman Urdu, and Arabic. Append the selected language to the final prompt instructions.
+- **SEO Package Generator:** In the same response, ask the OpenAI API to return an optimized SEO Meta Title, Meta Description, and 5 suggested keywords. Display this clearly next to the generated text.
+- **History & Export:** - Save all generated outputs to a new "Generations" collection in MongoDB linked to the user's `userId`.
+  - Add a "History" tab on the user dashboard.
+  - Add "Copy to Clipboard" and "Download as TXT" buttons next to every generation.
+
+---
+
+### 2. Premium & Distinct Admin Dashboard (`client/src/pages/Admin.jsx`)
+- **Different Theme & Layout:** Make the Admin Panel look entirely distinct from the user panel. Use a dark/slate theme (e.g., Tailwind `bg-slate-900` and `text-slate-100`) with its own sidebar navigation: "Overview", "User Management", and "System Settings".
+- **Admin Stats Cards:** Add 3 metric cards at the top of the Admin Panel:
+  - "Total Users in System"
+  - "Total AI Credits Distributed"
+  - "Active RAG Contexts" (Count of reference data items)
+- **User Management & Search:** - Add a data table of all users showing Name, Email, Credits, and Registration Date.
+  - Add a search bar at the top of the table to instantly filter users by name or email.
+  - Add a button next to each user that opens a modal allowing the admin to manually adjust their credits.
+
+---
+
+### 3. Stripe Billing & Credits Protection
+- **Stripe Integration (`server/routes/billing.js`):** - Create a POST route `/api/billing/checkout` to create a Stripe Checkout session based on pricing tiers.
+  - Set up a Stripe webhook listener (`/api/billing/webhook`) that detects `checkout.session.completed` and automatically updates the user's credits in MongoDB.
+- **Credit Validation Middleware:** - Before running any generation request, check if the user has `credits > 0`.
+  - Deduct 1 credit from the user's account upon successful generation. If credits are 0, return a clear error message asking them to upgrade.
+
+---
+
+### 4. RAG (Retrieval-Augmented Generation) Workflow
+- **MongoDB Context Lookups:** - Before sending the user prompt to OpenAI, search the "Context" collection using the keywords provided: `Context.findOne({ keywords: { $in: topicKeywords } })`.
+  - If a matching document is found, merge its information as trusted context into the OpenAI prompt so the AI produces factual, up-to-date responses without hallucinations.
+- **Custom Admin Data Input:** Create a simple form inside the Admin Settings where the admin can add new reference documents (Title, Keywords, Information) to the database.
+
+---
+
+Please configure all necessary API routes, Mongoose schemas, and frontend React routes in `server/server.js` and `client/src/App.jsx`. Ensure both the backend and frontend are properly synced.
