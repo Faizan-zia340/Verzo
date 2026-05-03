@@ -1,10 +1,9 @@
-import { generateContent } from '../utils/openai.js';
+import { generateContent, generateRAGContent } from '../utils/openai.js';
 import Content from '../models/Content.js';
 import Credit from '../models/Credit.js';
 import User from '../models/User.js';
 import Context from '../models/Context.js';
 import { io } from '../server.js';
-import openai from '../config/openai.js';
 
 export const generate = async (req, res, next) => {
   try {
@@ -51,14 +50,7 @@ export const generateAIContent = async (req, res, next) => {
       finalPrompt = userPrompt;
     }
 
-    const response = await openai.createChatCompletion({
-      model: 'gpt-4o-mini',
-      messages: [{ role: 'user', content: finalPrompt }],
-      max_tokens: 1000,
-      temperature: 0.7,
-    });
-
-    const result = response.data.choices[0].message.content.trim();
+    const result = await generateRAGContent(finalPrompt);
 
     res.json({
       response: result,
