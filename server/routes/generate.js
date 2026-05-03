@@ -1,0 +1,11 @@
+import { Router } from 'express';
+import { generate } from '../controllers/generatorController.js';
+import protect from '../middleware/auth.js';
+import creditCheck from '../middleware/creditCheck.js';
+import { validate, generateSchema } from '../utils/validators.js';
+
+const router = Router();
+
+router.post('/', protect, creditCheck(1), validate(generateSchema), generate);
+
+export default router;
