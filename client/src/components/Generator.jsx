@@ -174,6 +174,7 @@ export default function Generator() {
   };
 
   const isRateLimit = error.toLowerCase().includes('rate limit');
+  const isQuota = error.toLowerCase().includes('quota') || error.toLowerCase().includes('billing');
 
   return (
     <div className="space-y-5">
@@ -250,11 +251,41 @@ export default function Generator() {
 
           {/* Error */}
           {error && (
-            <div className={`flex items-start gap-2.5 px-4 py-3 rounded-xl text-sm ${isRateLimit ? 'bg-amber-50 border border-amber-200 text-amber-800' : 'bg-red-50 border border-red-200 text-red-700'}`}>
-              {isRateLimit ? <FiRefreshCw size={15} className="mt-0.5 flex-shrink-0 text-amber-500" /> : <FiAlertCircle size={15} className="mt-0.5 flex-shrink-0 text-red-500" />}
-              <div>
-                <p className="font-medium">{isRateLimit ? 'Rate limit reached' : 'Error'}</p>
-                <p className="text-xs mt-0.5 opacity-80">{error}</p>
+            <div className={`flex items-start gap-2.5 px-4 py-3 rounded-xl text-sm ${
+              isQuota
+                ? 'bg-orange-50 border border-orange-200 text-orange-900'
+                : isRateLimit
+                  ? 'bg-amber-50 border border-amber-200 text-amber-800'
+                  : 'bg-red-50 border border-red-200 text-red-700'
+            }`}>
+              {isQuota
+                ? <FiAlertCircle size={15} className="mt-0.5 flex-shrink-0 text-orange-500" />
+                : isRateLimit
+                  ? <FiRefreshCw size={15} className="mt-0.5 flex-shrink-0 text-amber-500" />
+                  : <FiAlertCircle size={15} className="mt-0.5 flex-shrink-0 text-red-500" />
+              }
+              <div className="flex-1">
+                <p className="font-semibold">
+                  {isQuota ? 'OpenAI Quota Exhausted' : isRateLimit ? 'Rate limit reached' : 'Generation Error'}
+                </p>
+                {isQuota ? (
+                  <div className="text-xs mt-1 space-y-1 opacity-90">
+                    <p>Your OpenAI API key has run out of credits. This is not a temporary error — waiting will not fix it.</p>
+                    <p>
+                      To fix this, add billing credits at{' '}
+                      <a
+                        href="https://platform.openai.com/account/billing"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline font-semibold hover:opacity-70"
+                      >
+                        platform.openai.com/account/billing
+                      </a>
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-xs mt-0.5 opacity-80">{error}</p>
+                )}
               </div>
             </div>
           )}

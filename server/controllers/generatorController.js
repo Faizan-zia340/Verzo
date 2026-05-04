@@ -17,9 +17,19 @@ const checkApiKey = () => {
 
 const openAIErrorMessage = (err) => {
   const status = err.response?.status;
+  const detail = err.response?.data?.error?.message || '';
+
+  console.error(`[OpenAI Error] status=${status} detail="${detail}"`);
+
   if (status === 401) return 'Invalid OpenAI API key. Please contact the administrator.';
-  if (status === 429) return 'OpenAI rate limit reached. Please wait 30–60 seconds and try again.';
-  if (status === 402) return 'OpenAI account billing issue. Please contact the administrator.';
+  if (status === 429) {
+    // Distinguish quota exhausted (daily/billing) from per-minute rate limit
+    if (detail.toLowerCase().includes('quota') || detail.toLowerCase().includes('billing') || detail.toLowerCase().includes('insufficient')) {
+      return 'OpenAI quota exhausted. The API billing limit has been reached — please add credits at platform.openai.com/account/billing.';
+    }
+    return 'OpenAI rate limit reached. Please wait 30–60 seconds and try again.';
+  }
+  if (status === 402) return 'OpenAI account billing issue. Please add credits at platform.openai.com/account/billing.';
   if (status === 503 || status === 500) return 'OpenAI service is temporarily unavailable. Try again shortly.';
   return err.message || 'AI generation failed. Please try again.';
 };
@@ -54,7 +64,29 @@ export const streamGenerate = async (req, res, next) => {
         { responseType: 'stream' }
       );
     } catch (err) {
-      sendEvent({ error: openAIErrorMessage(err) });
+      // For streaming requests, err.response.data is itself a stream — read it for the real message
+      const status = err.response?.status;
+      let detail = '';
+      try {
+        if (err.response?.data && typeof err.response.data.read === 'function') {
+          const chunks = [];
+          for await (const chunk of err.response.data) chunks.push(chunk);
+          const raw = Buffer.concat(chunks).toString();
+          detail = JSON.parse(raw)?.error?.message || '';
+        } else {
+          detail = err.response?.data?.error?.message || '';
+        }
+      } catch {}
+      console.error(`[OpenAI Stream Error] status=${status} detail="${detail}"`);
+      let msg = 'AI generation failed. Please try again.';
+      if (status === 401) msg = 'Invalid OpenAI API key. Please contact the administrator.';
+      else if (status === 429) {
+        const d = detail.toLowerCase();
+        msg = (d.includes('quota') || d.includes('billing') || d.includes('insufficient'))
+          ? 'OpenAI quota exhausted. Please add billing credits at platform.openai.com/account/billing.'
+          : 'OpenAI rate limit reached. Please wait 30–60 seconds and try again.';
+      } else if (status === 402) msg = 'OpenAI billing issue. Please add credits at platform.openai.com/account/billing.';
+      sendEvent({ error: msg });
       res.end();
       return;
     }
