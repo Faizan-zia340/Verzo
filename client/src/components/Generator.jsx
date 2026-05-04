@@ -254,7 +254,7 @@ export default function Generator() {
               {isRateLimit ? <FiRefreshCw size={15} className="mt-0.5 flex-shrink-0 text-amber-500" /> : <FiAlertCircle size={15} className="mt-0.5 flex-shrink-0 text-red-500" />}
               <div>
                 <p className="font-medium">{isRateLimit ? 'Rate limit reached' : 'Error'}</p>
-                <p className="text-xs mt-0.5 opacity-80">{error}{isRateLimit ? ' Wait 30–60 seconds then try again.' : ''}</p>
+                <p className="text-xs mt-0.5 opacity-80">{error}</p>
               </div>
             </div>
           )}
