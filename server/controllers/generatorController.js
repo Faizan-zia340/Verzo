@@ -15,7 +15,16 @@ const checkApiKey = () => {
   }
 };
 
-// Streaming generation with SSE
+const openAIErrorMessage = (err) => {
+  const status = err.response?.status;
+  if (status === 401) return 'Invalid OpenAI API key. Please contact the administrator.';
+  if (status === 429) return 'OpenAI rate limit reached. Please wait 30–60 seconds and try again.';
+  if (status === 402) return 'OpenAI account billing issue. Please contact the administrator.';
+  if (status === 503 || status === 500) return 'OpenAI service is temporarily unavailable. Try again shortly.';
+  return err.message || 'AI generation failed. Please try again.';
+};
+
+// ── Streaming generation via SSE ─────────────────────────────────
 export const streamGenerate = async (req, res, next) => {
   try {
     checkApiKey();
@@ -27,6 +36,8 @@ export const streamGenerate = async (req, res, next) => {
     res.setHeader('Connection', 'keep-alive');
     res.setHeader('X-Accel-Buffering', 'no');
     res.flushHeaders();
+
+    const sendEvent = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
 
     const fullPrompt = buildPrompt({ type, prompt, tone, length, language });
 
@@ -43,11 +54,7 @@ export const streamGenerate = async (req, res, next) => {
         { responseType: 'stream' }
       );
     } catch (err) {
-      const status = err.response?.status;
-      let message = 'OpenAI request failed';
-      if (status === 401) message = 'Invalid OpenAI API key.';
-      else if (status === 429) message = 'OpenAI rate limit reached. Please wait and try again.';
-      res.write(`data: ${JSON.stringify({ error: message })}\n\n`);
+      sendEvent({ error: openAIErrorMessage(err) });
       res.end();
       return;
     }
@@ -65,26 +72,31 @@ export const streamGenerate = async (req, res, next) => {
           const token = parsed.choices?.[0]?.delta?.content || '';
           if (token) {
             fullOutput += token;
-            res.write(`data: ${JSON.stringify({ token })}\n\n`);
+            sendEvent({ token });
           }
         } catch {}
       }
     });
 
     streamResponse.data.on('end', async () => {
+      if (!fullOutput) {
+        sendEvent({ error: 'No content was generated. Please try again.' });
+        res.end();
+        return;
+      }
+
       try {
-        // Generate SEO data
+        // Generate SEO data (separate non-streaming call)
         let seoData = { title: '', description: '', keywords: [] };
         try {
           const seoResponse = await openai.createChatCompletion({
             model: 'gpt-3.5-turbo',
             messages: [{ role: 'user', content: buildSEOPrompt(fullOutput) }],
-            max_tokens: 250,
+            max_tokens: 300,
             temperature: 0.3,
           });
           const raw = seoResponse.data.choices[0].message.content.trim();
-          const jsonStr = raw.replace(/```json|```/g, '').trim();
-          seoData = JSON.parse(jsonStr);
+          seoData = JSON.parse(raw.replace(/```json|```/g, '').trim());
         } catch {}
 
         const [content] = await Promise.all([
@@ -94,24 +106,26 @@ export const streamGenerate = async (req, res, next) => {
         ]);
 
         io.to(userId.toString()).emit('generation:done', { content });
-        res.write(`data: ${JSON.stringify({ done: true, seoData, contentId: content._id })}\n\n`);
+        sendEvent({ done: true, seoData, contentId: content._id });
         res.end();
       } catch (err) {
-        res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
+        sendEvent({ error: 'Failed to save content. Please try again.' });
         res.end();
       }
     });
 
     streamResponse.data.on('error', (err) => {
-      res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
+      sendEvent({ error: openAIErrorMessage(err) });
       res.end();
     });
   } catch (err) {
-    next(err);
+    if (!res.headersSent) return next(err);
+    res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
+    res.end();
   }
 };
 
-// Non-streaming fallback generate
+// ── Non-streaming generate (fallback) ───────────────────────────
 export const generate = async (req, res, next) => {
   try {
     checkApiKey();
@@ -121,12 +135,20 @@ export const generate = async (req, res, next) => {
     io.to(userId.toString()).emit('generation:start');
 
     const fullPrompt = buildPrompt({ type, prompt, tone, length, language });
-    const response = await openai.createChatCompletion({
-      model: 'gpt-3.5-turbo',
-      messages: [{ role: 'user', content: fullPrompt }],
-      max_tokens: 900,
-      temperature: 0.7,
-    });
+    let response;
+    try {
+      response = await openai.createChatCompletion({
+        model: 'gpt-3.5-turbo',
+        messages: [{ role: 'user', content: fullPrompt }],
+        max_tokens: 900,
+        temperature: 0.7,
+      });
+    } catch (err) {
+      const e = new Error(openAIErrorMessage(err));
+      e.statusCode = err.response?.status || 500;
+      throw e;
+    }
+
     const output = response.data.choices[0].message.content.trim();
 
     let seoData = { title: '', description: '', keywords: [] };
@@ -134,11 +156,10 @@ export const generate = async (req, res, next) => {
       const seoResponse = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo',
         messages: [{ role: 'user', content: buildSEOPrompt(output) }],
-        max_tokens: 250,
+        max_tokens: 300,
         temperature: 0.3,
       });
-      const raw = seoResponse.data.choices[0].message.content.trim();
-      seoData = JSON.parse(raw.replace(/```json|```/g, '').trim());
+      seoData = JSON.parse(seoResponse.data.choices[0].message.content.trim().replace(/```json|```/g, '').trim());
     } catch {}
 
     const [content] = await Promise.all([
@@ -154,24 +175,31 @@ export const generate = async (req, res, next) => {
   }
 };
 
-// Tune existing content — no credit deduction
+// ── Tune existing content (no credit deduction) ──────────────────
 export const tuneContent = async (req, res, next) => {
   try {
     checkApiKey();
     const { text, action } = req.body;
     if (!text || !action) return res.status(400).json({ message: 'text and action are required' });
     const validActions = ['shorten', 'engaging', 'professional'];
-    if (!validActions.includes(action)) return res.status(400).json({ message: 'Invalid action' });
+    if (!validActions.includes(action)) return res.status(400).json({ message: 'Invalid action. Use: shorten, engaging, or professional' });
 
-    const tunePrompt = buildTunePrompt(text, action);
-    const result = await generateRAGContent(tunePrompt);
+    let result;
+    try {
+      result = await generateRAGContent(buildTunePrompt(text, action));
+    } catch (err) {
+      const e = new Error(openAIErrorMessage(err));
+      e.statusCode = err.response?.status || 500;
+      throw e;
+    }
+
     res.json({ output: result });
   } catch (err) {
     next(err);
   }
 };
 
-// RAG-augmented generation
+// ── RAG-augmented generation ─────────────────────────────────────
 export const generateAIContent = async (req, res, next) => {
   try {
     checkApiKey();
@@ -183,10 +211,18 @@ export const generateAIContent = async (req, res, next) => {
       : null;
 
     const finalPrompt = foundContext
-      ? `Context Information: ${foundContext.information}\n\nStrict Instructions: Use the above Context Information to answer. Do not fabricate facts.\n\nUser Prompt: ${userPrompt}`
+      ? `Context Information:\n${foundContext.information}\n\nStrict Instructions: Use the above Context Information to answer accurately. Do not fabricate facts.\n\nUser Prompt: ${userPrompt}`
       : userPrompt;
 
-    const result = await generateRAGContent(finalPrompt);
+    let result;
+    try {
+      result = await generateRAGContent(finalPrompt);
+    } catch (err) {
+      const e = new Error(openAIErrorMessage(err));
+      e.statusCode = err.response?.status || 500;
+      throw e;
+    }
+
     res.json({ response: result, contextUsed: !!foundContext, contextTitle: foundContext?.title || null });
   } catch (err) {
     next(err);
