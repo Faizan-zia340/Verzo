@@ -1,0 +1,78 @@
+Build a high-end, production-ready Full-Stack AI Content SaaS with the following 10 parts. Execute systematically.
+
+Part 1: Database & Secure Auth (The Core)
+
+Use Express, Drizzle ORM, and PostgreSQL.
+
+Schema: users (id, email, password, credits [default 10], role [user/admin]), contents (id, userId, prompt, output, ratingScore, type, language, createdAt).
+
+Implement JWT Auth (Register/Login) and a /api/user/me profile route.
+
+Part 2: Elite AI Generation Engine
+
+Use Gemini 1.5 Pro or GPT-4o API.
+
+Strict Logic: No AI clichés (unleash, stunning, etc.). Use short, punchy sentences.
+
+Rating System: AI must return output as: [CONTENT]...[RATINGS]GPT:X, Claude:Y, Meta:Z[REASONING]....
+
+Deduct 1 credit per generation.
+
+Part 3: 20+ Languages & Accent Logic
+
+Support 20+ languages (English, Urdu, Arabic, Spanish, etc.).
+
+Add a 'Dialect/Accent' selector (e.g., Karachi vs. Lucknow Urdu, US vs. UK English).
+
+AI must adapt vocabulary to the specific accent chosen.
+
+Part 4: Real Image Integration (Unsplash API)
+
+Connect to Unsplash API.
+
+Logic: After generating text, AI extracts 3 keywords. Backend fetches Real High-Quality Stock Photos based on these keywords and embeds them in the result.
+
+Part 5: PDF Deep Analysis (Book-to-Notes)
+
+Use pdf-parse for /api/analyze-pdf.
+
+Implement 'Text Chunking' for large books.
+
+Output: Structured Study Notes, Chapter Summaries, and a 'Test Yourself' Question Bank.
+
+Part 6: Premium UI/UX (Glassmorphism)
+
+React + Tailwind + Framer Motion.
+
+Use Glassmorphism cards (bg-white/10 backdrop-blur-md).
+
+Sidebar navigation and a beautiful 'Result Dashboard' with progress bars for AI ratings.
+
+Part 7: Live User Notifications
+
+Install react-hot-toast.
+
+Triggers: 'Credit Deducted', 'Analyzing PDF...', 'Copied to Clipboard', and 'Error: Low Credits'.
+
+Part 8: SEO & Meta-Data Tools
+
+Every generation must include an auto-generated SEO Title, Meta Description, and Alt-text for the fetched Unsplash images.
+
+Part 9: Advanced Export & Sharing
+
+Buttons to 'Export as PDF', 'Export as DOCX', and 'Copy to Clipboard'.
+
+Social media share preview for LinkedIn and Twitter.
+
+Part 10: Master Admin Command Center
+
+Route /admin (Restricted).
+
+Features: Live User Activity Feed, Total Revenue/Usage Stats, and a tool to manually 'Grant Credits' to any user's email."
+
+💡 Replit Agent ke liye Pro-Tips (Zaroor Parhein):
+Secrets Tab: Prompt dene se pehle UNSPLASH_ACCESS_KEY, GEMINI_API_KEY, aur JWT_SECRET apne Secrets mein save kar lo.
+
+Step-by-Step: Agent ko bolo: "Start with Part 1 and 2, then wait for my signal to proceed." Is se Replit crash nahi hoga.
+
+UI Feedback: Jab wo UI banaye, to usay bolo: "Make it look like PropertyMesh - dark, sleek, and premium."

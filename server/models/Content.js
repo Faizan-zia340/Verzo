@@ -5,12 +5,21 @@ const contentSchema = new mongoose.Schema({
   type: { type: String, required: true, enum: ['blog', 'social', 'email', 'ad', 'product'] },
   prompt: { type: String, required: true },
   output: { type: String, required: true },
-  language: { type: String, default: 'english' },
+  language: { type: String, default: 'english_us' },
+  format: { type: String, default: 'paragraphs' },
   seoData: {
     title: { type: String, default: '' },
     description: { type: String, default: '' },
     keywords: [{ type: String }],
+    imageKeywords: [{ type: String }],
   },
+  images: [{
+    url: String,
+    thumb: String,
+    alt: String,
+    photographer: String,
+    photographerUrl: String,
+  }],
   creditsUsed: { type: Number, default: 1 },
   createdAt: { type: Date, default: Date.now },
 });

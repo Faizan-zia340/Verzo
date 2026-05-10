@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext.js';
 import { CreditProvider } from './context/CreditContext.js';
 import Navbar from './components/Navbar.jsx';
@@ -9,6 +10,7 @@ import Dashboard from './pages/Dashboard.jsx';
 import Pricing from './pages/Pricing.jsx';
 import PaymentSuccess from './pages/PaymentSuccess.jsx';
 import Admin from './pages/Admin.jsx';
+import PDFAnalyzer from './pages/PDFAnalyzer.jsx';
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth();
@@ -37,6 +39,14 @@ export default function App() {
     <AuthProvider>
       <CreditProvider>
         <BrowserRouter>
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 3000,
+              style: { borderRadius: '12px', fontSize: '13px', fontWeight: 500, boxShadow: '0 4px 24px rgba(0,0,0,0.10)' },
+              success: { iconTheme: { primary: '#6366f1', secondary: '#fff' } },
+            }}
+          />
           <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />
@@ -45,6 +55,7 @@ export default function App() {
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
             <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+            <Route path="/pdf" element={<PrivateRoute><PDFAnalyzer /></PrivateRoute>} />
             <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
           </Routes>
         </BrowserRouter>

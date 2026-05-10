@@ -14,6 +14,7 @@ import historyRoutes from './routes/history.js';
 import contextRoutes from './routes/context.js';
 import adminRoutes from './routes/admin.js';
 import billingRoutes from './routes/billing.js';
+import pdfRoutes from './routes/pdf.js';
 import errorHandler from './middleware/errorHandler.js';
 
 const app = express();
@@ -27,14 +28,12 @@ connectDB();
 app.set('trust proxy', 1);
 app.use(cors({ origin: true, credentials: true }));
 
-// Stripe webhook requires raw body — must be registered BEFORE express.json()
 app.use('/api/billing/webhook', express.raw({ type: 'application/json' }));
-
 app.use(express.json());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 150,
   validate: { xForwardedForHeader: false },
 });
 app.use('/api/', limiter);
@@ -48,12 +47,13 @@ app.use('/api/history', historyRoutes);
 app.use('/api/context', contextRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/billing', billingRoutes);
+app.use('/api/pdf', pdfRoutes);
 
-app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
+app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
 io.on('connection', (socket) => {
-  console.log('Client connected:', socket.id);
-  socket.on('disconnect', () => console.log('Client disconnected:', socket.id));
+  socket.on('join', (userId) => socket.join(userId));
+  socket.on('disconnect', () => {});
 });
 
 app.use(errorHandler);

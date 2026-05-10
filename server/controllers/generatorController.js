@@ -1,11 +1,11 @@
 import { generateText, generateSEO, tuneText, geminiError, getModel, withSystem } from '../utils/gemini.js';
 import { buildPrompt } from '../utils/prompts.js';
+import { fetchImages } from '../utils/unsplash.js';
 import Content from '../models/Content.js';
 import Credit from '../models/Credit.js';
 import User from '../models/User.js';
 import Context from '../models/Context.js';
 import { io } from '../server.js';
-import getClient, { MODEL, API_VERSION } from '../config/gemini.js';
 
 const checkKey = () => {
   if (!process.env.GEMINI_API_KEY) {
@@ -19,7 +19,7 @@ const checkKey = () => {
 export const streamGenerate = async (req, res, next) => {
   try {
     checkKey();
-    const { type, prompt, tone, length, language = 'english', format = 'paragraphs' } = req.body;
+    const { type, prompt, tone, length, language = 'english_us', format = 'paragraphs' } = req.body;
     const userId = req.user._id;
 
     res.setHeader('Content-Type', 'text/event-stream');
@@ -62,18 +62,19 @@ export const streamGenerate = async (req, res, next) => {
       return;
     }
 
-    // Generate SEO + save to DB
+    // Generate SEO + fetch images + save to DB
     try {
       const seoData = await generateSEO(fullOutput);
+      const images = await fetchImages(seoData?.imageKeywords || seoData?.keywords || []);
 
       const [content] = await Promise.all([
-        Content.create({ user: userId, type, prompt, output: fullOutput, creditsUsed: 1, language, seoData }),
+        Content.create({ user: userId, type, prompt, output: fullOutput, creditsUsed: 1, language, format, seoData, images }),
         User.findByIdAndUpdate(userId, { $inc: { credits: -1 } }),
         Credit.create({ user: userId, amount: -1, type: 'usage', description: `Generated ${type} content` }),
       ]);
 
       io.to(userId.toString()).emit('generation:done', { content });
-      sendEvent({ done: true, seoData, contentId: content._id });
+      sendEvent({ done: true, seoData, images, contentId: content._id });
     } catch (err) {
       console.error('[Save Error]', err.message);
       sendEvent({ error: 'Content generated but failed to save. Please try again.' });
@@ -91,7 +92,7 @@ export const streamGenerate = async (req, res, next) => {
 export const generate = async (req, res, next) => {
   try {
     checkKey();
-    const { type, prompt, tone, length, language = 'english', format = 'paragraphs' } = req.body;
+    const { type, prompt, tone, length, language = 'english_us', format = 'paragraphs' } = req.body;
     const userId = req.user._id;
 
     io.to(userId.toString()).emit('generation:start');
@@ -99,9 +100,10 @@ export const generate = async (req, res, next) => {
     const fullPrompt = buildPrompt({ type, prompt, tone, length, language, format });
     const output = await generateText(fullPrompt);
     const seoData = await generateSEO(output);
+    const images = await fetchImages(seoData?.imageKeywords || seoData?.keywords || []);
 
     const [content] = await Promise.all([
-      Content.create({ user: userId, type, prompt, output, creditsUsed: 1, language, seoData }),
+      Content.create({ user: userId, type, prompt, output, creditsUsed: 1, language, format, seoData, images }),
       User.findByIdAndUpdate(userId, { $inc: { credits: -1 } }),
       Credit.create({ user: userId, amount: -1, type: 'usage', description: `Generated ${type} content` }),
     ]);

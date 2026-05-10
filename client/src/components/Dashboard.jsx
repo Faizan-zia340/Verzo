@@ -1,6 +1,17 @@
 import { useAuth } from '../context/AuthContext.js';
 import { useCredits } from '../context/CreditContext.js';
+import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { FiZap, FiPackage, FiActivity } from 'react-icons/fi';
+
+const Card = ({ children, className = '' }) => (
+  <motion.div
+    whileHover={{ y: -2 }}
+    className={`bg-white rounded-2xl border border-gray-100 shadow-sm p-5 ${className}`}
+  >
+    {children}
+  </motion.div>
+);
 
 export default function DashboardStats() {
   const { user } = useAuth();
@@ -9,34 +20,54 @@ export default function DashboardStats() {
   const usageData = creditLogs
     .filter((l) => l.type === 'usage')
     .slice(0, 7)
-    .map((l, i) => ({ day: `Day ${i + 1}`, used: Math.abs(l.amount) }));
+    .map((l, i) => ({ day: `#${i + 1}`, used: Math.abs(l.amount) }));
+
+  const totalUsed = creditLogs.filter((l) => l.type === 'usage').length;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-      <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
-        <p className="text-sm text-gray-500 mb-1">Plan</p>
-        <p className="text-xl font-bold text-gray-900 capitalize">{user?.subscription}</p>
-      </div>
-      <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
-        <p className="text-sm text-gray-500 mb-1">Credits</p>
-        <p className="text-xl font-bold text-indigo-600">{user?.credits}</p>
-      </div>
-      <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
-        <p className="text-sm text-gray-500 mb-1">Items Generated</p>
-        <p className="text-xl font-bold text-gray-900">{creditLogs.filter((l) => l.type === 'usage').length}</p>
-      </div>
+      <Card>
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-9 h-9 bg-violet-100 rounded-xl flex items-center justify-center">
+            <FiPackage size={16} className="text-violet-600" />
+          </div>
+          <p className="text-sm text-gray-500 font-medium">Plan</p>
+        </div>
+        <p className="text-2xl font-bold text-gray-900 capitalize">{user?.subscription || 'free'}</p>
+      </Card>
+
+      <Card>
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-9 h-9 bg-indigo-100 rounded-xl flex items-center justify-center">
+            <FiZap size={16} className="text-indigo-600" />
+          </div>
+          <p className="text-sm text-gray-500 font-medium">Credits</p>
+        </div>
+        <p className="text-2xl font-bold text-indigo-600">{user?.credits ?? '—'}</p>
+      </Card>
+
+      <Card>
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-9 h-9 bg-emerald-100 rounded-xl flex items-center justify-center">
+            <FiActivity size={16} className="text-emerald-600" />
+          </div>
+          <p className="text-sm text-gray-500 font-medium">Generated</p>
+        </div>
+        <p className="text-2xl font-bold text-gray-900">{totalUsed}</p>
+      </Card>
+
       {usageData.length > 0 && (
-        <div className="col-span-1 md:col-span-3 bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
+        <Card className="col-span-1 md:col-span-3">
           <p className="text-sm font-semibold text-gray-700 mb-4">Recent Usage</p>
-          <ResponsiveContainer width="100%" height={160}>
+          <ResponsiveContainer width="100%" height={140}>
             <BarChart data={usageData}>
-              <XAxis dataKey="day" tick={{ fontSize: 12 }} />
-              <YAxis tick={{ fontSize: 12 }} />
-              <Tooltip />
-              <Bar dataKey="used" fill="#6366f1" radius={[4, 4, 0, 0]} />
+              <XAxis dataKey="day" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={{ borderRadius: 10, border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }} />
+              <Bar dataKey="used" fill="#6366f1" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        </div>
+        </Card>
       )}
     </div>
   );

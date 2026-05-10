@@ -16,7 +16,7 @@ export const generateSchema = Joi.object({
   prompt: Joi.string().min(10).max(1000).required(),
   tone: Joi.string().optional(),
   length: Joi.string().valid('short', 'medium', 'long').optional(),
-  language: Joi.string().valid('english', 'roman_urdu', 'arabic').optional(),
+  language: Joi.string().optional(),
   format: Joi.string().valid('paragraphs', 'bullets', 'headings').optional(),
 });
 
