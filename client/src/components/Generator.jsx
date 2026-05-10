@@ -2,12 +2,17 @@ import { useState } from 'react';
 import { useCredits } from '../context/CreditContext.js';
 import {
   FiZap, FiCopy, FiDownload, FiCheck, FiHome, FiSmartphone, FiMail,
-  FiAlertCircle, FiRefreshCw,
+  FiAlertCircle, FiRefreshCw, FiSliders,
 } from 'react-icons/fi';
 
 const TYPES = ['blog', 'social', 'email', 'ad', 'product'];
 const TONES = ['professional', 'casual', 'formal', 'friendly', 'persuasive'];
 const LENGTHS = ['short', 'medium', 'long'];
+const FORMATS = [
+  { value: 'paragraphs', label: 'Paragraphs' },
+  { value: 'bullets', label: 'Bullet Points' },
+  { value: 'headings', label: 'Headings' },
+];
 const LANGUAGES = [
   { value: 'english', label: 'English' },
   { value: 'roman_urdu', label: 'Roman Urdu' },
@@ -21,7 +26,7 @@ const TEMPLATES = [
     color: 'text-emerald-600',
     bg: 'bg-emerald-50',
     form: {
-      type: 'blog', tone: 'professional', length: 'medium', language: 'english',
+      type: 'blog', tone: 'professional', length: 'medium', language: 'english', format: 'headings',
       prompt: 'Write a compelling blog post about why 2026 is the best year to invest in real estate. Include 3 bullet points on market trends, mention rising demand in suburban areas, and end with a strong call to action encouraging first-time investors to act now.',
     },
   },
@@ -31,7 +36,7 @@ const TEMPLATES = [
     color: 'text-violet-600',
     bg: 'bg-violet-50',
     form: {
-      type: 'social', tone: 'friendly', length: 'short', language: 'english',
+      type: 'social', tone: 'friendly', length: 'short', language: 'english', format: 'paragraphs',
       prompt: 'Create a high-engagement Instagram caption for a motivational business post. Use 2-3 relevant emojis, write a hook in the first line, and end with a question to drive comments. Target audience: entrepreneurs aged 25-40.',
     },
   },
@@ -41,7 +46,7 @@ const TEMPLATES = [
     color: 'text-indigo-600',
     bg: 'bg-indigo-50',
     form: {
-      type: 'email', tone: 'professional', length: 'short', language: 'english',
+      type: 'email', tone: 'professional', length: 'short', language: 'english', format: 'paragraphs',
       prompt: 'Write a cold outreach email to a potential B2B SaaS client. Include a personalized opener, state the value proposition in 2 sentences, and close with a soft CTA to schedule a 15-minute discovery call. Keep it under 150 words.',
     },
   },
@@ -51,11 +56,12 @@ const TUNE_ACTIONS = [
   { key: 'shorten', label: '↓ Shorten' },
   { key: 'engaging', label: '⚡ More Engaging' },
   { key: 'professional', label: '✦ Professional Tone' },
+  { key: 'reduce_hype', label: '🎯 Reduce Hype' },
 ];
 
 export default function Generator() {
   const { deductCredit } = useCredits();
-  const [form, setForm] = useState({ type: 'blog', prompt: '', tone: 'professional', length: 'medium', language: 'english' });
+  const [form, setForm] = useState({ type: 'blog', prompt: '', tone: 'professional', length: 'medium', language: 'english', format: 'paragraphs' });
   const [output, setOutput] = useState('');
   const [seoData, setSeoData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -127,7 +133,6 @@ export default function Generator() {
           } catch {}
         }
       }
-      // Ensure loading always resets even if stream closes without done/error event
       if (!finished) setLoading(false);
     } catch {
       setError('Network error. Please check your connection and try again.');
@@ -205,11 +210,12 @@ export default function Generator() {
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <h2 className="text-xl font-bold text-gray-900 mb-5">Generate Content</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             {[
               { name: 'type', label: 'Type', options: TYPES.map((t) => ({ value: t, label: t.charAt(0).toUpperCase() + t.slice(1) })) },
               { name: 'tone', label: 'Tone', options: TONES.map((t) => ({ value: t, label: t.charAt(0).toUpperCase() + t.slice(1) })) },
               { name: 'length', label: 'Length', options: LENGTHS.map((l) => ({ value: l, label: l.charAt(0).toUpperCase() + l.slice(1) })) },
+              { name: 'format', label: 'Format', options: FORMATS },
             ].map(({ name, label, options }) => (
               <div key={name}>
                 <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
@@ -258,34 +264,15 @@ export default function Generator() {
                   ? 'bg-amber-50 border border-amber-200 text-amber-800'
                   : 'bg-red-50 border border-red-200 text-red-700'
             }`}>
-              {isQuota
-                ? <FiAlertCircle size={15} className="mt-0.5 flex-shrink-0 text-orange-500" />
-                : isRateLimit
-                  ? <FiRefreshCw size={15} className="mt-0.5 flex-shrink-0 text-amber-500" />
-                  : <FiAlertCircle size={15} className="mt-0.5 flex-shrink-0 text-red-500" />
+              {isRateLimit
+                ? <FiRefreshCw size={15} className="mt-0.5 flex-shrink-0 text-amber-500" />
+                : <FiAlertCircle size={15} className="mt-0.5 flex-shrink-0 text-red-500" />
               }
               <div className="flex-1">
                 <p className="font-semibold">
-                  {isQuota ? 'OpenAI Quota Exhausted' : isRateLimit ? 'Rate limit reached' : 'Generation Error'}
+                  {isQuota ? 'AI Quota Reached' : isRateLimit ? 'Rate limit reached — try again in a moment' : 'Generation Error'}
                 </p>
-                {isQuota ? (
-                  <div className="text-xs mt-1 space-y-1 opacity-90">
-                    <p>Your OpenAI API key has run out of credits. This is not a temporary error — waiting will not fix it.</p>
-                    <p>
-                      To fix this, add billing credits at{' '}
-                      <a
-                        href="https://platform.openai.com/account/billing"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="underline font-semibold hover:opacity-70"
-                      >
-                        platform.openai.com/account/billing
-                      </a>
-                    </p>
-                  </div>
-                ) : (
-                  <p className="text-xs mt-0.5 opacity-80">{error}</p>
-                )}
+                <p className="text-xs mt-0.5 opacity-80">{error}</p>
               </div>
             </div>
           )}
@@ -323,7 +310,7 @@ export default function Generator() {
                 </button>
                 <button
                   onClick={handleDownload}
-                  className="flex items-center gap-1.5 text-xs bg-gray-100 hover:bg-indigo-50 hover:text-indigo-700 text-gray-600 px-3 py-1.5 rounded-lg transition font-medium"
+                  className="flex items-center gap-1.5 text-xs bg-gray-100 hover:bg-indigo-50 hover:text-indigo-700 text-gray-600 px-3 py-1.5 rounded-full transition font-medium"
                 >
                   <FiDownload size={12} /> Download
                 </button>
@@ -338,7 +325,9 @@ export default function Generator() {
             {/* Tune buttons */}
             {!loading && output && (
               <div className="mt-4 pt-4 border-t border-gray-100">
-                <p className="text-xs text-gray-400 font-medium mb-2">Refine output — no credits used</p>
+                <p className="text-xs text-gray-400 font-medium mb-2 flex items-center gap-1.5">
+                  <FiSliders size={11} /> Refine output — no credits used
+                </p>
                 <div className="flex flex-wrap gap-2">
                   {TUNE_ACTIONS.map(({ key, label }) => (
                     <button

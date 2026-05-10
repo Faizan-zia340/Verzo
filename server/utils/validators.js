@@ -17,6 +17,7 @@ export const generateSchema = Joi.object({
   tone: Joi.string().optional(),
   length: Joi.string().valid('short', 'medium', 'long').optional(),
   language: Joi.string().valid('english', 'roman_urdu', 'arabic').optional(),
+  format: Joi.string().valid('paragraphs', 'bullets', 'headings').optional(),
 });
 
 export const validate = (schema) => (req, res, next) => {

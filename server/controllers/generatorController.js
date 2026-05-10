@@ -19,7 +19,7 @@ const checkKey = () => {
 export const streamGenerate = async (req, res, next) => {
   try {
     checkKey();
-    const { type, prompt, tone, length, language = 'english' } = req.body;
+    const { type, prompt, tone, length, language = 'english', format = 'paragraphs' } = req.body;
     const userId = req.user._id;
 
     res.setHeader('Content-Type', 'text/event-stream');
@@ -30,7 +30,7 @@ export const streamGenerate = async (req, res, next) => {
 
     const sendEvent = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
 
-    const fullPrompt = buildPrompt({ type, prompt, tone, length, language });
+    const fullPrompt = buildPrompt({ type, prompt, tone, length, language, format });
 
     let fullOutput = '';
     try {
@@ -92,12 +92,12 @@ export const streamGenerate = async (req, res, next) => {
 export const generate = async (req, res, next) => {
   try {
     checkKey();
-    const { type, prompt, tone, length, language = 'english' } = req.body;
+    const { type, prompt, tone, length, language = 'english', format = 'paragraphs' } = req.body;
     const userId = req.user._id;
 
     io.to(userId.toString()).emit('generation:start');
 
-    const fullPrompt = buildPrompt({ type, prompt, tone, length, language });
+    const fullPrompt = buildPrompt({ type, prompt, tone, length, language, format });
     const output = await generateText(fullPrompt);
     const seoData = await generateSEO(output);
 
@@ -120,7 +120,7 @@ export const tuneContent = async (req, res, next) => {
     checkKey();
     const { text, action } = req.body;
     if (!text || !action) return res.status(400).json({ message: 'text and action are required' });
-    const validActions = ['shorten', 'engaging', 'professional'];
+    const validActions = ['shorten', 'engaging', 'professional', 'reduce_hype'];
     if (!validActions.includes(action)) return res.status(400).json({ message: 'Invalid action' });
 
     const output = await tuneText(text, action);
