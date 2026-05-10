@@ -5,7 +5,7 @@ import Credit from '../models/Credit.js';
 import User from '../models/User.js';
 import Context from '../models/Context.js';
 import { io } from '../server.js';
-import getClient from '../config/gemini.js';
+import getClient, { MODEL, API_VERSION } from '../config/gemini.js';
 
 const checkKey = () => {
   if (!process.env.GEMINI_API_KEY) {
@@ -35,7 +35,7 @@ export const streamGenerate = async (req, res, next) => {
     let fullOutput = '';
     try {
       const genAI = getClient();
-      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite' });
+      const model = genAI.getGenerativeModel({ model: MODEL }, { apiVersion: API_VERSION });
       const streamResult = await model.generateContentStream(fullPrompt);
 
       for await (const chunk of streamResult.stream) {
@@ -48,10 +48,10 @@ export const streamGenerate = async (req, res, next) => {
     } catch (err) {
       const msg = err.message || '';
       let userMsg = 'AI generation failed. Please try again.';
-      if (msg.includes('API_KEY_INVALID') || msg.includes('API key')) userMsg = 'Invalid Gemini API key. Please check your GEMINI_API_KEY secret.';
-      else if (msg.includes('RESOURCE_EXHAUSTED') || msg.includes('quota')) userMsg = 'Gemini free tier quota reached. Wait a minute and try again.';
+      if (msg.includes('API_KEY_INVALID') || msg.includes('API key not valid')) userMsg = 'Invalid Gemini API key. Please check your GEMINI_API_KEY secret.';
+      else if (msg.includes('RESOURCE_EXHAUSTED') || msg.includes('quota') || msg.includes('429')) userMsg = 'Gemini free tier quota reached. Please wait a minute and try again.';
       else if (msg.includes('overloaded') || msg.includes('503')) userMsg = 'Gemini is temporarily overloaded. Please try again shortly.';
-      console.error('[Gemini Stream Error]', err.message);
+      console.error('[Gemini Stream Error]', msg.slice(0, 200));
       sendEvent({ error: userMsg });
       res.end();
       return;

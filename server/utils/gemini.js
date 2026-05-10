@@ -1,34 +1,35 @@
-import getClient from '../config/gemini.js';
+import getClient, { MODEL, API_VERSION } from '../config/gemini.js';
 import { buildSEOPrompt, buildTunePrompt } from './prompts.js';
+
+const REQUEST_OPTIONS = { apiVersion: API_VERSION };
 
 const geminiError = (err) => {
   const msg = err.message || '';
-  const status = err.status || err.httpStatusCode || 500;
-  console.error(`[Gemini Error] status=${status} msg="${msg}"`);
+  console.error(`[Gemini Error] ${msg.slice(0, 200)}`);
 
-  if (status === 400 || msg.includes('API_KEY_INVALID') || msg.includes('API key')) {
+  if (msg.includes('API_KEY_INVALID') || msg.includes('API key not valid')) {
     const e = new Error('Invalid Gemini API key. Please check your GEMINI_API_KEY secret.');
     e.statusCode = 503;
     throw e;
   }
-  if (status === 429 || msg.includes('quota') || msg.includes('RESOURCE_EXHAUSTED')) {
-    const e = new Error('Gemini quota reached. Free tier limit hit — wait a minute and try again.');
+  if (msg.includes('RESOURCE_EXHAUSTED') || msg.includes('quota') || msg.includes('429')) {
+    const e = new Error('Gemini free tier quota reached. Please wait a minute and try again.');
     e.statusCode = 429;
     throw e;
   }
-  if (status === 503 || msg.includes('overloaded')) {
+  if (msg.includes('overloaded') || msg.includes('503')) {
     const e = new Error('Gemini is temporarily overloaded. Please try again shortly.');
     e.statusCode = 503;
     throw e;
   }
   const e = new Error(msg || 'AI generation failed. Please try again.');
-  e.statusCode = status;
+  e.statusCode = 500;
   throw e;
 };
 
 export const generateText = async (prompt) => {
   const genAI = getClient();
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite' });
+  const model = genAI.getGenerativeModel({ model: MODEL }, REQUEST_OPTIONS);
   try {
     const result = await model.generateContent(prompt);
     return result.response.text();
@@ -40,7 +41,7 @@ export const generateText = async (prompt) => {
 export const generateSEO = async (content) => {
   try {
     const genAI = getClient();
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite' });
+    const model = genAI.getGenerativeModel({ model: MODEL }, REQUEST_OPTIONS);
     const result = await model.generateContent(buildSEOPrompt(content));
     const raw = result.response.text().trim().replace(/```json|```/g, '').trim();
     return JSON.parse(raw);
@@ -51,7 +52,7 @@ export const generateSEO = async (content) => {
 
 export const tuneText = async (text, action) => {
   const genAI = getClient();
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite' });
+  const model = genAI.getGenerativeModel({ model: MODEL }, REQUEST_OPTIONS);
   try {
     const result = await model.generateContent(buildTunePrompt(text, action));
     return result.response.text();
