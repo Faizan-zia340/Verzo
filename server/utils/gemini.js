@@ -28,7 +28,7 @@ const geminiError = (err) => {
 
 export const generateText = async (prompt) => {
   const genAI = getClient();
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite' });
   try {
     const result = await model.generateContent(prompt);
     return result.response.text();
@@ -40,7 +40,7 @@ export const generateText = async (prompt) => {
 export const generateSEO = async (content) => {
   try {
     const genAI = getClient();
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite' });
     const result = await model.generateContent(buildSEOPrompt(content));
     const raw = result.response.text().trim().replace(/```json|```/g, '').trim();
     return JSON.parse(raw);
@@ -51,7 +51,7 @@ export const generateSEO = async (content) => {
 
 export const tuneText = async (text, action) => {
   const genAI = getClient();
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite' });
   try {
     const result = await model.generateContent(buildTunePrompt(text, action));
     return result.response.text();

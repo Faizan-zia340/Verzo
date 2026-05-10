@@ -19,7 +19,7 @@ router.get('/ping-ai', protect, async (req, res) => {
   }
   try {
     const genAI = getClient();
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite' });
     const result = await model.generateContent('Say "ok" in one word only.');
     const text = result.response.text().trim();
     console.log('[Gemini Ping] SUCCESS:', text);

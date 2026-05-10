@@ -35,7 +35,7 @@ export const streamGenerate = async (req, res, next) => {
     let fullOutput = '';
     try {
       const genAI = getClient();
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite' });
       const streamResult = await model.generateContentStream(fullPrompt);
 
       for await (const chunk of streamResult.stream) {
