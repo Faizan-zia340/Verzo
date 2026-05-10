@@ -1,4 +1,4 @@
-import { generateText, generateSEO, tuneText, geminiError } from '../utils/gemini.js';
+import { generateText, generateSEO, tuneText, geminiError, getModel, withSystem } from '../utils/gemini.js';
 import { buildPrompt } from '../utils/prompts.js';
 import Content from '../models/Content.js';
 import Credit from '../models/Credit.js';
@@ -34,9 +34,8 @@ export const streamGenerate = async (req, res, next) => {
 
     let fullOutput = '';
     try {
-      const genAI = getClient();
-      const model = genAI.getGenerativeModel({ model: MODEL }, { apiVersion: API_VERSION });
-      const streamResult = await model.generateContentStream(fullPrompt);
+      const model = getModel();
+      const streamResult = await model.generateContentStream(withSystem(fullPrompt));
 
       for await (const chunk of streamResult.stream) {
         const token = chunk.text();
