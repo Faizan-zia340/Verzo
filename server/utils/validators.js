@@ -18,10 +18,11 @@ export const generateSchema = Joi.object({
   length: Joi.string().valid('short', 'medium', 'long').optional(),
   language: Joi.string().optional(),
   format: Joi.string().valid('paragraphs', 'bullets', 'headings').optional(),
-});
+}).options({ stripUnknown: true });
 
 export const validate = (schema) => (req, res, next) => {
-  const { error } = schema.validate(req.body);
+  const { error, value } = schema.validate(req.body);
   if (error) return res.status(400).json({ message: error.details[0].message });
+  req.body = value;
   next();
 };
