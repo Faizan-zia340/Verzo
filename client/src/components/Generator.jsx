@@ -106,6 +106,7 @@ export default function Generator() {
   const [output, setOutput] = useState('');
   const [seoData, setSeoData] = useState(null);
   const [images, setImages] = useState([]);
+  const [realityCheck, setRealityCheck] = useState(null);
   const [loading, setLoading] = useState(false);
   const [fetchingImages, setFetchingImages] = useState(false);
   const [tuning, setTuning] = useState('');
@@ -127,7 +128,7 @@ export default function Generator() {
       toast.error('Not enough credits. Please buy more.');
       return;
     }
-    setLoading(true); setFetchingImages(false); setError(''); setOutput(''); setSeoData(null); setImages([]);
+    setLoading(true); setFetchingImages(false); setError(''); setOutput(''); setSeoData(null); setImages([]); setRealityCheck(null);
 
     const token = localStorage.getItem('token');
     const genToast = toast.loading('Generating content...');
@@ -170,6 +171,7 @@ export default function Generator() {
             } else if (parsed.done) {
               setSeoData(parsed.seoData || null);
               setImages(parsed.images || []);
+              setRealityCheck(parsed.realityCheck || null);
               if (parsed.contentWithImages) setOutput(parsed.contentWithImages);
               setFetchingImages(false);
               deductCredit(1);
@@ -217,6 +219,7 @@ export default function Generator() {
       setOutput(data.output);
       setImages([]);
       setSeoData(null);
+      setRealityCheck(data.realityCheck || null);
       toast.success('Content refined!', { id: tuneToast });
     } catch {
       toast.error('Tune request failed.', { id: tuneToast });
@@ -621,6 +624,57 @@ export default function Generator() {
                   </div>
                 )}
               </div>
+
+              {/* Reality Check Score Card */}
+              {realityCheck && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 bg-violet-100 rounded-lg flex items-center justify-center">
+                        <span className="text-xs">⚡</span>
+                      </div>
+                      <h3 className="font-semibold text-gray-900 text-sm">Reality Check</h3>
+                    </div>
+                    {realityCheck.rating != null && (
+                      <div className={`text-sm font-bold px-2.5 py-1 rounded-lg ${
+                        realityCheck.rating >= 8 ? 'bg-emerald-100 text-emerald-700' :
+                        realityCheck.rating >= 6 ? 'bg-amber-100 text-amber-700' :
+                        'bg-red-100 text-red-700'
+                      }`}>
+                        {realityCheck.rating}/10
+                      </div>
+                    )}
+                  </div>
+                  <div className="space-y-3">
+                    {realityCheck.pillars.map((pillar) => {
+                      const pct = Math.round((pillar.score / 10) * 100);
+                      const color = pillar.score >= 8 ? 'bg-emerald-500' : pillar.score >= 6 ? 'bg-amber-400' : 'bg-red-400';
+                      const textColor = pillar.score >= 8 ? 'text-emerald-700' : pillar.score >= 6 ? 'text-amber-700' : 'text-red-600';
+                      return (
+                        <div key={pillar.name}>
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-xs font-medium text-gray-700">{pillar.name}</span>
+                            <span className={`text-xs font-bold ${textColor}`}>{pillar.score}/10</span>
+                          </div>
+                          <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden mb-1">
+                            <div className={`h-full ${color} rounded-full transition-all`} style={{ width: `${pct}%` }} />
+                          </div>
+                          <p className="text-xs text-gray-400 leading-snug">{pillar.verdict}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {realityCheck.rating != null && (
+                    <p className="text-xs text-gray-400 mt-3 pt-3 border-t border-gray-100 text-center">
+                      Avg score vs GPT-4, Claude 3.5, Llama 3, Gemini
+                    </p>
+                  )}
+                </motion.div>
+              )}
 
               {/* Sidebar images — only for non-blog types (blog shows inline) */}
               {images.length > 0 && !hasInlineImages(output) && (

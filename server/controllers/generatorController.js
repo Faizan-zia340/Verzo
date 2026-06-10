@@ -1,4 +1,4 @@
-import { generateText, generateSEO, tuneText, geminiError, getModel, withSystem } from '../utils/gemini.js';
+import { generateText, generateSEO, tuneText, getModel, withSystem } from '../utils/gemini.js';
 import { buildPrompt } from '../utils/prompts.js';
 import { fetchImages } from '../utils/unsplash.js';
 import { fetchAndAnalyzeImages, embedImagesInContent } from '../utils/imageService.js';
@@ -14,6 +14,38 @@ const checkKey = () => {
     err.statusCode = 503;
     throw err;
   }
+};
+
+/**
+ * Splits Gemini output into clean blog content + structured Reality Check data.
+ * Returns { cleanContent, realityCheck } where realityCheck may be null.
+ */
+const parseRealityCheck = (rawOutput) => {
+  // Separator is a line of dashes followed by **REALITY CHECK**
+  const sepMatch = rawOutput.match(/\n*-{3,}\s*\n\*\*REALITY CHECK\*\*/);
+  if (!sepMatch) return { cleanContent: rawOutput.trim(), realityCheck: null };
+
+  const cleanContent = rawOutput.slice(0, sepMatch.index).trim();
+  const rcSection = rawOutput.slice(sepMatch.index);
+
+  // Parse table rows: | Pillar name | Score | Verdict |
+  const pillars = [];
+  const rowReg = /\|\s*([^|\-][^|]*?)\s*\|\s*(\d+(?:\.\d+)?)\s*\|\s*([^|]+?)\s*\|/g;
+  let m;
+  while ((m = rowReg.exec(rcSection)) !== null) {
+    const name = m[1].trim();
+    if (!name || name === 'Pillar' || name === 'Score /10' || name === 'Verdict') continue;
+    pillars.push({ name, score: parseFloat(m[2]), verdict: m[3].trim() });
+  }
+
+  // Parse overall rating
+  const ratingMatch = rcSection.match(/Estimated Global AI Rating[^0-9]*([\d.]+)\s*\/\s*10/);
+  const rating = ratingMatch ? parseFloat(ratingMatch[1]) : null;
+
+  return {
+    cleanContent,
+    realityCheck: pillars.length ? { pillars, rating } : null,
+  };
 };
 
 // ── Streaming generation via SSE ─────────────────────────────────
@@ -63,23 +95,24 @@ export const streamGenerate = async (req, res, next) => {
       return;
     }
 
+    // Split clean content from Reality Check section
+    const { cleanContent, realityCheck } = parseRealityCheck(fullOutput);
+
     // Post-generation: SEO + images + save
     try {
-      const seoData = await generateSEO(fullOutput);
+      const seoData = await generateSEO(cleanContent);
       const keywords = seoData?.imageKeywords || seoData?.keywords || [];
 
       let images = [];
-      let finalOutput = fullOutput;
+      let finalOutput = cleanContent;
 
       if (type === 'blog' && process.env.UNSPLASH_ACCESS_KEY) {
-        // Blog posts: download images, run Gemini Vision, embed at fitting positions
         sendEvent({ status: 'Fetching and analyzing images...' });
         images = await fetchAndAnalyzeImages(keywords);
         if (images.length) {
-          finalOutput = await embedImagesInContent(fullOutput, images);
+          finalOutput = await embedImagesInContent(cleanContent, images);
         }
       } else {
-        // Other types: keep existing sidebar image display
         images = await fetchImages(keywords);
       }
 
@@ -100,7 +133,7 @@ export const streamGenerate = async (req, res, next) => {
       ]);
 
       io.to(userId.toString()).emit('generation:done', { content });
-      sendEvent({ done: true, seoData, images, contentWithImages: finalOutput, contentId: content._id });
+      sendEvent({ done: true, seoData, images, contentWithImages: finalOutput, realityCheck, contentId: content._id });
     } catch (err) {
       console.error('[Save Error]', err.message);
       sendEvent({ error: 'Content generated but failed to save. Please try again.' });
@@ -125,15 +158,17 @@ export const generate = async (req, res, next) => {
 
     const fullPrompt = buildPrompt({ type, prompt, tone, length, language, format });
     const rawOutput = await generateText(fullPrompt);
-    const seoData = await generateSEO(rawOutput);
+    const { cleanContent, realityCheck } = parseRealityCheck(rawOutput);
+
+    const seoData = await generateSEO(cleanContent);
     const keywords = seoData?.imageKeywords || seoData?.keywords || [];
 
     let images = [];
-    let finalOutput = rawOutput;
+    let finalOutput = cleanContent;
 
     if (type === 'blog' && process.env.UNSPLASH_ACCESS_KEY) {
       images = await fetchAndAnalyzeImages(keywords);
-      if (images.length) finalOutput = await embedImagesInContent(rawOutput, images);
+      if (images.length) finalOutput = await embedImagesInContent(cleanContent, images);
     } else {
       images = await fetchImages(keywords);
     }
@@ -145,7 +180,7 @@ export const generate = async (req, res, next) => {
     ]);
 
     io.to(userId.toString()).emit('generation:done', { content });
-    res.json({ content });
+    res.json({ content, realityCheck });
   } catch (err) {
     next(err);
   }
@@ -160,8 +195,9 @@ export const tuneContent = async (req, res, next) => {
     const validActions = ['shorten', 'engaging', 'professional', 'reduce_hype'];
     if (!validActions.includes(action)) return res.status(400).json({ message: 'Invalid action' });
 
-    const output = await tuneText(text, action);
-    res.json({ output });
+    const raw = await tuneText(text, action);
+    const { cleanContent, realityCheck } = parseRealityCheck(raw);
+    res.json({ output: cleanContent, realityCheck });
   } catch (err) {
     next(err);
   }
@@ -182,8 +218,9 @@ export const generateAIContent = async (req, res, next) => {
       ? `Context Information:\n${foundContext.information}\n\nStrict Instructions: Use the above Context Information to answer accurately. Do not fabricate facts.\n\nUser Prompt: ${userPrompt}`
       : userPrompt;
 
-    const result = await generateText(finalPrompt);
-    res.json({ response: result, contextUsed: !!foundContext, contextTitle: foundContext?.title || null });
+    const raw = await generateText(finalPrompt);
+    const { cleanContent, realityCheck } = parseRealityCheck(raw);
+    res.json({ response: cleanContent, realityCheck, contextUsed: !!foundContext, contextTitle: foundContext?.title || null });
   } catch (err) {
     next(err);
   }
