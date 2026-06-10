@@ -1,6 +1,7 @@
 import { generateText, generateSEO, tuneText, geminiError, getModel, withSystem } from '../utils/gemini.js';
 import { buildPrompt } from '../utils/prompts.js';
 import { fetchImages } from '../utils/unsplash.js';
+import { fetchAndAnalyzeImages, embedImagesInContent } from '../utils/imageService.js';
 import Content from '../models/Content.js';
 import Credit from '../models/Credit.js';
 import User from '../models/User.js';
@@ -62,19 +63,44 @@ export const streamGenerate = async (req, res, next) => {
       return;
     }
 
-    // Generate SEO + fetch images + save to DB
+    // Post-generation: SEO + images + save
     try {
       const seoData = await generateSEO(fullOutput);
-      const images = await fetchImages(seoData?.imageKeywords || seoData?.keywords || []);
+      const keywords = seoData?.imageKeywords || seoData?.keywords || [];
+
+      let images = [];
+      let finalOutput = fullOutput;
+
+      if (type === 'blog' && process.env.UNSPLASH_ACCESS_KEY) {
+        // Blog posts: download images, run Gemini Vision, embed at fitting positions
+        sendEvent({ status: 'Fetching and analyzing images...' });
+        images = await fetchAndAnalyzeImages(keywords);
+        if (images.length) {
+          finalOutput = await embedImagesInContent(fullOutput, images);
+        }
+      } else {
+        // Other types: keep existing sidebar image display
+        images = await fetchImages(keywords);
+      }
 
       const [content] = await Promise.all([
-        Content.create({ user: userId, type, prompt, output: fullOutput, creditsUsed: 1, language, format, seoData, images }),
+        Content.create({
+          user: userId,
+          type,
+          prompt,
+          output: finalOutput,
+          creditsUsed: 1,
+          language,
+          format,
+          seoData,
+          images,
+        }),
         User.findByIdAndUpdate(userId, { $inc: { credits: -1 } }),
         Credit.create({ user: userId, amount: -1, type: 'usage', description: `Generated ${type} content` }),
       ]);
 
       io.to(userId.toString()).emit('generation:done', { content });
-      sendEvent({ done: true, seoData, images, contentId: content._id });
+      sendEvent({ done: true, seoData, images, contentWithImages: finalOutput, contentId: content._id });
     } catch (err) {
       console.error('[Save Error]', err.message);
       sendEvent({ error: 'Content generated but failed to save. Please try again.' });
@@ -98,12 +124,22 @@ export const generate = async (req, res, next) => {
     io.to(userId.toString()).emit('generation:start');
 
     const fullPrompt = buildPrompt({ type, prompt, tone, length, language, format });
-    const output = await generateText(fullPrompt);
-    const seoData = await generateSEO(output);
-    const images = await fetchImages(seoData?.imageKeywords || seoData?.keywords || []);
+    const rawOutput = await generateText(fullPrompt);
+    const seoData = await generateSEO(rawOutput);
+    const keywords = seoData?.imageKeywords || seoData?.keywords || [];
+
+    let images = [];
+    let finalOutput = rawOutput;
+
+    if (type === 'blog' && process.env.UNSPLASH_ACCESS_KEY) {
+      images = await fetchAndAnalyzeImages(keywords);
+      if (images.length) finalOutput = await embedImagesInContent(rawOutput, images);
+    } else {
+      images = await fetchImages(keywords);
+    }
 
     const [content] = await Promise.all([
-      Content.create({ user: userId, type, prompt, output, creditsUsed: 1, language, format, seoData, images }),
+      Content.create({ user: userId, type, prompt, output: finalOutput, creditsUsed: 1, language, format, seoData, images }),
       User.findByIdAndUpdate(userId, { $inc: { credits: -1 } }),
       Credit.create({ user: userId, amount: -1, type: 'usage', description: `Generated ${type} content` }),
     ]);
