@@ -1,0 +1,1 @@
+- [Blog image embedding](blog-image-embedding.md) — blog posts download+save Unsplash images as base64, embed via [IMAGE:N] markers; needs UNSPLASH_ACCESS_KEY secret

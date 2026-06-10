@@ -96,6 +96,10 @@ const TUNE_ACTIONS = [
 
 const selectClass = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500';
 
+const stripMarkers = (text) => text.replace(/\[IMAGE:\d+\]/g, '').replace(/\n{3,}/g, '\n\n').trim();
+
+const hasInlineImages = (text) => /\[IMAGE:\d+\]/.test(text);
+
 export default function Generator() {
   const { deductCredit, credits } = useCredits();
   const [form, setForm] = useState({ type: 'blog', prompt: '', tone: 'professional', length: 'medium', language: 'english_us', format: 'paragraphs' });
@@ -103,6 +107,7 @@ export default function Generator() {
   const [seoData, setSeoData] = useState(null);
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [fetchingImages, setFetchingImages] = useState(false);
   const [tuning, setTuning] = useState('');
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
@@ -122,7 +127,7 @@ export default function Generator() {
       toast.error('Not enough credits. Please buy more.');
       return;
     }
-    setLoading(true); setError(''); setOutput(''); setSeoData(null); setImages([]);
+    setLoading(true); setFetchingImages(false); setError(''); setOutput(''); setSeoData(null); setImages([]);
 
     const token = localStorage.getItem('token');
     const genToast = toast.loading('Generating content...');
@@ -159,9 +164,14 @@ export default function Generator() {
             const parsed = JSON.parse(line.slice(6));
             if (parsed.token) {
               setOutput((prev) => prev + parsed.token);
+            } else if (parsed.status) {
+              setFetchingImages(true);
+              toast.loading(parsed.status, { id: genToast });
             } else if (parsed.done) {
               setSeoData(parsed.seoData || null);
               setImages(parsed.images || []);
+              if (parsed.contentWithImages) setOutput(parsed.contentWithImages);
+              setFetchingImages(false);
               deductCredit(1);
               finished = true;
               setLoading(false);
@@ -171,12 +181,14 @@ export default function Generator() {
               toast.error(parsed.error, { id: genToast });
               finished = true;
               setLoading(false);
+              setFetchingImages(false);
             }
           } catch {}
         }
       }
       if (!finished) {
         setLoading(false);
+        setFetchingImages(false);
         toast.dismiss(genToast);
       }
     } catch {
@@ -184,6 +196,7 @@ export default function Generator() {
       setError(msg);
       toast.error(msg, { id: genToast });
       setLoading(false);
+      setFetchingImages(false);
     }
   };
 
@@ -197,11 +210,12 @@ export default function Generator() {
       const res = await fetch('/api/generate/tune', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ text: output, action }),
+        body: JSON.stringify({ text: stripMarkers(output), action }),
       });
       const data = await res.json();
       if (!res.ok) { toast.error(data.message || 'Tune failed', { id: tuneToast }); return; }
       setOutput(data.output);
+      setImages([]);
       setSeoData(null);
       toast.success('Content refined!', { id: tuneToast });
     } catch {
@@ -212,14 +226,14 @@ export default function Generator() {
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(output);
+    navigator.clipboard.writeText(stripMarkers(output));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
     toast.success('Copied to clipboard!');
   };
 
   const handleDownloadTxt = () => {
-    const blob = new Blob([output], { type: 'text/plain' });
+    const blob = new Blob([stripMarkers(output)], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -233,6 +247,8 @@ export default function Generator() {
     const doc = new jsPDF();
     const margin = 15;
     const pageWidth = doc.internal.pageSize.getWidth() - margin * 2;
+    let y = 42;
+
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(14);
     doc.text(`${form.type.toUpperCase()} — AI Generated`, margin, 20);
@@ -242,21 +258,76 @@ export default function Generator() {
     doc.text(`Prompt: ${form.prompt.slice(0, 100)}`, margin, 30);
     doc.setTextColor(0);
     doc.setFontSize(11);
-    const lines = doc.splitTextToSize(output, pageWidth);
-    doc.text(lines, margin, 42);
-    if (seoData?.title) {
-      const y = Math.min(42 + lines.length * 5 + 10, 270);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(10);
-      doc.setTextColor(79, 70, 229);
-      doc.text('SEO: ' + seoData.title, margin, y);
+
+    if (images.length && hasInlineImages(output)) {
+      const parts = output.split(/(\[IMAGE:\d+\])/);
+      for (const part of parts) {
+        const match = part.match(/\[IMAGE:(\d+)\]/);
+        if (match) {
+          const img = images[parseInt(match[1])];
+          if (img?.dataUrl) {
+            const imgH = pageWidth * 0.5;
+            if (y + imgH > 270) { doc.addPage(); y = 20; }
+            try {
+              doc.addImage(img.dataUrl, 'JPEG', margin, y, pageWidth, imgH);
+              y += imgH + 2;
+            } catch {}
+            doc.setFontSize(7); doc.setTextColor(150);
+            doc.text(img.credit || '', margin, y);
+            doc.setTextColor(0); doc.setFontSize(11);
+            y += 8;
+            if (img.extractedText) {
+              doc.setFontSize(8); doc.setTextColor(80);
+              doc.text(`Text in image: "${img.extractedText.slice(0, 100)}"`, margin, y);
+              doc.setTextColor(0); doc.setFontSize(11);
+              y += 7;
+            }
+          }
+        } else if (part.trim()) {
+          const lines = doc.splitTextToSize(part.trim(), pageWidth);
+          if (y + lines.length * 5 > 270) { doc.addPage(); y = 20; }
+          doc.text(lines, margin, y);
+          y += lines.length * 5 + 4;
+        }
+      }
+    } else {
+      const lines = doc.splitTextToSize(stripMarkers(output), pageWidth);
+      doc.text(lines, margin, y);
+      y += lines.length * 5 + 4;
+    }
+
+    if (seoData?.title && y < 275) {
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(79, 70, 229);
+      doc.text('SEO: ' + seoData.title, margin, Math.min(y, 275));
     }
     doc.save(`content-${form.type}-${Date.now()}.pdf`);
     toast.success('Exported as PDF!');
   };
 
   const handleDownloadDocx = () => {
-    const html = `<html><head><meta charset="utf-8"><style>body{font-family:Calibri,sans-serif;font-size:11pt;line-height:1.6;margin:2cm;} h1{color:#4f46e5;} p{margin:0.5em 0;}</style></head><body><h1>${form.type.toUpperCase()} Content</h1><p><b>Prompt:</b> ${form.prompt}</p><hr/>${output.replace(/\n/g, '<br/>')}</body></html>`;
+    let bodyContent = '';
+    if (images.length && hasInlineImages(output)) {
+      const parts = output.split(/(\[IMAGE:\d+\])/);
+      for (const part of parts) {
+        const match = part.match(/\[IMAGE:(\d+)\]/);
+        if (match) {
+          const img = images[parseInt(match[1])];
+          if (img?.dataUrl) {
+            bodyContent += `<div style="margin:14px 0;page-break-inside:avoid;">`;
+            bodyContent += `<img src="${img.dataUrl}" style="max-width:100%;border-radius:4px;" alt="${img.alt || ''}"/>`;
+            bodyContent += `<p style="font-size:8pt;color:#999;margin:3px 0;">${img.credit || ''}</p>`;
+            if (img.extractedText) bodyContent += `<p style="font-size:8pt;color:#666;font-style:italic;">Text in image (EN): "${img.extractedText}"</p>`;
+            bodyContent += `</div>`;
+          }
+        } else {
+          bodyContent += `<span>${part.replace(/\n/g, '<br/>')}</span>`;
+        }
+      }
+    } else {
+      bodyContent = stripMarkers(output).replace(/\n/g, '<br/>');
+    }
+
+    const html = `<html><head><meta charset="utf-8"><style>body{font-family:Calibri,sans-serif;font-size:11pt;line-height:1.6;margin:2cm;} h1{color:#4f46e5;} p{margin:0.5em 0;}</style></head><body><h1>${form.type.toUpperCase()} Content</h1><p><b>Prompt:</b> ${form.prompt}</p><hr/>${bodyContent}</body></html>`;
     const blob = new Blob([html], { type: 'application/vnd.ms-word' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -264,17 +335,64 @@ export default function Generator() {
     a.download = `content-${form.type}-${Date.now()}.doc`;
     a.click();
     URL.revokeObjectURL(url);
-    toast.success('Exported as DOCX!');
+    toast.success('Exported as DOCX with images!');
   };
 
   const handleShareLinkedIn = () => {
-    const text = encodeURIComponent(output.slice(0, 700));
+    const text = encodeURIComponent(stripMarkers(output).slice(0, 700));
     window.open(`https://www.linkedin.com/sharing/share-offsite/?mini=true&summary=${text}`, '_blank');
   };
 
   const handleShareTwitter = () => {
-    const text = encodeURIComponent(output.slice(0, 260) + '...');
+    const text = encodeURIComponent(stripMarkers(output).slice(0, 260) + '...');
     window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
+  };
+
+  // Render content with inline [IMAGE:N] markers replaced by actual images
+  const renderContent = () => {
+    if (!output) return null;
+    if (!images.length || !hasInlineImages(output)) {
+      return (
+        <span className="whitespace-pre-wrap">{output}</span>
+      );
+    }
+
+    const parts = output.split(/(\[IMAGE:\d+\])/);
+    return (
+      <>
+        {parts.map((part, i) => {
+          const match = part.match(/\[IMAGE:(\d+)\]/);
+          if (match) {
+            const img = images[parseInt(match[1])];
+            if (!img) return null;
+            return (
+              <div key={i} className="my-5 rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+                <img
+                  src={img.dataUrl || img.url}
+                  alt={img.alt}
+                  className="w-full object-cover max-h-72"
+                  loading="lazy"
+                />
+                <div className="bg-gray-50 px-3 py-2 space-y-0.5">
+                  {img.extractedText && (
+                    <p className="text-xs text-gray-600 italic">
+                      📝 <span className="font-medium">Text in image (EN):</span> "{img.extractedText}"
+                    </p>
+                  )}
+                  <p className="text-xs text-gray-400">
+                    📷{' '}
+                    <a href={img.creditUrl} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-gray-600 transition">
+                      {img.credit}
+                    </a>
+                  </p>
+                </div>
+              </div>
+            );
+          }
+          return part ? <span key={i} className="whitespace-pre-wrap">{part}</span> : null;
+        })}
+      </>
+    );
   };
 
   const isRateLimit = error.toLowerCase().includes('rate limit');
@@ -370,7 +488,7 @@ export default function Generator() {
             className="w-full bg-indigo-600 text-white py-3 rounded-xl font-semibold hover:bg-indigo-700 transition disabled:opacity-60 flex items-center justify-center gap-2 text-sm shadow-sm"
           >
             {loading
-              ? <><span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />Generating...</>
+              ? <><span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />{fetchingImages ? 'Analyzing images...' : 'Generating...'}</>
               : <><FiZap size={15} /> Generate (1 credit)</>
             }
           </motion.button>
@@ -388,7 +506,14 @@ export default function Generator() {
             {/* Main output */}
             <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
               <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-                <h3 className="font-semibold text-gray-900">Generated Output</h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold text-gray-900">Generated Output</h3>
+                  {hasInlineImages(output) && images.length > 0 && (
+                    <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                      <FiImage size={10} /> {images.length} images embedded
+                    </span>
+                  )}
+                </div>
                 <div className="flex flex-wrap gap-2">
                   <button onClick={handleCopy} className="flex items-center gap-1.5 text-xs bg-gray-100 hover:bg-indigo-50 hover:text-indigo-700 text-gray-600 px-3 py-1.5 rounded-lg transition font-medium">
                     {copied ? <><FiCheck size={12} /> Copied!</> : <><FiCopy size={12} /> Copy</>}
@@ -405,8 +530,8 @@ export default function Generator() {
                 </div>
               </div>
 
-              <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 text-sm text-gray-800 whitespace-pre-wrap leading-relaxed min-h-[140px]">
-                {output}
+              <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 text-sm text-gray-800 leading-relaxed min-h-[140px]">
+                {renderContent()}
                 {loading && <span className="inline-block w-0.5 h-4 bg-indigo-500 animate-pulse ml-0.5 align-middle" />}
               </div>
 
@@ -447,7 +572,7 @@ export default function Generator() {
               )}
             </div>
 
-            {/* Right panel: SEO + Images */}
+            {/* Right panel: SEO + sidebar images (non-blog) */}
             <div className="space-y-4">
               {/* SEO Panel */}
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
@@ -461,7 +586,7 @@ export default function Generator() {
                 {loading && !seoData && (
                   <div className="space-y-2.5">
                     {[1, 0.8, 0.6].map((w, i) => (
-                      <div key={i} className={`h-2.5 bg-gray-100 rounded-full animate-pulse`} style={{ width: `${w * 100}%` }} />
+                      <div key={i} className="h-2.5 bg-gray-100 rounded-full animate-pulse" style={{ width: `${w * 100}%` }} />
                     ))}
                     <p className="text-xs text-gray-400 mt-2">Generating SEO metadata...</p>
                   </div>
@@ -497,8 +622,8 @@ export default function Generator() {
                 )}
               </div>
 
-              {/* Images Panel */}
-              {images.length > 0 && (
+              {/* Sidebar images — only for non-blog types (blog shows inline) */}
+              {images.length > 0 && !hasInlineImages(output) && (
                 <motion.div
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -520,7 +645,7 @@ export default function Generator() {
                       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
                         {images.map((img, i) => (
                           <a key={i} href={img.photographerUrl} target="_blank" rel="noopener noreferrer" className="block group">
-                            <img src={img.thumb} alt={img.alt} className="w-full h-24 object-cover rounded-lg group-hover:opacity-90 transition" />
+                            <img src={img.thumb || img.url} alt={img.alt} className="w-full h-24 object-cover rounded-lg group-hover:opacity-90 transition" />
                             <p className="text-xs text-gray-400 mt-1">📷 {img.photographer} · Unsplash</p>
                           </a>
                         ))}
