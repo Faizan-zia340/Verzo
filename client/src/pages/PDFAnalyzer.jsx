@@ -52,15 +52,26 @@ export default function PDFAnalyzer() {
     }
   };
 
-  const parseSection = (text, heading) => {
-    const regex = new RegExp(`##\\s*[^#]*${heading}[^#]*\\n([\\s\\S]*?)(?=##|$)`, 'i');
-    const match = text.match(regex);
-    return match ? match[1].trim() : '';
+  const parseSection = (text, keywords) => {
+    if (!text) return '';
+    // Normalize line endings
+    const normalized = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    // Try each keyword variant
+    for (const kw of keywords) {
+      // Match any ## heading line that contains the keyword, capture everything until next ## heading or end
+      const regex = new RegExp(
+        `(?:^|\\n)#{1,3}[^\\n]*${kw}[^\\n]*\\n([\\s\\S]*?)(?=\\n#{1,3}\\s|$)`,
+        'i'
+      );
+      const match = normalized.match(regex);
+      if (match && match[1].trim()) return match[1].trim();
+    }
+    return '';
   };
 
-  const studyNotes = result ? parseSection(result.analysis, 'STUDY NOTES') : '';
-  const summaries = result ? parseSection(result.analysis, 'CHAPTER SUMMARIES') : '';
-  const questions = result ? parseSection(result.analysis, 'TEST YOURSELF') : '';
+  const studyNotes = result ? parseSection(result.analysis, ['STUDY NOTES', 'STUDY NOTE', 'KEY CONCEPTS', 'NOTES']) : '';
+  const summaries = result ? parseSection(result.analysis, ['CHAPTER SUMMAR', 'SUMMAR', 'OVERVIEW', 'SECTION']) : '';
+  const questions = result ? parseSection(result.analysis, ['TEST YOURSELF', 'TEST BANK', 'QUESTION', 'QUIZ']) : '';
 
   const handleCopy = () => {
     navigator.clipboard.writeText(result?.analysis || '');
@@ -197,9 +208,12 @@ export default function PDFAnalyzer() {
                   </div>
                   <div className="p-5">
                     <div className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed min-h-[200px]">
-                      {TABS.find((t) => t.key === tab)?.content || (
-                        <p className="text-gray-400 italic">No content found for this section.</p>
-                      )}
+                      {TABS.find((t) => t.key === tab)?.content
+                        ? TABS.find((t) => t.key === tab).content
+                        : tab === 'notes' && result?.analysis
+                          ? result.analysis
+                          : <p className="text-gray-400 italic">No content found for this section.</p>
+                      }
                     </div>
                   </div>
                 </div>

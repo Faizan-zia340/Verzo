@@ -10,7 +10,7 @@ const extractPDFText = async (buffer) => {
   const result = await parser.getText();
   const numPages = parser.doc?.numPages ?? 0;
   await parser.destroy();
-  return { text: result.text || '', numPages };
+  return { text: result.text || result || '', numPages };
 };
 
 const chunkText = (text) => {
@@ -35,12 +35,15 @@ export const analyzePDF = async (req, res, next) => {
     let numPages = 0;
     try {
       const extracted = await extractPDFText(req.file.buffer);
-      rawText = extracted.text.trim();
+      // Handle both string and object returns
+      rawText = (typeof extracted.text === 'string' ? extracted.text : String(extracted.text)).trim();
       numPages = extracted.numPages;
     } catch (parseErr) {
       console.error('[PDF Parse Error]', parseErr.message);
       return res.status(422).json({ message: 'Could not read this PDF. Make sure it is a text-based (not scanned) PDF.' });
     }
+
+    console.log(`[PDF] Extracted ${rawText.length} chars, ${numPages} pages from ${req.file.originalname}`);
 
     if (!rawText || rawText.length < 50) {
       return res.status(422).json({ message: 'PDF appears empty or unreadable. Try a text-based PDF.' });
@@ -65,6 +68,8 @@ export const analyzePDF = async (req, res, next) => {
       const result = await model.generateContent(withSystem(buildPDFPrompt(combined)));
       analysisText = result.response.text();
     }
+
+    console.log(`[PDF] Gemini response (first 300 chars): ${analysisText.slice(0, 300)}`);
 
     res.json({
       pages: numPages,
