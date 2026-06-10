@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.js';
 import { useCredits } from '../context/CreditContext.js';
-import { FiZap, FiLogOut, FiUser, FiShield, FiFileText } from 'react-icons/fi';
+import { FiEdit3, FiLogOut, FiGrid, FiShield, FiFileText, FiZap } from 'react-icons/fi';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -11,37 +11,54 @@ export default function Navbar() {
   const handleLogout = () => { logout(); navigate('/'); };
 
   return (
-    <nav className="bg-white/80 backdrop-blur-md border-b border-gray-200/80 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-        <Link to="/" className="flex items-center gap-2 text-indigo-600 font-bold text-xl">
-          <FiZap /> AI Content
+    <nav className="bg-white/95 backdrop-blur-xl border-b border-gray-100 sticky top-0 z-50 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-[60px]">
+
+        <Link to="/" className="flex items-center gap-2.5 group">
+          <div className="w-8 h-8 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-indigo-200 group-hover:shadow-md transition-shadow">
+            <FiEdit3 size={14} className="text-white" />
+          </div>
+          <span className="font-black text-gray-900 text-xl tracking-tight">Quillify</span>
         </Link>
-        <div className="flex items-center gap-5">
-          <Link to="/pricing" className="text-gray-600 hover:text-indigo-600 text-sm font-medium transition">Pricing</Link>
+
+        <div className="flex items-center gap-1">
+          <Link to="/pricing" className="text-gray-500 hover:text-gray-900 text-sm font-medium px-3 py-2 rounded-lg hover:bg-gray-100 transition">
+            Pricing
+          </Link>
+
           {user ? (
             <>
-              <Link to="/dashboard" className="text-gray-600 hover:text-indigo-600 text-sm font-medium flex items-center gap-1.5 transition">
-                <FiUser size={13} /> Dashboard
+              <Link to="/dashboard" className="text-gray-500 hover:text-gray-900 text-sm font-medium px-3 py-2 rounded-lg hover:bg-gray-100 transition flex items-center gap-1.5">
+                <FiGrid size={13} /> Dashboard
               </Link>
-              <Link to="/pdf" className="text-gray-600 hover:text-indigo-600 text-sm font-medium flex items-center gap-1.5 transition">
+              <Link to="/pdf" className="text-gray-500 hover:text-gray-900 text-sm font-medium px-3 py-2 rounded-lg hover:bg-gray-100 transition flex items-center gap-1.5">
                 <FiFileText size={13} /> PDF Analyzer
               </Link>
               {user.isAdmin && (
-                <Link to="/admin" className="text-purple-600 hover:text-purple-800 text-sm font-medium flex items-center gap-1.5 transition">
+                <Link to="/admin" className="text-violet-600 hover:text-violet-800 text-sm font-medium px-3 py-2 rounded-lg hover:bg-violet-50 transition flex items-center gap-1.5">
                   <FiShield size={13} /> Admin
                 </Link>
               )}
-              <span className="text-sm bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full font-semibold flex items-center gap-1">
-                <FiZap size={11} /> {credits ?? user.credits}
-              </span>
-              <button onClick={handleLogout} className="text-gray-500 hover:text-red-500 flex items-center gap-1 text-sm transition">
-                <FiLogOut size={14} /> Logout
+              <div className="flex items-center gap-1.5 bg-indigo-50 border border-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg mx-1">
+                <FiZap size={11} className="text-indigo-500" />
+                <span className="text-sm font-bold">{credits ?? user.credits}</span>
+                <span className="text-xs text-indigo-400 font-medium">cr</span>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="text-gray-400 hover:text-red-500 hover:bg-red-50 flex items-center gap-1.5 text-sm px-3 py-2 rounded-lg transition font-medium"
+              >
+                <FiLogOut size={13} /> Logout
               </button>
             </>
           ) : (
             <>
-              <Link to="/login" className="text-gray-600 hover:text-indigo-600 text-sm font-medium transition">Login</Link>
-              <Link to="/register" className="bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-indigo-700 transition shadow-sm">Get Started</Link>
+              <Link to="/login" className="text-gray-600 hover:text-gray-900 text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-100 transition">
+                Sign in
+              </Link>
+              <Link to="/register" className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition shadow-sm ml-1">
+                Get started free
+              </Link>
             </>
           )}
         </div>

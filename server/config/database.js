@@ -1,10 +1,11 @@
 import mongoose from 'mongoose';
 
-// Fail operations immediately when not connected instead of buffering for 10s
+// Fail operations immediately when not connected instead of queuing
 mongoose.set('bufferCommands', false);
 
-const RETRY_DELAY = 8000;
+const RETRY_DELAY = 5000;
 const MAX_RETRIES = 20;
+let isRetrying = false;
 
 const connectDB = async (attempt = 1) => {
   try {
@@ -14,6 +15,7 @@ const connectDB = async (attempt = 1) => {
       connectTimeoutMS: 10000,
       heartbeatFrequencyMS: 10000,
     });
+    isRetrying = false;
     console.log(`MongoDB connected: ${mongoose.connection.host}`);
   } catch (err) {
     const msg = err.message || '';
@@ -27,14 +29,24 @@ const connectDB = async (attempt = 1) => {
       setTimeout(() => connectDB(attempt + 1), delay);
     } else {
       console.error('MongoDB: max retries reached. Fix Atlas IP whitelist to restore DB access.');
+      isRetrying = false;
     }
   }
 };
 
-mongoose.connection.on('connected', () => console.log('MongoDB ready'));
-mongoose.connection.on('disconnected', () => {
-  console.warn('MongoDB disconnected — will auto-reconnect...');
+mongoose.connection.on('connected', () => {
+  isRetrying = false;
+  console.log('MongoDB ready');
 });
+
+mongoose.connection.on('disconnected', () => {
+  console.warn('MongoDB disconnected — auto-reconnecting...');
+  if (!isRetrying) {
+    isRetrying = true;
+    setTimeout(() => connectDB(), 2000);
+  }
+});
+
 mongoose.connection.on('error', (err) => {
   console.error('MongoDB runtime error:', err.message?.slice(0, 100));
 });
