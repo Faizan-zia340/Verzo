@@ -4,6 +4,8 @@ import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import connectDB from './config/database.js';
 import authRoutes from './routes/auth.js';
 import generateRoutes from './routes/generate.js';
@@ -16,6 +18,9 @@ import adminRoutes from './routes/admin.js';
 import billingRoutes from './routes/billing.js';
 import pdfRoutes from './routes/pdf.js';
 import errorHandler from './middleware/errorHandler.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const isProd = process.env.NODE_ENV === 'production';
 
 const app = express();
 const server = http.createServer(app);
@@ -51,6 +56,15 @@ app.use('/api/pdf', pdfRoutes);
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
+// Serve built React frontend in production
+if (isProd) {
+  const clientDist = path.join(__dirname, '..', 'client', 'dist');
+  app.use(express.static(clientDist));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(clientDist, 'index.html'));
+  });
+}
+
 io.on('connection', (socket) => {
   socket.on('join', (userId) => socket.join(userId));
   socket.on('disconnect', () => {});
@@ -59,6 +73,6 @@ io.on('connection', (socket) => {
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
 
 export { io };
