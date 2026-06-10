@@ -1,4 +1,15 @@
 node_modules/
 dist/
 .env
+server/.env
+client/.env
+.env.local
+.env.production
 drizzle/
+.cache/
+.upm/
+.local/
+attached_assets/
+client/dist/
+*.log
+npm-debug.log*
