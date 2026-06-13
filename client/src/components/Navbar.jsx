@@ -18,7 +18,7 @@ export default function Navbar() {
           <div className="w-8 h-8 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-indigo-200 group-hover:shadow-md transition-shadow">
             <FiEdit3 size={14} className="text-white" />
           </div>
-          <span className="font-black text-gray-900 text-xl tracking-tight">Quillify</span>
+          <span className="font-black text-gray-900 text-xl tracking-tight">ContentForge</span>
         </Link>
 
         <div className="flex items-center gap-1">

@@ -44,7 +44,7 @@ export default function Register() {
           <div className="w-9 h-9 bg-white/10 border border-white/20 rounded-xl flex items-center justify-center">
             <FiEdit3 size={17} className="text-white" />
           </div>
-          <span className="text-white font-black text-2xl tracking-tight">Quillify</span>
+          <span className="text-white font-black text-2xl tracking-tight">ContentForge</span>
         </Link>
 
         <div>
@@ -88,7 +88,7 @@ export default function Register() {
             <div className="w-8 h-8 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-lg flex items-center justify-center">
               <FiEdit3 size={14} className="text-white" />
             </div>
-            <span className="font-black text-gray-900 text-xl">Quillify</span>
+            <span className="font-black text-gray-900 text-xl">ContentForge</span>
           </Link>
 
           <h1 className="text-3xl font-black text-gray-950 mb-1 tracking-tight">Create your account</h1>

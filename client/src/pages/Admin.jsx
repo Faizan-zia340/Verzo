@@ -506,7 +506,7 @@ export default function Admin() {
             <FiEdit3 size={15} className="text-white" />
           </div>
           <div>
-            <p className="text-sm font-black text-white tracking-tight">Quillify</p>
+            <p className="text-sm font-black text-white tracking-tight">ContentForge</p>
             <p className="text-xs text-gray-400">Admin Panel</p>
           </div>
         </div>
@@ -543,7 +543,7 @@ export default function Admin() {
         <div className="bg-white border-b border-gray-100 px-8 py-4 flex items-center justify-between shadow-sm">
           <div>
             <h1 className="font-black text-gray-900 text-lg">{NAV.find((n) => n.key === section)?.label}</h1>
-            <p className="text-xs text-gray-400">Quillify Admin · {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+            <p className="text-xs text-gray-400">ContentForge Admin · {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs bg-violet-100 text-violet-700 border border-violet-200 font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">

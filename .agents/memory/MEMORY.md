@@ -1,3 +1,4 @@
 - [Blog image embedding](blog-image-embedding.md) — blog posts download+save Unsplash images as base64, embed via [IMAGE:N] markers; needs UNSPLASH_ACCESS_KEY secret
-- [App branding](branding.md) — App renamed to "Quillify"; FiEdit3 pen icon, indigo→violet gradient; all UI pages updated
+- [App branding](branding.md) — App renamed to "ContentForge"; FiEdit3 pen icon, indigo→violet gradient; all UI pages updated
 - [DB reconnect fix](db-reconnect.md) — bufferCommands:false + isRetrying flag prevents duplicate reconnect loops on disconnect
+- [Vercel+Render split deploy](deploy-split.md) — frontend on Vercel, backend on Render; VITE_API_URL env var connects them; fetch() calls use apiUrl() helper

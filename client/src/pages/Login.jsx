@@ -48,7 +48,7 @@ export default function Login() {
           <div className="w-9 h-9 bg-white/10 border border-white/20 rounded-xl flex items-center justify-center">
             <FiEdit3 size={17} className="text-white" />
           </div>
-          <span className="text-white font-black text-2xl tracking-tight">Quillify</span>
+          <span className="text-white font-black text-2xl tracking-tight">ContentForge</span>
         </Link>
 
         <div>
@@ -72,7 +72,7 @@ export default function Login() {
 
         <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
           <p className="text-gray-300 text-sm italic leading-relaxed">
-            "Quillify generates content my readers actually want to read. The Reality Check scoring changed how I write."
+            "ContentForge generates content my readers actually want to read. The Reality Check scoring changed how I write."
           </p>
           <div className="flex items-center gap-2.5 mt-4">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white text-xs font-bold">A</div>
@@ -93,7 +93,7 @@ export default function Login() {
             <div className="w-8 h-8 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-lg flex items-center justify-center">
               <FiEdit3 size={14} className="text-white" />
             </div>
-            <span className="font-black text-gray-900 text-xl">Quillify</span>
+            <span className="font-black text-gray-900 text-xl">ContentForge</span>
           </Link>
 
           <h1 className="text-3xl font-black text-gray-950 mb-1 tracking-tight">Welcome back</h1>
