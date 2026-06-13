@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiUpload, FiFileText, FiX, FiDownload, FiCopy, FiCheck, FiBook, FiHelpCircle } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import { apiUrl } from '../services/apiUrl.js';
 import { jsPDF } from 'jspdf';
 
 export default function PDFAnalyzer() {
@@ -34,7 +35,7 @@ export default function PDFAnalyzer() {
       const formData = new FormData();
       formData.append('pdf', file);
       const token = localStorage.getItem('token');
-      const res = await fetch('/api/pdf/analyze', {
+      const res = await fetch(apiUrl('/api/pdf/analyze'), {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: formData,

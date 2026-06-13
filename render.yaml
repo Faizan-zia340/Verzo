@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: quillify-backend
+    runtime: node
+    region: oregon
+    plan: free
+    buildCommand: cd server && npm install
+    startCommand: NODE_ENV=production node server/server.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production

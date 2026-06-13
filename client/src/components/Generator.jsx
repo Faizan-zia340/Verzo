@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCredits } from '../context/CreditContext.js';
+import { apiUrl } from '../services/apiUrl.js';
 import toast from 'react-hot-toast';
 import { jsPDF } from 'jspdf';
 import {
@@ -133,7 +134,7 @@ export default function Generator() {
     const token = localStorage.getItem('token');
     const genToast = toast.loading('Generating content...');
     try {
-      const response = await fetch('/api/generate/stream', {
+      const response = await fetch(apiUrl('/api/generate/stream'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(form),
@@ -209,7 +210,7 @@ export default function Generator() {
     const token = localStorage.getItem('token');
     const tuneToast = toast.loading('Rewriting...');
     try {
-      const res = await fetch('/api/generate/tune', {
+      const res = await fetch(apiUrl('/api/generate/tune'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ text: stripMarkers(output), action }),
