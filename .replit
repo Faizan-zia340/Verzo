@@ -69,3 +69,8 @@ externalPort = 3003
 deploymentTarget = "autoscale"
 run = ["bash", "-c", "NODE_ENV=production node server/server.js"]
 build = ["bash", "-c", "cd client && npm install && npm run build"]
+
+[userenv]
+
+[userenv.shared]
+CLIENT_URL = "https://your-project-name.vercel.app"

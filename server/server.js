@@ -22,19 +22,31 @@ import errorHandler from './middleware/errorHandler.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isProd = process.env.NODE_ENV === 'production';
 
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'http://localhost:5173',
+  'http://localhost:5000',
+].filter(Boolean);
+
+const corsOriginCheck = (origin, callback) => {
+  if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+  return callback(new Error(`Origin ${origin} not allowed by CORS`));
+};
+
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: isProd ? '*' : (process.env.CLIENT_URL || 'http://localhost:5000'),
+    origin: corsOriginCheck,
     methods: ['GET', 'POST'],
+    credentials: true,
   },
 });
 
 connectDB();
 
 app.set('trust proxy', 1);
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors({ origin: corsOriginCheck, credentials: true }));
 
 app.use('/api/billing/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json());
@@ -57,6 +69,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/billing', billingRoutes);
 app.use('/api/pdf', pdfRoutes);
 
+app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
 // Serve built React frontend in production
