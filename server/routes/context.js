@@ -1,13 +1,15 @@
 import { Router } from 'express';
 import Context from '../models/Context.js';
+import { generateEmbedding } from '../utils/embeddings.js';
 
 const router = Router();
 
 router.post('/', async (req, res, next) => {
   try {
     const { title, keywords, information } = req.body;
-    const context = await Context.create({ title, keywords, information });
-    res.status(201).json({ message: 'Context saved successfully', context });
+    const embedding = await generateEmbedding(information);
+    const context = await Context.create({ title, keywords, information, embedding: embedding || undefined });
+    res.status(201).json({ message: 'Context saved successfully', context: { ...context.toObject(), embedding: undefined } });
   } catch (err) {
     next(err);
   }

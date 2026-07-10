@@ -6,7 +6,9 @@ import Content from '../models/Content.js';
 import Credit from '../models/Credit.js';
 import User from '../models/User.js';
 import Context from '../models/Context.js';
+import { findRelevantContexts } from '../utils/embeddings.js';
 import { io } from '../server.js';
+import logger from '../utils/logger.js';
 
 const checkKey = () => {
   if (!process.env.GEMINI_API_KEY) {
@@ -83,7 +85,7 @@ export const streamGenerate = async (req, res, next) => {
       if (msg.includes('API_KEY_INVALID') || msg.includes('API key not valid')) userMsg = 'Invalid Gemini API key. Please check your GEMINI_API_KEY secret.';
       else if (msg.includes('RESOURCE_EXHAUSTED') || msg.includes('quota') || msg.includes('429')) userMsg = 'Gemini free tier quota reached. Please wait a minute and try again.';
       else if (msg.includes('overloaded') || msg.includes('503')) userMsg = 'Gemini is temporarily overloaded. Please try again shortly.';
-      console.error('[Gemini Stream Error]', msg.slice(0, 200));
+      logger.error({ msg: msg.slice(0, 200) }, 'Gemini stream error');
       sendEvent({ error: userMsg });
       res.end();
       return;
@@ -135,7 +137,7 @@ export const streamGenerate = async (req, res, next) => {
       io.to(userId.toString()).emit('generation:done', { content });
       sendEvent({ done: true, seoData, images, contentWithImages: finalOutput, realityCheck, contentId: content._id });
     } catch (err) {
-      console.error('[Save Error]', err.message);
+      logger.error({ err: err.message }, 'Content save error');
       sendEvent({ error: 'Content generated but failed to save. Please try again.' });
     }
 
@@ -210,17 +212,41 @@ export const generateAIContent = async (req, res, next) => {
     const { userPrompt, topicKeywords = [] } = req.body;
     if (!userPrompt) return res.status(400).json({ message: 'userPrompt is required' });
 
-    const foundContext = topicKeywords.length
-      ? await Context.findOne({ keywords: { $in: topicKeywords } })
+    let matchedContexts = [];
+    let retrievalMethod = 'none';
+
+    const allContexts = await Context.find().select('+embedding');
+    if (allContexts.length) {
+      const { matches, usedEmbeddings } = await findRelevantContexts(userPrompt, allContexts, 3);
+      if (usedEmbeddings && matches.length) {
+        matchedContexts = matches;
+        retrievalMethod = 'embedding';
+      } else if (topicKeywords.length) {
+        const keywordMatch = await Context.findOne({ keywords: { $in: topicKeywords } });
+        if (keywordMatch) {
+          matchedContexts = [keywordMatch];
+          retrievalMethod = 'keyword';
+        }
+      }
+    }
+
+    const contextBlock = matchedContexts.length
+      ? matchedContexts.map((c) => `[${c.title}]\n${c.information}`).join('\n\n')
       : null;
 
-    const finalPrompt = foundContext
-      ? `Context Information:\n${foundContext.information}\n\nStrict Instructions: Use the above Context Information to answer accurately. Do not fabricate facts.\n\nUser Prompt: ${userPrompt}`
+    const finalPrompt = contextBlock
+      ? `Context Information:\n${contextBlock}\n\nStrict Instructions: Use the above Context Information to answer accurately. Do not fabricate facts.\n\nUser Prompt: ${userPrompt}`
       : userPrompt;
 
     const raw = await generateText(finalPrompt);
     const { cleanContent, realityCheck } = parseRealityCheck(raw);
-    res.json({ response: cleanContent, realityCheck, contextUsed: !!foundContext, contextTitle: foundContext?.title || null });
+    res.json({
+      response: cleanContent,
+      realityCheck,
+      contextUsed: matchedContexts.length > 0,
+      contextTitles: matchedContexts.map((c) => c.title),
+      retrievalMethod,
+    });
   } catch (err) {
     next(err);
   }

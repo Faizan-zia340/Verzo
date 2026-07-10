@@ -34,10 +34,9 @@ export default function PDFAnalyzer() {
     try {
       const formData = new FormData();
       formData.append('pdf', file);
-      const token = localStorage.getItem('token');
       const res = await fetch(apiUrl('/api/pdf/analyze'), {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
+        credentials: 'include',
         body: formData,
       });
       const data = await res.json();

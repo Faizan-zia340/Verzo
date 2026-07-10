@@ -1,6 +1,11 @@
+import logger from '../utils/logger.js';
+
+const OPERATIONAL_STATUS_CODES = new Set([400, 401, 402, 403, 404, 409, 422, 429, 503]);
+
 const errorHandler = (err, req, res, next) => {
   const status = err.statusCode || err.response?.status || 500;
   let message = err.message || 'Internal Server Error';
+  const isOperational = err.isOperational === true || OPERATIONAL_STATUS_CODES.has(status);
 
   // Sanitize raw MongoDB / Mongoose errors — never leak internals to the client
   const msg = message.toLowerCase();
@@ -19,8 +24,16 @@ const errorHandler = (err, req, res, next) => {
     message = 'The database is temporarily unreachable. Please try again in a moment.';
   }
 
-  if (status >= 500) console.error(`[Error] ${status} - ${err.message?.slice(0, 120)}`);
-  res.status(status).json({ message });
+  const reqId = req.id || req.headers['x-request-id'];
+
+  if (isOperational) {
+    logger.warn({ reqId, status, path: req.originalUrl, message: err.message }, 'Operational error');
+  } else {
+    logger.error({ reqId, status, path: req.originalUrl, err }, 'Unhandled programmer error');
+    if (status >= 500) message = 'Something went wrong on our end. Please try again shortly.';
+  }
+
+  res.status(status).json({ message, ...(reqId ? { requestId: reqId } : {}) });
 };
 
 export default errorHandler;

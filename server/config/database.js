@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import logger from '../utils/logger.js';
 
 // Fail operations immediately when not connected instead of queuing
 mongoose.set('bufferCommands', false);
@@ -16,7 +17,7 @@ const connectDB = async (attempt = 1) => {
       heartbeatFrequencyMS: 10000,
     });
     isRetrying = false;
-    console.log(`MongoDB connected: ${mongoose.connection.host}`);
+    logger.info(`MongoDB connected: ${mongoose.connection.host}`);
   } catch (err) {
     const msg = err.message || '';
     const isIPBlock = msg.includes('whitelist') || msg.includes('IP') || msg.includes('ssl') || msg.includes('SSL');
@@ -25,10 +26,10 @@ const connectDB = async (attempt = 1) => {
     );
     if (attempt < MAX_RETRIES) {
       const delay = Math.min(RETRY_DELAY * attempt, 60000);
-      console.log(`Retrying in ${Math.round(delay / 1000)}s...`);
+      logger.warn(`Retrying in ${Math.round(delay / 1000)}s...`);
       setTimeout(() => connectDB(attempt + 1), delay);
     } else {
-      console.error('MongoDB: max retries reached. Fix Atlas IP whitelist to restore DB access.');
+      logger.error('MongoDB: max retries reached. Fix Atlas IP whitelist to restore DB access.');
       isRetrying = false;
     }
   }
@@ -36,11 +37,11 @@ const connectDB = async (attempt = 1) => {
 
 mongoose.connection.on('connected', () => {
   isRetrying = false;
-  console.log('MongoDB ready');
+  logger.info('MongoDB ready');
 });
 
 mongoose.connection.on('disconnected', () => {
-  console.warn('MongoDB disconnected — auto-reconnecting...');
+  logger.warn('MongoDB disconnected — auto-reconnecting...');
   if (!isRetrying) {
     isRetrying = true;
     setTimeout(() => connectDB(), 2000);
@@ -48,7 +49,7 @@ mongoose.connection.on('disconnected', () => {
 });
 
 mongoose.connection.on('error', (err) => {
-  console.error('MongoDB runtime error:', err.message?.slice(0, 100));
+  logger.error({ err: err.message?.slice(0, 100) }, 'MongoDB runtime error');
 });
 
 export default connectDB;

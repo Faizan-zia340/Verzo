@@ -4,6 +4,7 @@ import isAdmin from '../middleware/isAdmin.js';
 import User from '../models/User.js';
 import Credit from '../models/Credit.js';
 import Context from '../models/Context.js';
+import { generateEmbedding } from '../utils/embeddings.js';
 import Content from '../models/Content.js';
 
 const router = Router();
@@ -113,8 +114,9 @@ router.post('/contexts', async (req, res, next) => {
   try {
     const { title, keywords, information } = req.body;
     if (!title || !information) return res.status(400).json({ message: 'title and information are required' });
-    const context = await Context.create({ title, keywords: keywords || [], information });
-    res.status(201).json(context);
+    const embedding = await generateEmbedding(information);
+    const context = await Context.create({ title, keywords: keywords || [], information, embedding: embedding || undefined });
+    res.status(201).json({ ...context.toObject(), embedding: undefined });
   } catch (err) {
     next(err);
   }

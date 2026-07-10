@@ -1,5 +1,5 @@
 import User from '../models/User.js';
-import { generateToken } from '../utils/jwt.js';
+import { generateToken, cookieOptions } from '../utils/jwt.js';
 
 const formatUser = (user) => ({
   id: user._id,
@@ -18,7 +18,8 @@ export const register = async (req, res, next) => {
     }
     const user = await User.create({ name, email, password });
     const token = generateToken(user._id);
-    res.status(201).json({ token, user: formatUser(user) });
+    res.cookie('token', token, cookieOptions());
+    res.status(201).json({ user: formatUser(user) });
   } catch (err) {
     next(err);
   }
@@ -32,7 +33,8 @@ export const login = async (req, res, next) => {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
     const token = generateToken(user._id);
-    res.json({ token, user: formatUser(user) });
+    res.cookie('token', token, cookieOptions());
+    res.json({ user: formatUser(user) });
   } catch (err) {
     next(err);
   }
@@ -40,4 +42,9 @@ export const login = async (req, res, next) => {
 
 export const getMe = async (req, res) => {
   res.json(formatUser(req.user));
+};
+
+export const logout = async (req, res) => {
+  res.clearCookie('token', { ...cookieOptions(), maxAge: 0 });
+  res.json({ message: 'Logged out' });
 };

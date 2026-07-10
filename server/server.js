@@ -3,10 +3,16 @@ import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
+import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
+import pinoHttp from 'pino-http';
+import { randomUUID } from 'crypto';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import connectDB from './config/database.js';
+import validateEnv from './utils/validateEnv.js';
+import logger from './utils/logger.js';
 import authRoutes from './routes/auth.js';
 import generateRoutes from './routes/generate.js';
 import userRoutes from './routes/user.js';
@@ -21,6 +27,8 @@ import errorHandler from './middleware/errorHandler.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isProd = process.env.NODE_ENV === 'production';
+
+validateEnv();
 
 const allowedOrigins = [
   process.env.CLIENT_URL,
@@ -46,10 +54,25 @@ const io = new Server(server, {
 connectDB();
 
 app.set('trust proxy', 1);
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  contentSecurityPolicy: false,
+}));
 app.use(cors({ origin: corsOriginCheck, credentials: true }));
+app.use(pinoHttp({
+  logger,
+  genReqId: (req) => req.headers['x-request-id'] || randomUUID(),
+  customLogLevel: (req, res, err) => {
+    if (err || res.statusCode >= 500) return 'error';
+    if (res.statusCode >= 400) return 'warn';
+    return 'info';
+  },
+  autoLogging: { ignore: (req) => req.url === '/health' || req.url === '/api/health' },
+}));
 
 app.use('/api/billing/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json());
+app.use(cookieParser());
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -89,6 +112,18 @@ io.on('connection', (socket) => {
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
-server.listen(PORT, '0.0.0.0', () => console.log(`Server running on port ${PORT}`));
+server.listen(PORT, '0.0.0.0', () => logger.info(`Server running on port ${PORT}`));
+
+process.on('unhandledRejection', (reason) => {
+  logger.error({ err: reason }, 'Unhandled Promise Rejection — shutting down');
+  server.close(() => process.exit(1));
+  setTimeout(() => process.exit(1), 5000).unref();
+});
+
+process.on('uncaughtException', (err) => {
+  logger.error({ err }, 'Uncaught Exception — shutting down');
+  server.close(() => process.exit(1));
+  setTimeout(() => process.exit(1), 5000).unref();
+});
 
 export { io };

@@ -131,12 +131,12 @@ export default function Generator() {
     }
     setLoading(true); setFetchingImages(false); setError(''); setOutput(''); setSeoData(null); setImages([]); setRealityCheck(null);
 
-    const token = localStorage.getItem('token');
     const genToast = toast.loading('Generating content...');
     try {
       const response = await fetch(apiUrl('/api/generate/stream'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
 
@@ -207,12 +207,12 @@ export default function Generator() {
     if (!output || tuning || loading) return;
     setTuning(action);
     setError('');
-    const token = localStorage.getItem('token');
     const tuneToast = toast.loading('Rewriting...');
     try {
       const res = await fetch(apiUrl('/api/generate/tune'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: stripMarkers(output), action }),
       });
       const data = await res.json();
