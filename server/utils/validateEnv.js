@@ -1,6 +1,4 @@
-const REQUIRED = ['MONGODB_URI', 'JWT_SECRET'];
-
-const AI_KEYS = ['GEMINI_API_KEY', 'OPENAI_API_KEY'];
+const REQUIRED = ['MONGODB_URI', 'JWT_SECRET', 'GEMINI_API_KEY'];
 
 const OPTIONAL = [
   'CLIENT_URL',
@@ -14,10 +12,6 @@ const OPTIONAL = [
 export const validateEnv = () => {
   const missing = REQUIRED.filter((key) => !process.env[key]);
   const missingOptional = OPTIONAL.filter((key) => !process.env[key]);
-
-  if (!AI_KEYS.some((key) => process.env[key])) {
-    missing.push(`one of [${AI_KEYS.join(', ')}]`);
-  }
 
   if (missing.length) {
     console.error('\n FATAL: Missing required environment variables:');

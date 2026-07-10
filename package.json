@@ -1,29 +1,13 @@
 {
-  "name": "ai-content-generator",
+  "name": "contentforge",
   "version": "1.0.0",
-  "type": "module",
+  "private": true,
+  "description": "ContentForge — AI content SaaS. Monorepo root: see client/ (React frontend) and server/ (Express backend).",
   "scripts": {
-    "build": "npm install --prefix server && npm install --prefix client && npm run build --prefix client",
-    "start": "NODE_ENV=production node server/server.js",
-    "dev": "vite"
-  },
-  "dependencies": {
-    "@google/generative-ai": "^0.24.1",
-    "bcryptjs": "^2.4.3",
-    "cors": "^2.8.6",
-    "dotenv": "^16.6.1",
-    "express": "^4.22.1",
-    "jsonwebtoken": "^9.0.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-router-dom": "^6.30.3",
-    "stripe": "^11.10.0"
-  },
-  "devDependencies": {
-    "@vitejs/plugin-react": "^3.1.0",
-    "autoprefixer": "^10.5.0",
-    "postcss": "^8.5.13",
-    "tailwindcss": "^3.4.19",
-    "vite": "^4.5.14"
+    "dev:client": "cd client && npm run dev",
+    "dev:server": "cd server && npm run dev",
+    "install:all": "npm install --prefix client && npm install --prefix server",
+    "build": "npm install --prefix client && npm run build --prefix client",
+    "start": "NODE_ENV=production node server/server.js"
   }
 }

@@ -175,10 +175,9 @@ A full-stack, commercial-ready AI content generation platform with React fronten
 | `STRIPE_SECRET_KEY` | For billing | Stripe secret key (not yet configured — billing dormant) |
 | `STRIPE_WEBHOOK_SECRET` | For billing | Stripe webhook signing secret |
 | `UNSPLASH_ACCESS_KEY` | For images | Unsplash API access key |
-| `OPENAI_API_KEY` | Legacy/unused | OpenAI key (kept for compatibility) |
 | `LOG_LEVEL` | Optional | Pino log level override (defaults to `debug` in dev, `info` in prod) |
 
-Startup validation (`server/utils/validateEnv.js`) makes the server refuse to boot if `MONGODB_URI`, `JWT_SECRET`, or any AI key is missing — fails fast with a clear message instead of crashing later mid-request.
+Startup validation (`server/utils/validateEnv.js`) makes the server refuse to boot if `MONGODB_URI`, `JWT_SECRET`, or `GEMINI_API_KEY` is missing — fails fast with a clear message instead of crashing later mid-request.
 
 ### server/.env file
 

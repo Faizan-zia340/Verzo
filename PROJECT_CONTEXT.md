@@ -1,6 +1,6 @@
 # PROJECT_CONTEXT.md
 
-Last verified against actual code: July 10, 2026. This file is a living document — update it whenever a feature, architectural decision, or significant fix is made.
+Last verified against actual code: July 10, 2026 (post-cleanup). This file is a living document — update it whenever a feature, architectural decision, or significant fix is made.
 
 ---
 
@@ -33,13 +33,13 @@ ContentForge is a full-stack SaaS web app that generates AI-written content (blo
 - **AI provider actually wired up and in active use: Google Gemini** (`@google/generative-ai` SDK)
   - Chat/content generation model: `gemini-2.5-flash-lite` via the `v1` API (`server/config/gemini.js`)
   - Embeddings model (for semantic RAG search): `gemini-embedding-001` via the `v1` API (`server/utils/embeddings.js`) — note `text-embedding-004` does NOT work on this API key/SDK combination, returns 404
-  - `openai` npm package and `server/config/openai.js` / `server/utils/openai.js` exist in the codebase but are **not called from any active route or controller** — dead/unused code, kept only for the `OPENAI_API_KEY` env var compatibility check in `validateEnv.js`
+  - OpenAI is not used anywhere in this codebase — the unused `openai` package and its config/utils wrapper files were removed during cleanup (July 2026)
 - `stripe` npm package + `server/config/stripe.js` exist and are referenced by `server/routes/billing.js` and `server/controllers/paymentController.js`, but `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET` are not configured, so billing is dormant (see Decisions Log)
 
 ### Database
-- **MongoDB Atlas** via Mongoose — this is the real, connected database.
+- **MongoDB Atlas** via Mongoose — this is the only database used by this app.
 - Network Access whitelist must include `0.0.0.0/0` because Replit's outbound IP changes.
-- There is also leftover, **unused** Postgres/Drizzle scaffolding at the repo root (`drizzle.config.js`, `server/db/index.js`, `server/db/schema.js`, `server/models/Subscription.js`) that requires a `DATABASE_URL` env var to even load — it is never imported by the running server (`server/server.js`) and should be treated as dead code, not a second database.
+- There is no Postgres/Drizzle setup — an earlier, unused scaffold for one was removed during cleanup (July 2026).
 
 ### Auth Method
 - JWT signed with `JWT_SECRET`, stored in an **httpOnly, SameSite=Lax cookie** (`server/utils/jwt.js` `cookieOptions`), not localStorage. `server/middleware/auth.js` reads the token from `req.cookies.token`. Login/register set the cookie; `POST /api/auth/logout` clears it. All frontend API calls use `credentials: 'include'` / axios `withCredentials: true`.
@@ -99,12 +99,11 @@ The frontend and backend are deployed as **two separate services**, not as a sin
 │   ├── tailwind.config.js
 │   └── vite.config.js               # port 5000, /api proxy → localhost:3001
 │
-├── server/                          # Express backend (the one actually run — entrypoint server.js)
-│   ├── server.js                    # real entrypoint: Express, Socket.io, Pino logging, rate limiting, SPA fallback, crash handlers
+├── server/                          # Express backend (entrypoint server.js)
+│   ├── server.js                    # entrypoint: Express, Socket.io, Pino logging, rate limiting, SPA fallback, crash handlers
 │   ├── config/
 │   │   ├── database.js              # Mongoose connect, bufferCommands:false, 20-attempt retry
 │   │   ├── gemini.js                # Gemini client, MODEL='gemini-2.5-flash-lite', API_VERSION='v1'
-│   │   ├── openai.js                # OpenAI client config — NOT called by any active route
 │   │   └── stripe.js                # Stripe client — used by billing route, dormant until keys set
 │   ├── controllers/
 │   │   ├── authController.js
@@ -112,10 +111,6 @@ The frontend and backend are deployed as **two separate services**, not as a sin
 │   │   ├── paymentController.js     # Stripe checkout/webhook handling — dormant
 │   │   ├── pdfController.js
 │   │   └── userController.js
-│   ├── db/                          # LEFTOVER/UNUSED — Drizzle+Postgres scaffolding, not imported by server.js
-│   │   ├── index.js
-│   │   └── schema.js
-│   ├── index.js                     # LEFTOVER/UNUSED — an alternate, minimal Express entrypoint referencing db/, never started by any workflow or deploy config
 │   ├── middleware/
 │   │   ├── auth.js                  # reads JWT from httpOnly cookie
 │   │   ├── creditCheck.js
@@ -127,7 +122,6 @@ The frontend and backend are deployed as **two separate services**, not as a sin
 │   │   ├── Context.js               # has `embedding` field (select:false) for semantic RAG
 │   │   ├── Credit.js
 │   │   ├── Payment.js
-│   │   ├── Subscription.js          # LEFTOVER/UNUSED — not imported anywhere
 │   │   └── User.js
 │   ├── routes/
 │   │   ├── admin.js
@@ -139,8 +133,7 @@ The frontend and backend are deployed as **two separate services**, not as a sin
 │   │   ├── history.js
 │   │   ├── payment.js
 │   │   ├── pdf.js
-│   │   ├── user.js                  # actually mounted in server.js at /api/user
-│   │   └── users.js                 # only used by the unused server/index.js, not by server.js
+│   │   └── user.js                  # mounted in server.js at /api/user
 │   └── utils/
 │       ├── asyncHandler.js
 │       ├── embeddings.js            # generateEmbedding/cosineSimilarity/findRelevantContexts, gemini-embedding-001
@@ -148,19 +141,16 @@ The frontend and backend are deployed as **two separate services**, not as a sin
 │       ├── imageService.js          # fetches + embeds Unsplash images into generated content
 │       ├── jwt.js                   # signs JWT, defines httpOnly cookieOptions
 │       ├── logger.js                # Pino logger, pretty in dev / JSON in prod
-│       ├── openai.js                # OpenAI wrapper — NOT called by any active controller
 │       ├── prompts.js               # LANGUAGE_MAP (23 langs), FORMAT_MAP, buildPDFPrompt
 │       ├── unsplash.js
-│       ├── validateEnv.js           # startup fail-fast if MONGODB_URI/JWT_SECRET/AI key missing
+│       ├── validateEnv.js           # startup fail-fast if MONGODB_URI/JWT_SECRET/GEMINI_API_KEY missing
 │       └── validators.js            # Joi schemas, stripUnknown:true
 │   └── package.json                 # server's own dependency list (the one that actually matters at runtime)
 │
-├── src/                             # LEFTOVER/UNUSED — an older root-level React app skeleton (main.jsx, App.jsx, pages/Home.jsx), not part of the running client/ or server/ build
 ├── attached_assets/                 # user-pasted files/screenshots dropped into chat, not app source
 ├── .agents/                         # agent memory directory (not app code)
-├── package.json                     # root-level package.json — mixes some client and server deps together, NOT what actually runs either app (client/package.json and server/package.json are authoritative)
+├── package.json                     # root-level orchestrator only (scripts to install/build/run client+server) — holds no app dependencies of its own
 ├── package-lock.json
-├── drizzle.config.js                # LEFTOVER/UNUSED — Postgres/Drizzle config, no active Postgres database
 ├── railway.toml                     # unused alternate deploy config (Railway)
 ├── nixpacks.toml                    # unused alternate build config
 ├── render.yaml                      # ACTIVE backend deploy config (Render)
@@ -171,6 +161,8 @@ The frontend and backend are deployed as **two separate services**, not as a sin
 ├── DOCUMENTATION.md                 # older/possibly stale doc file, not actively maintained
 └── replit.md                        # the actively maintained project README/status doc for this Replit workspace
 ```
+
+**Cleanup note (July 2026):** the following were removed as unused leftovers from earlier scaffolding and no longer exist: a duplicate root-level React app (`src/`, plus stray root `index.html`/`vite.config.js`/`tailwind.config.js`/`postcss.config.js` that belonged to it), an unused Postgres/Drizzle setup (`drizzle.config.js`, `server/db/`, `server/models/Subscription.js`), an unused alternate Express entrypoint (`server/index.js` and the `server/routes/users.js` it alone used), and the unused `openai` package plus its wrapper files (`server/config/openai.js`, `server/utils/openai.js`). The root `package.json` was rewritten to be a thin orchestrator with no duplicated dependencies. App was verified working end-to-end (register/login, health checks, homepage render) after this cleanup.
 
 ---
 
@@ -240,8 +232,8 @@ The frontend and backend are deployed as **two separate services**, not as a sin
 - **Render free tier** (per `render.yaml`, `plan: free`) — free web services on Render spin down after inactivity and cold-start on the next request, which will cause a noticeable delay on the first request after idling.
 - **Gemini has occasional transient 503 overload errors** — the app now surfaces these honestly to the user ("temporarily overloaded, try again shortly") rather than pretending it's a app-side bug, but they are outside this app's control.
 - **Stripe is not live** — `STRIPE_SECRET_KEY`/`STRIPE_WEBHOOK_SECRET` are unset; any billing UI that references pricing/checkout will not actually process payments until these are configured.
-- **The `openai` package/config/utils are dead code** — present in `server/package.json` and `server/config|utils/openai.js` but never called by any live route; do not assume OpenAI is a working fallback.
-- **Root-level clutter is leftover from earlier scaffolding, not part of the running app**: `src/` (a second, unused React app skeleton), root `package.json` (a third, inconsistent dependency manifest), `drizzle.config.js` + `server/db/` + `server/models/Subscription.js` (unused Postgres/Drizzle setup requiring a `DATABASE_URL` that isn't configured), `server/index.js` (an alternate, unused Express entrypoint), `server/routes/users.js` (only reachable through that unused entrypoint), `railway.toml`/`nixpacks.toml` (unused alternate deploy configs), `README.md`/`DOCUMENTATION.md` (older docs not actively kept in sync — `replit.md` is the maintained one).
+- **OpenAI is not an active provider** — the unused `openai` package and its wrapper files were removed during the July 2026 cleanup; only Gemini is wired in.
+- **`railway.toml`/`nixpacks.toml`** are unused alternate deploy configs (Render + Vercel is the active split); `README.md`/`DOCUMENTATION.md` are older docs not actively kept in sync — `replit.md` is the maintained one.
 - **No automated tests exist yet** — all verification so far has been manual (curl requests, manual DB inspection), so regressions are only caught by hand-testing.
 
 ---
@@ -250,8 +242,7 @@ The frontend and backend are deployed as **two separate services**, not as a sin
 
 - **Do not** suggest deploying this as a single Vercel-only app — the backend needs Socket.io/SSE, which Vercel serverless cannot sustain. The split (Vercel frontend + Render backend) is intentional.
 - **Do not** assume Stripe is processing real payments — the integration code exists but the secrets are deliberately unconfigured. Ask before assuming billing works.
-- **Do not** assume OpenAI is an active AI provider — only Gemini (`gemini-2.5-flash-lite` for generation, `gemini-embedding-001` for embeddings) is actually wired into the live code paths. The `openai` package/files are unused leftovers.
-- **Do not** treat `server/db/`, `server/models/Subscription.js`, `drizzle.config.js`, `server/index.js`, the root-level `src/` folder, or the root `package.json` as part of the running application — they are unused scaffolding from earlier iterations. The authoritative app is `client/` (frontend) + `server/` (backend, entrypoint `server/server.js`).
+- **Do not** assume OpenAI is an active AI provider — only Gemini (`gemini-2.5-flash-lite` for generation, `gemini-embedding-001` for embeddings) is actually wired into the live code paths.
 - **Do not** suggest switching the database from MongoDB to Postgres — this has been explicitly decided against (see `replit.md` User Preferences).
 - **Do not** suggest moving JWT back to localStorage — the httpOnly cookie approach was a deliberate security fix.
 - **Do** treat `replit.md` as the actively maintained status/roadmap doc, and this file (`PROJECT_CONTEXT.md`) as the portable, AI-facing snapshot — keep both in sync when making significant changes.
