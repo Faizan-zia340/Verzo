@@ -10,8 +10,8 @@ export function CreditProvider({ children }) {
   const fetchCredits = useCallback(async () => {
     try {
       const { data } = await api.get('/credits');
-      setCredits(data.credits);
-      setCreditLogs(data.logs);
+      setCredits(data.credits ?? null);
+      setCreditLogs(Array.isArray(data.logs) ? data.logs : []);
     } catch (_) {}
   }, []);
 

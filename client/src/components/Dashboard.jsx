@@ -14,7 +14,8 @@ export default function DashboardStats() {
   const { user } = useAuth();
   const { creditLogs } = useCredits();
 
-  const usageLogs = creditLogs.filter((l) => l.type === 'usage');
+  const safeLogs = Array.isArray(creditLogs) ? creditLogs : [];
+  const usageLogs = safeLogs.filter((l) => l.type === 'usage');
   const totalUsed = usageLogs.length;
   const plan = user?.subscription || 'free';
 

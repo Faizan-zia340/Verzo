@@ -93,7 +93,8 @@ function Overview({ stats, loadingStats }) {
 
   useEffect(() => {
     api.get('/admin/activity')
-      .then(({ data }) => setActivity(data))
+      .then(({ data }) => setActivity(Array.isArray(data) ? data : []))
+      .catch(() => setActivity([]))
       .finally(() => setLoadingActivity(false));
   }, []);
 
@@ -240,7 +241,10 @@ function UserManagement() {
   const [editTarget, setEditTarget] = useState(null);
 
   useEffect(() => {
-    api.get('/admin/users').then(({ data }) => setUsers(data)).finally(() => setLoading(false));
+    api.get('/admin/users')
+      .then(({ data }) => setUsers(Array.isArray(data) ? data : []))
+      .catch(() => setUsers([]))
+      .finally(() => setLoading(false));
   }, []);
 
   const filtered = users.filter((u) => {
@@ -351,7 +355,10 @@ function SystemSettings() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    api.get('/admin/contexts').then(({ data }) => setContexts(data)).finally(() => setLoading(false));
+    api.get('/admin/contexts')
+      .then(({ data }) => setContexts(Array.isArray(data) ? data : []))
+      .catch(() => setContexts([]))
+      .finally(() => setLoading(false));
   }, []);
 
   const handleAdd = async (e) => {
