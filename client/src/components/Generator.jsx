@@ -499,12 +499,47 @@ export default function Generator() {
         </form>
       </div>
 
+      {/* Loading skeleton — shown while waiting for first token */}
+      <AnimatePresence>
+        {loading && !output && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.22 }}
+            className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-3"
+          >
+            {[1, 0.7, 0.85, 0.55].map((w, i) => (
+              <motion.div
+                key={i}
+                className="h-3 rounded-full bg-gray-100"
+                style={{ width: `${w * 100}%` }}
+                animate={{ opacity: [0.4, 0.85, 0.4] }}
+                transition={{ duration: 1.4, repeat: Infinity, delay: i * 0.18, ease: 'easeInOut' }}
+              />
+            ))}
+            <div className="flex items-center gap-2 pt-1">
+              {[0, 1, 2].map((i) => (
+                <motion.div
+                  key={i}
+                  className="w-2 h-2 rounded-full bg-indigo-400"
+                  animate={{ y: [0, -5, 0], opacity: [0.4, 1, 0.4] }}
+                  transition={{ duration: 0.65, repeat: Infinity, delay: i * 0.13, ease: 'easeInOut' }}
+                />
+              ))}
+              <span className="text-xs text-gray-400 ml-1">AI is writing…</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Output */}
       <AnimatePresence>
         {output && (
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.28, ease: 'easeOut' }}
             className="grid grid-cols-1 lg:grid-cols-3 gap-4"
           >
             {/* Main output */}
