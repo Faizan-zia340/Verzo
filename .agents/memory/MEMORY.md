@@ -1,3 +1,4 @@
+- [Auto-push rule](auto-push.md) — after every verified piece of work, commit and push to GitHub (Faizan-zia340/Verzo, main) using GITHUB_PERSONAL_ACCESS_TOKEN secret; confirm with just the commit message
 - [Blog image embedding](blog-image-embedding.md) — blog posts download+save Unsplash images as base64, embed via [IMAGE:N] markers; needs UNSPLASH_ACCESS_KEY secret
 - [App branding](branding.md) — App renamed to "ContentForge"; FiEdit3 pen icon, indigo→violet gradient; all UI pages updated
 - [DB reconnect fix](db-reconnect.md) — bufferCommands:false + isRetrying flag prevents duplicate reconnect loops on disconnect
