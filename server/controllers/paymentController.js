@@ -45,6 +45,9 @@ export const webhook = async (req, res, next) => {
 
     res.json({ received: true });
   } catch (err) {
+    if (err.type === 'StripeSignatureVerificationError') {
+      return res.status(400).json({ message: `Webhook error: ${err.message}` });
+    }
     next(err);
   }
 };

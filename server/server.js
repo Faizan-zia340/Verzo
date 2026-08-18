@@ -6,6 +6,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
+import mongoSanitize from 'express-mongo-sanitize';
 import pinoHttp from 'pino-http';
 import { randomUUID } from 'crypto';
 import path from 'path';
@@ -73,17 +74,35 @@ app.use(pinoHttp({
   autoLogging: { ignore: (req) => req.url === '/health' || req.url === '/api/health' },
 }));
 
-app.use('/api/billing/webhook', express.raw({ type: 'application/json' }));
+const stripeWebhookRawBody = express.raw({ type: 'application/json' });
+app.use(['/api/billing/webhook', '/api/payment/webhook'], stripeWebhookRawBody);
 app.use(express.json());
 app.use(cookieParser());
+app.use(mongoSanitize({
+  onSanitize: ({ req, key }) => {
+    logger.warn({ path: req.originalUrl, key }, 'Sanitized MongoDB operator from request');
+  },
+}));
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 150,
+  standardHeaders: true,
+  legacyHeaders: false,
+  validate: { xForwardedForHeader: false },
+});
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Too many authentication attempts. Please try again later.' },
   validate: { xForwardedForHeader: false },
 });
 app.use('/api/', limiter);
 
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/generate', generateRoutes);
 app.use('/api/user', userRoutes);

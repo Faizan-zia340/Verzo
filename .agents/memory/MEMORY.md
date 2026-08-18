@@ -5,3 +5,4 @@
 - [Vercel+Render split deploy](deploy-split.md) — frontend on Vercel, backend on Render; VITE_API_URL env var connects them; fetch() calls use apiUrl() helper
 - [Gemini embedding model name](gemini-embedding-model.md) — `text-embedding-004` 404s on this Gemini SDK/account; `gemini-embedding-001` (v1 API) works, 3072-dim vectors
 - [Error handler operational status codes](error-handler-status-codes.md) — 503 from upstream AI providers must be classified operational (not masked as generic 500) so users see the real transient-failure message
+- [Monorepo server dependencies](monorepo-dependencies.md) — backend-only packages must be declared and locked under `server/`, not only at the workspace root
