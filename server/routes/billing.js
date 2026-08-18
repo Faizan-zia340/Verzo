@@ -4,6 +4,7 @@ import stripe from '../config/stripe.js';
 import User from '../models/User.js';
 import Credit from '../models/Credit.js';
 import Payment from '../models/Payment.js';
+import asyncHandler from '../utils/asyncHandler.js';
 
 const router = Router();
 
@@ -12,41 +13,37 @@ const PLANS = {
   enterprise: { amount: 4000, credits: 500, label: 'Enterprise — 500 Credits' },
 };
 
-router.post('/checkout', protect, async (req, res, next) => {
-  try {
-    const { planId } = req.body;
-    const plan = PLANS[planId];
-    if (!plan) return res.status(400).json({ message: 'Invalid plan' });
+router.post('/checkout', protect, asyncHandler(async (req, res) => {
+  const { planId } = req.body;
+  const plan = PLANS[planId];
+  if (!plan) return res.status(400).json({ message: 'Invalid plan' });
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            unit_amount: plan.amount,
-            product_data: { name: plan.label },
-          },
-          quantity: 1,
+  const session = await stripe.checkout.sessions.create({
+    payment_method_types: ['card'],
+    line_items: [
+      {
+        price_data: {
+          currency: 'usd',
+          unit_amount: plan.amount,
+          product_data: { name: plan.label },
         },
-      ],
-      mode: 'payment',
-      success_url: `${process.env.CLIENT_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.CLIENT_URL}/pricing`,
-      metadata: {
-        userId: req.user._id.toString(),
-        credits: plan.credits.toString(),
-        planId,
+        quantity: 1,
       },
-    });
+    ],
+    mode: 'payment',
+    success_url: `${process.env.CLIENT_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${process.env.CLIENT_URL}/pricing`,
+    metadata: {
+      userId: req.user._id.toString(),
+      credits: plan.credits.toString(),
+      planId,
+    },
+  });
 
-    res.json({ url: session.url });
-  } catch (err) {
-    next(err);
-  }
-});
+  res.status(201).json({ url: session.url });
+}));
 
-router.post('/webhook', async (req, res, next) => {
+router.post('/webhook', asyncHandler(async (req, res) => {
   const sig = req.headers['stripe-signature'];
   let event;
 
@@ -83,7 +80,7 @@ router.post('/webhook', async (req, res, next) => {
     ]);
   }
 
-  res.json({ received: true });
-});
+  res.status(200).json({ received: true });
+}));
 
 export default router;

@@ -6,6 +6,7 @@ import userRateLimit from '../middleware/userRateLimit.js';
 import { validate, generateSchema } from '../utils/validators.js';
 import getClient, { MODEL, API_VERSION } from '../config/gemini.js';
 import logger from '../utils/logger.js';
+import asyncHandler from '../utils/asyncHandler.js';
 
 const router = Router();
 
@@ -17,7 +18,7 @@ router.post('/tune', protect, genLimit, tuneContent);
 router.post('/rag', generateAIContent);
 
 // Diagnostic: verify Gemini key works without consuming user credits
-router.get('/ping-ai', protect, async (req, res) => {
+router.get('/ping-ai', protect, asyncHandler(async (req, res) => {
   if (!process.env.GEMINI_API_KEY) {
     return res.status(503).json({ ok: false, error: 'GEMINI_API_KEY not set on server' });
   }
@@ -27,12 +28,12 @@ router.get('/ping-ai', protect, async (req, res) => {
     const result = await model.generateContent('Say "ok" in one word only.');
     const text = result.response.text().trim();
     logger.info({ text }, 'Gemini ping success');
-    return res.json({ ok: true, model: MODEL, response: text });
+    return res.status(200).json({ ok: true, model: MODEL, response: text });
   } catch (err) {
     const msg = err.message || 'Unknown error';
     logger.error({ msg: msg.slice(0, 200) }, 'Gemini ping failed');
     return res.status(500).json({ ok: false, error: msg });
   }
-});
+}));
 
 export default router;

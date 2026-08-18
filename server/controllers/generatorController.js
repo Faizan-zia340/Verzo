@@ -9,6 +9,7 @@ import Context from '../models/Context.js';
 import { findRelevantContexts } from '../utils/embeddings.js';
 import { io } from '../server.js';
 import logger from '../utils/logger.js';
+import asyncHandler from '../utils/asyncHandler.js';
 
 const checkKey = () => {
   if (!process.env.GEMINI_API_KEY) {
@@ -51,7 +52,7 @@ const parseRealityCheck = (rawOutput) => {
 };
 
 // ── Streaming generation via SSE ─────────────────────────────────
-export const streamGenerate = async (req, res, next) => {
+export const streamGenerate = asyncHandler(async (req, res) => {
   try {
     checkKey();
     const { type, prompt, tone, length, language = 'english_us', format = 'paragraphs' } = req.body;
@@ -143,111 +144,99 @@ export const streamGenerate = async (req, res, next) => {
 
     res.end();
   } catch (err) {
-    if (!res.headersSent) return next(err);
+    if (!res.headersSent) throw err;
     res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
     res.end();
   }
-};
+});
 
 // ── Non-streaming generate (fallback) ───────────────────────────
-export const generate = async (req, res, next) => {
-  try {
-    checkKey();
-    const { type, prompt, tone, length, language = 'english_us', format = 'paragraphs' } = req.body;
-    const userId = req.user._id;
+export const generate = asyncHandler(async (req, res) => {
+  checkKey();
+  const { type, prompt, tone, length, language = 'english_us', format = 'paragraphs' } = req.body;
+  const userId = req.user._id;
 
-    io.to(userId.toString()).emit('generation:start');
+  io.to(userId.toString()).emit('generation:start');
 
-    const fullPrompt = buildPrompt({ type, prompt, tone, length, language, format });
-    const rawOutput = await generateText(fullPrompt);
-    const { cleanContent, realityCheck } = parseRealityCheck(rawOutput);
+  const fullPrompt = buildPrompt({ type, prompt, tone, length, language, format });
+  const rawOutput = await generateText(fullPrompt);
+  const { cleanContent, realityCheck } = parseRealityCheck(rawOutput);
 
-    const seoData = await generateSEO(cleanContent);
-    const keywords = seoData?.imageKeywords || seoData?.keywords || [];
+  const seoData = await generateSEO(cleanContent);
+  const keywords = seoData?.imageKeywords || seoData?.keywords || [];
 
-    let images = [];
-    let finalOutput = cleanContent;
+  let images = [];
+  let finalOutput = cleanContent;
 
-    if (type === 'blog' && process.env.UNSPLASH_ACCESS_KEY) {
-      images = await fetchAndAnalyzeImages(keywords);
-      if (images.length) finalOutput = await embedImagesInContent(cleanContent, images);
-    } else {
-      images = await fetchImages(keywords);
-    }
-
-    const [content] = await Promise.all([
-      Content.create({ user: userId, type, prompt, output: finalOutput, creditsUsed: 1, language, format, seoData, images }),
-      User.findByIdAndUpdate(userId, { $inc: { credits: -1 } }),
-      Credit.create({ user: userId, amount: -1, type: 'usage', description: `Generated ${type} content` }),
-    ]);
-
-    io.to(userId.toString()).emit('generation:done', { content });
-    res.json({ content, realityCheck });
-  } catch (err) {
-    next(err);
+  if (type === 'blog' && process.env.UNSPLASH_ACCESS_KEY) {
+    images = await fetchAndAnalyzeImages(keywords);
+    if (images.length) finalOutput = await embedImagesInContent(cleanContent, images);
+  } else {
+    images = await fetchImages(keywords);
   }
-};
+
+  const [content] = await Promise.all([
+    Content.create({ user: userId, type, prompt, output: finalOutput, creditsUsed: 1, language, format, seoData, images }),
+    User.findByIdAndUpdate(userId, { $inc: { credits: -1 } }),
+    Credit.create({ user: userId, amount: -1, type: 'usage', description: `Generated ${type} content` }),
+  ]);
+
+  io.to(userId.toString()).emit('generation:done', { content });
+  res.status(200).json({ content, realityCheck });
+});
 
 // ── Tune existing content (no credit deduction) ──────────────────
-export const tuneContent = async (req, res, next) => {
-  try {
-    checkKey();
-    const { text, action } = req.body;
-    if (!text || !action) return res.status(400).json({ message: 'text and action are required' });
-    const validActions = ['shorten', 'engaging', 'professional', 'reduce_hype'];
-    if (!validActions.includes(action)) return res.status(400).json({ message: 'Invalid action' });
+export const tuneContent = asyncHandler(async (req, res) => {
+  checkKey();
+  const { text, action } = req.body;
+  if (!text || !action) return res.status(400).json({ message: 'text and action are required' });
+  const validActions = ['shorten', 'engaging', 'professional', 'reduce_hype'];
+  if (!validActions.includes(action)) return res.status(400).json({ message: 'Invalid action' });
 
-    const raw = await tuneText(text, action);
-    const { cleanContent, realityCheck } = parseRealityCheck(raw);
-    res.json({ output: cleanContent, realityCheck });
-  } catch (err) {
-    next(err);
-  }
-};
+  const raw = await tuneText(text, action);
+  const { cleanContent, realityCheck } = parseRealityCheck(raw);
+  res.status(200).json({ output: cleanContent, realityCheck });
+});
 
 // ── RAG-augmented generation ─────────────────────────────────────
-export const generateAIContent = async (req, res, next) => {
-  try {
-    checkKey();
-    const { userPrompt, topicKeywords = [] } = req.body;
-    if (!userPrompt) return res.status(400).json({ message: 'userPrompt is required' });
+export const generateAIContent = asyncHandler(async (req, res) => {
+  checkKey();
+  const { userPrompt, topicKeywords = [] } = req.body;
+  if (!userPrompt) return res.status(400).json({ message: 'userPrompt is required' });
 
-    let matchedContexts = [];
-    let retrievalMethod = 'none';
+  let matchedContexts = [];
+  let retrievalMethod = 'none';
 
-    const allContexts = await Context.find().select('+embedding');
-    if (allContexts.length) {
-      const { matches, usedEmbeddings } = await findRelevantContexts(userPrompt, allContexts, 3);
-      if (usedEmbeddings && matches.length) {
-        matchedContexts = matches;
-        retrievalMethod = 'embedding';
-      } else if (topicKeywords.length) {
-        const keywordMatch = await Context.findOne({ keywords: { $in: topicKeywords } });
-        if (keywordMatch) {
-          matchedContexts = [keywordMatch];
-          retrievalMethod = 'keyword';
-        }
+  const allContexts = await Context.find().select('+embedding');
+  if (allContexts.length) {
+    const { matches, usedEmbeddings } = await findRelevantContexts(userPrompt, allContexts, 3);
+    if (usedEmbeddings && matches.length) {
+      matchedContexts = matches;
+      retrievalMethod = 'embedding';
+    } else if (topicKeywords.length) {
+      const keywordMatch = await Context.findOne({ keywords: { $in: topicKeywords } });
+      if (keywordMatch) {
+        matchedContexts = [keywordMatch];
+        retrievalMethod = 'keyword';
       }
     }
-
-    const contextBlock = matchedContexts.length
-      ? matchedContexts.map((c) => `[${c.title}]\n${c.information}`).join('\n\n')
-      : null;
-
-    const finalPrompt = contextBlock
-      ? `Context Information:\n${contextBlock}\n\nStrict Instructions: Use the above Context Information to answer accurately. Do not fabricate facts.\n\nUser Prompt: ${userPrompt}`
-      : userPrompt;
-
-    const raw = await generateText(finalPrompt);
-    const { cleanContent, realityCheck } = parseRealityCheck(raw);
-    res.json({
-      response: cleanContent,
-      realityCheck,
-      contextUsed: matchedContexts.length > 0,
-      contextTitles: matchedContexts.map((c) => c.title),
-      retrievalMethod,
-    });
-  } catch (err) {
-    next(err);
   }
-};
+
+  const contextBlock = matchedContexts.length
+    ? matchedContexts.map((c) => `[${c.title}]\n${c.information}`).join('\n\n')
+    : null;
+
+  const finalPrompt = contextBlock
+    ? `Context Information:\n${contextBlock}\n\nStrict Instructions: Use the above Context Information to answer accurately. Do not fabricate facts.\n\nUser Prompt: ${userPrompt}`
+    : userPrompt;
+
+  const raw = await generateText(finalPrompt);
+  const { cleanContent, realityCheck } = parseRealityCheck(raw);
+  res.status(200).json({
+    response: cleanContent,
+    realityCheck,
+    contextUsed: matchedContexts.length > 0,
+    contextTitles: matchedContexts.map((c) => c.title),
+    retrievalMethod,
+  });
+});

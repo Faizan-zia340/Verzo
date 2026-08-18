@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import mongoose from 'mongoose';
 import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
@@ -7,6 +8,7 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import mongoSanitize from 'express-mongo-sanitize';
+import morgan from 'morgan';
 import pinoHttp from 'pino-http';
 import { randomUUID } from 'crypto';
 import path from 'path';
@@ -73,6 +75,11 @@ app.use(pinoHttp({
   },
   autoLogging: { ignore: (req) => req.url === '/health' || req.url === '/api/health' },
 }));
+app.use(morgan('combined', {
+  stream: {
+    write: (message) => logger.info(message.trim(), 'HTTP request'),
+  },
+}));
 
 const stripeWebhookRawBody = express.raw({ type: 'application/json' });
 app.use(['/api/billing/webhook', '/api/payment/webhook'], stripeWebhookRawBody);
@@ -114,8 +121,19 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/billing', billingRoutes);
 app.use('/api/pdf', pdfRoutes);
 
-app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
-app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
+const healthCheck = (req, res) => {
+  const mongoConnected = mongoose.connection.readyState === 1;
+  res.status(mongoConnected ? 200 : 503).json({
+    status: mongoConnected ? 'ok' : 'degraded',
+    server: 'ok',
+    mongodb: mongoConnected ? 'connected' : 'disconnected',
+    mongoReadyState: mongoose.connection.readyState,
+    timestamp: new Date().toISOString(),
+  });
+};
+
+app.get('/health', healthCheck);
+app.get('/api/health', healthCheck);
 
 // Serve built React frontend in production
 if (isProd) {
