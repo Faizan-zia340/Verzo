@@ -51,6 +51,40 @@ const parseRealityCheck = (rawOutput) => {
   };
 };
 
+const generateContentData = async ({ type, prompt, language = 'english_us', format = 'paragraphs' }) => {
+  checkKey();
+
+  const rawOutput = await generateText(buildPrompt({ type, prompt, language, format }));
+  const { cleanContent, realityCheck } = parseRealityCheck(rawOutput);
+  const seoData = await generateSEO(cleanContent);
+  const keywords = seoData?.imageKeywords || seoData?.keywords || [];
+
+  let images = [];
+  let finalOutput = cleanContent;
+
+  if (type === 'blog' && process.env.UNSPLASH_ACCESS_KEY) {
+    images = await fetchAndAnalyzeImages(keywords);
+    if (images.length) finalOutput = await embedImagesInContent(cleanContent, images);
+  } else {
+    images = await fetchImages(keywords);
+  }
+
+  return {
+    data: {
+      type,
+      prompt,
+      output: finalOutput,
+      creditsUsed: 1,
+      language,
+      format,
+      seoData,
+      images,
+      updatedAt: new Date(),
+    },
+    realityCheck,
+  };
+};
+
 // ── Streaming generation via SSE ─────────────────────────────────
 export const streamGenerate = asyncHandler(async (req, res) => {
   try {
@@ -239,4 +273,35 @@ export const generateAIContent = asyncHandler(async (req, res) => {
     contextTitles: matchedContexts.map((c) => c.title),
     retrievalMethod,
   });
+});
+
+export const regenerateContent = asyncHandler(async (req, res) => {
+  const existing = await Content.findOne({ _id: req.params.id, user: req.user._id });
+  if (!existing) return res.status(404).json({ message: 'Content not found' });
+
+  const { data, realityCheck } = await generateContentData({
+    type: existing.type,
+    prompt: existing.prompt,
+    language: existing.language,
+    format: existing.format,
+  });
+
+  const content = await Content.findOneAndUpdate(
+    { _id: existing._id, user: req.user._id },
+    { $set: data },
+    { new: true, runValidators: true }
+  );
+
+  await Promise.all([
+    User.findByIdAndUpdate(req.user._id, { $inc: { credits: -1 } }),
+    Credit.create({
+      user: req.user._id,
+      amount: -1,
+      type: 'usage',
+      description: `Regenerated ${existing.type} content`,
+    }),
+  ]);
+
+  io.to(req.user._id.toString()).emit('generation:done', { content });
+  res.status(200).json({ content, realityCheck });
 });

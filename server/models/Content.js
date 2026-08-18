@@ -26,7 +26,9 @@ const contentSchema = new mongoose.Schema({
     geminiDescription: { type: String, default: '' },
   }],
   creditsUsed: { type: Number, default: 1 },
+  favorite: { type: Boolean, default: false, index: true },
   createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
 });
 
 export default mongoose.model('Content', contentSchema);

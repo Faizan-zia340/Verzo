@@ -27,6 +27,7 @@ import adminRoutes from './routes/admin.js';
 import billingRoutes from './routes/billing.js';
 import pdfRoutes from './routes/pdf.js';
 import errorHandler from './middleware/errorHandler.js';
+import { scheduleDailyFreeCreditReset } from './jobs/dailyCreditReset.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isProd = process.env.NODE_ENV === 'production';
@@ -58,6 +59,7 @@ const io = new Server(server, {
 });
 
 connectDB();
+scheduleDailyFreeCreditReset();
 
 app.set('trust proxy', 1);
 app.use(helmet({

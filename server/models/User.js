@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true, minlength: 6 },
   credits: { type: Number, default: 10 },
   subscription: { type: String, enum: ['free', 'basic', 'pro'], default: 'free' },
+  lastFreeCreditResetAt: { type: Date },
   stripeCustomerId: { type: String },
   isAdmin: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },

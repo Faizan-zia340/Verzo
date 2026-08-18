@@ -1,11 +1,16 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api.js';
+import toast from 'react-hot-toast';
+import { useCredits } from '../context/CreditContext.js';
 import { formatDistanceToNow } from 'date-fns';
 import LoadingSpinner from './LoadingSpinner.jsx';
-import { FiTrash2, FiCopy, FiDownload, FiCheck, FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import {
+  FiTrash2, FiCopy, FiDownload, FiCheck, FiChevronDown, FiChevronUp,
+  FiStar, FiRefreshCw, FiFileText,
+} from 'react-icons/fi';
 
-function HistoryItem({ item, index, onDelete }) {
+function HistoryItem({ item, index, onDelete, onFavorite, onRegenerate, regenerating }) {
   const [expanded, setExpanded] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -41,14 +46,28 @@ function HistoryItem({ item, index, onDelete }) {
           )}
           <span className="text-xs text-gray-400">{formatDistanceToNow(new Date(item.createdAt), { addSuffix: true })}</span>
         </div>
-        <motion.button
-          onClick={() => onDelete(item._id)}
-          className="text-gray-300 hover:text-red-400 transition flex-shrink-0"
-          whileHover={{ scale: 1.15 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <FiTrash2 size={14} />
-        </motion.button>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <motion.button
+            onClick={() => onFavorite(item._id, !item.favorite)}
+            className={item.favorite ? 'text-amber-400 hover:text-amber-500 transition' : 'text-gray-300 hover:text-amber-400 transition'}
+            whileHover={{ scale: 1.15 }}
+            whileTap={{ scale: 0.9 }}
+            title={item.favorite ? 'Remove from favorites' : 'Add to favorites'}
+            aria-label={item.favorite ? 'Remove from favorites' : 'Add to favorites'}
+          >
+            <FiStar size={15} fill={item.favorite ? 'currentColor' : 'none'} />
+          </motion.button>
+          <motion.button
+            onClick={() => onDelete(item._id)}
+            className="text-gray-300 hover:text-red-400 transition"
+            whileHover={{ scale: 1.15 }}
+            whileTap={{ scale: 0.9 }}
+            title="Delete content"
+            aria-label="Delete content"
+          >
+            <FiTrash2 size={14} />
+          </motion.button>
+        </div>
       </div>
 
       <p className="text-sm text-gray-700 font-medium mt-2 mb-3 line-clamp-2">{item.prompt}</p>
@@ -71,6 +90,15 @@ function HistoryItem({ item, index, onDelete }) {
               exit={{ opacity: 0, x: -4 }}
               transition={{ duration: 0.18 }}
             >
+              <motion.button
+                onClick={() => onRegenerate(item._id)}
+                disabled={regenerating}
+                className="flex items-center gap-1 text-xs text-gray-500 hover:text-indigo-600 transition disabled:opacity-50"
+                whileTap={{ scale: 0.95 }}
+              >
+                <FiRefreshCw size={11} className={regenerating ? 'animate-spin' : ''} />
+                {regenerating ? 'Regenerating…' : 'Regenerate'}
+              </motion.button>
               <motion.button
                 onClick={handleCopy}
                 className="flex items-center gap-1 text-xs text-gray-500 hover:text-indigo-600 transition"
@@ -134,34 +162,128 @@ function HistoryItem({ item, index, onDelete }) {
 export default function ContentHistory() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [favoriteOnly, setFavoriteOnly] = useState(false);
+  const [regeneratingId, setRegeneratingId] = useState(null);
+  const { deductCredit } = useCredits();
 
   useEffect(() => {
-    api.get('/history').then(({ data }) => setItems(data.items)).finally(() => setLoading(false));
-  }, []);
+    setLoading(true);
+    api.get('/history', { params: favoriteOnly ? { favorite: true } : {} })
+      .then(({ data }) => setItems(Array.isArray(data.items) ? data.items : []))
+      .catch(() => {
+        setItems([]);
+        toast.error('Could not load your content history');
+      })
+      .finally(() => setLoading(false));
+  }, [favoriteOnly]);
 
   const handleDelete = async (id) => {
-    await api.delete(`/history/${id}`);
-    setItems((prev) => prev.filter((i) => i._id !== id));
+    try {
+      await api.delete(`/history/${id}`);
+      setItems((prev) => prev.filter((i) => i._id !== id));
+      toast.success('Content deleted');
+    } catch (_) {
+      toast.error('Could not delete this content');
+    }
+  };
+
+  const handleFavorite = async (id, favorite) => {
+    try {
+      const { data } = await api.patch(`/history/${id}/favorite`, { favorite });
+      if (favoriteOnly && !favorite) {
+        setItems((prev) => prev.filter((item) => item._id !== id));
+      } else {
+        setItems((prev) => prev.map((item) => (item._id === id ? data.content : item)));
+      }
+    } catch (_) {
+      toast.error('Could not update favorite');
+    }
+  };
+
+  const handleRegenerate = async (id) => {
+    setRegeneratingId(id);
+    try {
+      const { data } = await api.post(`/history/${id}/regenerate`);
+      setItems((prev) => prev.map((item) => (item._id === id ? data.content : item)));
+      deductCredit(1);
+      toast.success('Content regenerated in the same history entry');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Could not regenerate this content');
+    } finally {
+      setRegeneratingId(null);
+    }
+  };
+
+  const handleExport = async (format) => {
+    try {
+      const { data } = await api.get('/history/export', {
+        params: { format, ...(favoriteOnly ? { favorite: true } : {}) },
+        responseType: 'blob',
+      });
+      const url = URL.createObjectURL(new Blob([data]));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `contentforge-history${favoriteOnly ? '-favorites' : ''}.${format}`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success(`History exported as ${format.toUpperCase()}`);
+    } catch (_) {
+      toast.error('Could not export your content history');
+    }
   };
 
   if (loading) return <LoadingSpinner />;
-  if (!items.length) return (
-    <motion.div
-      className="text-center py-16"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-    >
-      <p className="text-gray-400 text-sm">No content generated yet.</p>
-      <p className="text-gray-300 text-xs mt-1">Your generations will appear here.</p>
-    </motion.div>
-  );
 
   return (
-    <div className="space-y-3">
-      {items.map((item, index) => (
-        <HistoryItem key={item._id} item={item} index={index} onDelete={handleDelete} />
-      ))}
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setFavoriteOnly(false)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${!favoriteOnly ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+          >
+            All content
+          </button>
+          <button
+            onClick={() => setFavoriteOnly(true)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${favoriteOnly ? 'bg-amber-400 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+          >
+            <FiStar size={12} fill={favoriteOnly ? 'currentColor' : 'none'} /> Favorites
+          </button>
+        </div>
+        <div className="flex items-center gap-2">
+          <button onClick={() => handleExport('csv')} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition">
+            <FiDownload size={12} /> CSV
+          </button>
+          <button onClick={() => handleExport('pdf')} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-50 text-red-700 hover:bg-red-100 transition">
+            <FiFileText size={12} /> PDF
+          </button>
+        </div>
+      </div>
+
+      {!items.length ? (
+        <motion.div
+          className="text-center py-16"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <p className="text-gray-400 text-sm">{favoriteOnly ? 'No favorite content yet.' : 'No content generated yet.'}</p>
+          <p className="text-gray-300 text-xs mt-1">{favoriteOnly ? 'Star content to find it quickly here.' : 'Your generations will appear here.'}</p>
+        </motion.div>
+      ) : (
+        items.map((item, index) => (
+          <HistoryItem
+            key={item._id}
+            item={item}
+            index={index}
+            onDelete={handleDelete}
+            onFavorite={handleFavorite}
+            onRegenerate={handleRegenerate}
+            regenerating={regeneratingId === item._id}
+          />
+        ))
+      )}
     </div>
   );
 }
