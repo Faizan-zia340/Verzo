@@ -6,7 +6,7 @@ Last verified against actual code: July 10, 2026 (post-cleanup). This file is a 
 
 ## 1. What This Project Is
 
-ContentForge is a full-stack SaaS web app that generates AI-written content (blog posts, social media posts, cold emails) for users. Users register, get free credits, and spend credits to generate content via a streaming AI response. It supports 23 languages/dialects, tunes existing text (shorten/more engaging/professional/reduce hype) for free, auto-generates an SEO package (meta title/description/keywords) per generation, attaches relevant stock photos, and lets users export/share/download their content. It also includes a standalone PDF analyzer that turns an uploaded PDF into study notes, chapter summaries, and a test bank. An admin dashboard lets an admin manage users, grant/revoke credits, monitor a live generation activity feed, and manage a RAG "knowledge base" of context documents the AI can draw on.
+Verzo is a full-stack SaaS web app that generates AI-written content (blog posts, social media posts, cold emails) for users. Users register, get free credits, and spend credits to generate content via a streaming AI response. It supports 23 languages/dialects, tunes existing text (shorten/more engaging/professional/reduce hype) for free, auto-generates an SEO package (meta title/description/keywords) per generation, attaches relevant stock photos, and lets users export/share/download their content. It also includes a standalone PDF analyzer that turns an uploaded PDF into study notes, chapter summaries, and a test bank. An admin dashboard lets an admin manage users, grant/revoke credits, monitor a live generation activity feed, and manage a RAG "knowledge base" of context documents the AI can draw on.
 
 ---
 

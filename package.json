@@ -1,8 +1,8 @@
 {
-  "name": "contentforge",
+  "name": "verzo",
   "version": "1.0.0",
   "private": true,
-  "description": "ContentForge — AI content SaaS. Monorepo root: see client/ (React frontend) and server/ (Express backend).",
+  "description": "Verzo — AI content SaaS. Monorepo root: see client/ (React frontend) and server/ (Express backend).",
   "scripts": {
     "dev:client": "cd client && npm run dev",
     "dev:server": "cd server && npm run dev",

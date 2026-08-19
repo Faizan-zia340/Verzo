@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.js';
+import toast from 'react-hot-toast';
 import { FiEdit3, FiAlertCircle, FiRefreshCw, FiCheck, FiArrowLeft } from 'react-icons/fi';
 
 const DB_ERROR_KEYWORDS = ['database', 'unreachable', 'temporarily', 'buffering'];
@@ -27,9 +28,12 @@ export default function Login() {
     setLoading(true); setError('');
     try {
       const data = await login(form.email, form.password);
+      toast.success('Welcome back!');
       navigate(data.user?.isAdmin ? '/admin' : '/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      const message = err.response?.data?.message || 'Login failed. Please try again.';
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -48,7 +52,7 @@ export default function Login() {
           <div className="w-9 h-9 bg-white/10 border border-white/20 rounded-xl flex items-center justify-center">
             <FiEdit3 size={17} className="text-white" />
           </div>
-          <span className="text-white font-black text-2xl tracking-tight">ContentForge</span>
+          <span className="text-white font-black text-2xl tracking-tight">Verzo</span>
         </Link>
 
         <div>
@@ -72,7 +76,7 @@ export default function Login() {
 
         <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
           <p className="text-gray-300 text-sm italic leading-relaxed">
-            "ContentForge generates content my readers actually want to read. The Reality Check scoring changed how I write."
+            "Verzo generates content my readers actually want to read. The Reality Check scoring changed how I write."
           </p>
           <div className="flex items-center gap-2.5 mt-4">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white text-xs font-bold">A</div>
@@ -93,7 +97,7 @@ export default function Login() {
             <div className="w-8 h-8 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-lg flex items-center justify-center">
               <FiEdit3 size={14} className="text-white" />
             </div>
-            <span className="font-black text-gray-900 text-xl">ContentForge</span>
+            <span className="font-black text-gray-900 text-xl">Verzo</span>
           </Link>
 
           <h1 className="text-3xl font-black text-gray-950 mb-1 tracking-tight">Welcome back</h1>

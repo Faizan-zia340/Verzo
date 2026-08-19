@@ -162,20 +162,44 @@ function HistoryItem({ item, index, onDelete, onFavorite, onRegenerate, regenera
 export default function ContentHistory() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pages, setPages] = useState(1);
   const [favoriteOnly, setFavoriteOnly] = useState(false);
   const [regeneratingId, setRegeneratingId] = useState(null);
   const { deductCredit } = useCredits();
 
   useEffect(() => {
     setLoading(true);
-    api.get('/history', { params: favoriteOnly ? { favorite: true } : {} })
-      .then(({ data }) => setItems(Array.isArray(data.items) ? data.items : []))
+    api.get('/history', { params: { page: 1, limit: 10, ...(favoriteOnly ? { favorite: true } : {}) } })
+      .then(({ data }) => {
+        setItems(Array.isArray(data.items) ? data.items : []);
+        setPage(data.page || 1);
+        setPages(data.pages || 1);
+      })
       .catch(() => {
         setItems([]);
         toast.error('Could not load your content history');
       })
       .finally(() => setLoading(false));
   }, [favoriteOnly]);
+
+  const handleLoadMore = async () => {
+    if (loadingMore || page >= pages) return;
+    setLoadingMore(true);
+    try {
+      const { data } = await api.get('/history', {
+        params: { page: page + 1, limit: 10, ...(favoriteOnly ? { favorite: true } : {}) },
+      });
+      setItems((prev) => [...prev, ...(Array.isArray(data.items) ? data.items : [])]);
+      setPage(data.page || page + 1);
+      setPages(data.pages || pages);
+    } catch (_) {
+      toast.error('Could not load more history');
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   const handleDelete = async (id) => {
     try {
@@ -223,7 +247,7 @@ export default function ContentHistory() {
       const url = URL.createObjectURL(new Blob([data]));
       const a = document.createElement('a');
       a.href = url;
-      a.download = `contentforge-history${favoriteOnly ? '-favorites' : ''}.${format}`;
+      a.download = `verzo-history${favoriteOnly ? '-favorites' : ''}.${format}`;
       a.click();
       URL.revokeObjectURL(url);
       toast.success(`History exported as ${format.toUpperCase()}`);
@@ -272,17 +296,29 @@ export default function ContentHistory() {
           <p className="text-gray-300 text-xs mt-1">{favoriteOnly ? 'Star content to find it quickly here.' : 'Your generations will appear here.'}</p>
         </motion.div>
       ) : (
-        items.map((item, index) => (
-          <HistoryItem
-            key={item._id}
-            item={item}
-            index={index}
-            onDelete={handleDelete}
-            onFavorite={handleFavorite}
-            onRegenerate={handleRegenerate}
-            regenerating={regeneratingId === item._id}
-          />
-        ))
+        <>
+          {items.map((item, index) => (
+            <HistoryItem
+              key={item._id}
+              item={item}
+              index={index}
+              onDelete={handleDelete}
+              onFavorite={handleFavorite}
+              onRegenerate={handleRegenerate}
+              regenerating={regeneratingId === item._id}
+            />
+          ))}
+          {page < pages && (
+            <button
+              onClick={handleLoadMore}
+              disabled={loadingMore}
+              className="mx-auto flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 text-sm font-semibold transition disabled:opacity-60"
+            >
+              {loadingMore && <span className="w-3.5 h-3.5 rounded-full border-2 border-gray-400 border-t-transparent animate-spin" />}
+              {loadingMore ? 'Loading…' : 'Load more'}
+            </button>
+          )}
+        </>
       )}
     </div>
   );

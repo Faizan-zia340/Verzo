@@ -1,8 +1,10 @@
 import { useAuth } from '../context/AuthContext.js';
 import { useCredits } from '../context/CreditContext.js';
+import { lazy, Suspense } from 'react';
 import { motion } from 'framer-motion';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { FiZap, FiPackage, FiActivity, FiTrendingUp } from 'react-icons/fi';
+import { FiZap, FiPackage, FiTrendingUp } from 'react-icons/fi';
+
+const DashboardChart = lazy(() => import('./DashboardChart.jsx'));
 
 const PLAN_COLORS = {
   free: 'text-gray-600 bg-gray-100',
@@ -61,7 +63,7 @@ export default function DashboardStats() {
           <motion.div
             key={label}
             whileHover={{ y: -2, boxShadow: '0 8px 24px rgba(0,0,0,0.07)' }}
-            className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 transition-shadow"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-5 transition-shadow"
           >
             <div className="flex items-start justify-between mb-4">
               <div className={`w-10 h-10 ${iconBg} rounded-xl flex items-center justify-center`}>
@@ -76,33 +78,9 @@ export default function DashboardStats() {
       </div>
 
       {usageData.length > 0 && (
-        <motion.div
-          whileHover={{ y: -1 }}
-          className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 transition-shadow"
-        >
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <FiActivity size={14} className="text-indigo-500" />
-              <p className="text-sm font-bold text-gray-900">Recent Usage</p>
-            </div>
-            <span className="text-xs text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full font-medium">Last {usageData.length}</span>
-          </div>
-          <ResponsiveContainer width="100%" height={130}>
-            <BarChart data={usageData} barSize={28}>
-              <XAxis dataKey="label" tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} width={24} />
-              <Tooltip
-                cursor={{ fill: '#f3f4f6', radius: 6 }}
-                contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)', fontSize: 12 }}
-              />
-              <Bar dataKey="used" radius={[6, 6, 0, 0]}>
-                {usageData.map((_, i) => (
-                  <Cell key={i} fill={i === usageData.length - 1 ? '#6366f1' : '#e0e7ff'} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </motion.div>
+        <Suspense fallback={<div className="h-[200px] rounded-2xl bg-gray-100 dark:bg-gray-800 animate-pulse" />}>
+          <DashboardChart data={usageData} />
+        </Suspense>
       )}
     </div>
   );

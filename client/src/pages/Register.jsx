@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.js';
+import toast from 'react-hot-toast';
 import { FiEdit3, FiAlertCircle, FiCheck, FiArrowLeft, FiZap } from 'react-icons/fi';
 
 const PERKS = [
@@ -25,9 +26,12 @@ export default function Register() {
     setLoading(true); setError('');
     try {
       await register(form.name, form.email, form.password);
+      toast.success('Account created — welcome to Verzo!');
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+      const message = err.response?.data?.message || 'Registration failed. Please try again.';
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -44,7 +48,7 @@ export default function Register() {
           <div className="w-9 h-9 bg-white/10 border border-white/20 rounded-xl flex items-center justify-center">
             <FiEdit3 size={17} className="text-white" />
           </div>
-          <span className="text-white font-black text-2xl tracking-tight">ContentForge</span>
+          <span className="text-white font-black text-2xl tracking-tight">Verzo</span>
         </Link>
 
         <div>
@@ -88,7 +92,7 @@ export default function Register() {
             <div className="w-8 h-8 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-lg flex items-center justify-center">
               <FiEdit3 size={14} className="text-white" />
             </div>
-            <span className="font-black text-gray-900 text-xl">ContentForge</span>
+            <span className="font-black text-gray-900 text-xl">Verzo</span>
           </Link>
 
           <h1 className="text-3xl font-black text-gray-950 mb-1 tracking-tight">Create your account</h1>

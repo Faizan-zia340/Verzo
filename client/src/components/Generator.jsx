@@ -468,6 +468,10 @@ export default function Generator() {
               placeholder="Describe what you want to generate, or pick a quick template above..."
               className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none placeholder-gray-400"
             />
+           <div className="flex items-center justify-between mt-1.5 text-xs text-gray-400">
+             <span>{form.prompt.length.toLocaleString()} characters</span>
+             <span>{form.prompt.trim() ? form.prompt.trim().split(/\s+/).length.toLocaleString() : 0} words</span>
+           </div>
           </div>
 
           {/* Error */}

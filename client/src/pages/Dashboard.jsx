@@ -17,13 +17,15 @@ const greet = () => {
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const { fetchCredits, credits } = useCredits();
+  const { fetchCredits, credits, loading: creditsLoading } = useCredits();
   const [tab, setTab] = useState('generate');
 
   useEffect(() => { fetchCredits(); }, [fetchCredits]);
 
+  const dashboardLoading = creditsLoading;
+
   return (
-    <div className="min-h-screen bg-gray-50/80">
+    <div className="min-h-screen bg-gray-50/80 dark:bg-gray-950">
 
       {/* ── Welcome banner ─────────────────────────────────── */}
       <div className="bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600">
@@ -50,9 +52,30 @@ export default function Dashboard() {
       <div className="max-w-5xl mx-auto px-4 py-7">
 
         {/* Stats */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.05 }}>
-          <DashboardStats />
-        </motion.div>
+        {dashboardLoading ? (
+          <div className="mb-6 animate-pulse">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              {[1, 2, 3].map((card) => (
+                <div key={card} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 h-[145px]">
+                  <div className="flex justify-between mb-5">
+                    <div className="w-10 h-10 rounded-xl bg-gray-200 dark:bg-gray-800" />
+                    <div className="w-20 h-3 rounded bg-gray-200 dark:bg-gray-800" />
+                  </div>
+                  <div className="w-16 h-3 rounded bg-gray-200 dark:bg-gray-800 mb-3" />
+                  <div className="w-24 h-7 rounded bg-gray-200 dark:bg-gray-800" />
+                </div>
+              ))}
+            </div>
+            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 h-[200px]">
+              <div className="w-32 h-4 rounded bg-gray-200 dark:bg-gray-800 mb-6" />
+              <div className="h-28 rounded-lg bg-gray-100 dark:bg-gray-800" />
+            </div>
+          </div>
+        ) : (
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.05 }}>
+            <DashboardStats />
+          </motion.div>
+        )}
 
         {/* Tab bar */}
         <motion.div

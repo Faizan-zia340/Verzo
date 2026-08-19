@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.js';
 import api from '../services/api.js';
 import { FiCheck, FiZap } from 'react-icons/fi';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
+import toast from 'react-hot-toast';
 
 const PLANS = [
   {
@@ -53,7 +54,9 @@ export default function Pricing() {
       const { data } = await api.post('/billing/checkout', { planId: plan.id });
       window.location.href = data.url;
     } catch (err) {
-      setError(err.response?.data?.message || 'Could not start checkout. Please try again.');
+      const message = err.response?.data?.message || 'Could not start checkout. Please try again.';
+      setError(message);
+      toast.error(message);
       setLoadingPlan(null);
     }
   };

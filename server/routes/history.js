@@ -43,7 +43,7 @@ router.get('/export', protect, asyncHandler(async (req, res) => {
       ]),
     ];
     const csv = rows.map((row) => row.map(escapeCsv).join(',')).join('\r\n');
-    res.status(200).type('text/csv').attachment('contentforge-history.csv').send(csv);
+    res.status(200).type('text/csv').attachment('verzo-history.csv').send(csv);
     return;
   }
 
@@ -53,10 +53,10 @@ router.get('/export', protect, asyncHandler(async (req, res) => {
 
   res.status(200);
   res.type('application/pdf');
-  res.attachment('contentforge-history.pdf');
+  res.attachment('verzo-history.pdf');
   const doc = new PDFDocument({ margin: 50 });
   doc.pipe(res);
-  doc.fontSize(20).fillColor('#312e81').text('ContentForge Content History');
+  doc.fontSize(20).fillColor('#312e81').text('Verzo Content History');
   doc.moveDown(0.5).fontSize(9).fillColor('#6b7280').text(`Exported ${new Date().toISOString()}`);
 
   items.forEach((item, index) => {

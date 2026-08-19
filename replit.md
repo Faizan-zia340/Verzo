@@ -1,4 +1,4 @@
-# ContentForge — AI Content SaaS
+# Verzo — AI Content SaaS
 
 A full-stack, commercial-ready AI content generation platform with React frontend and Express backend. Users register, receive free credits, and spend them to generate AI-written content via Gemini streaming. Admins manage users, credits, RAG context documents, and monitor a live activity feed from a dedicated dashboard.
 

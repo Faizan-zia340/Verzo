@@ -1,4 +1,5 @@
 import cron from 'node-cron';
+import mongoose from 'mongoose';
 import User from '../models/User.js';
 import logger from '../utils/logger.js';
 
@@ -32,13 +33,14 @@ export const resetDailyFreeCredits = async () => {
 };
 
 export const scheduleDailyFreeCreditReset = () => {
-  cron.schedule('0 0 * * *', () => {
+  const runReset = () => {
     resetDailyFreeCredits().catch((err) => {
       logger.error({ err }, 'Daily free credit reset failed');
     });
-  }, { timezone: 'UTC' });
+  };
 
-  resetDailyFreeCredits().catch((err) => {
-    logger.error({ err }, 'Initial free credit reset failed');
-  });
+  cron.schedule('0 0 * * *', runReset, { timezone: 'UTC' });
+
+  if (mongoose.connection.readyState === 1) runReset();
+  else mongoose.connection.once('connected', runReset);
 };
