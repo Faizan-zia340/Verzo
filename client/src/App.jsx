@@ -7,6 +7,8 @@ import Navbar from './components/Navbar.jsx';
 import Home from './pages/Home.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
+import ForgotPassword from './pages/ForgotPassword.jsx';
+import ResetPassword from './pages/ResetPassword.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Pricing from './pages/Pricing.jsx';
 import PaymentSuccess from './pages/PaymentSuccess.jsx';
@@ -64,6 +66,8 @@ function AnimatedRoutes() {
         <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
         <Route path="/register" element={<PageWrapper><Register /></PageWrapper>} />
+        <Route path="/forgot-password" element={<PageWrapper><ForgotPassword /></PageWrapper>} />
+        <Route path="/reset-password/:token" element={<PageWrapper><ResetPassword /></PageWrapper>} />
         <Route path="/pricing" element={<PageWrapper><Pricing /></PageWrapper>} />
         <Route path="/payment-success" element={<PageWrapper><PaymentSuccess /></PageWrapper>} />
         <Route path="/dashboard" element={<PrivateRoute><PageWrapper><Dashboard /></PageWrapper></PrivateRoute>} />

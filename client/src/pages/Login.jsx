@@ -138,6 +138,12 @@ export default function Login() {
                 placeholder="••••••••" className={inputClass} />
             </div>
 
+            <div className="flex justify-end">
+              <Link to="/forgot-password" className="text-indigo-600 hover:text-indigo-800 font-semibold text-sm transition">
+                Forgot password?
+              </Link>
+            </div>
+
             <button type="submit" disabled={loading}
               className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-xl font-bold transition disabled:opacity-60 text-sm shadow-lg shadow-indigo-200 mt-2">
               {loading ? (

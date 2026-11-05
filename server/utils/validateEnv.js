@@ -2,6 +2,9 @@ const REQUIRED = ['MONGODB_URI', 'JWT_SECRET', 'GEMINI_API_KEY'];
 
 const OPTIONAL = [
   'CLIENT_URL',
+  // Forgot-password email sending is disabled when these are not set.
+  'RESEND_API_KEY',
+  'EMAIL_FROM',
   'UNSPLASH_ACCESS_KEY',
   'STRIPE_SECRET_KEY',
   'STRIPE_WEBHOOK_SECRET',
