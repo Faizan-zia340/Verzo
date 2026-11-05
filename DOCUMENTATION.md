@@ -553,6 +553,8 @@ All stored in `server/.env`.
 | `OPENAI_API_KEY` | For generation | Your OpenAI API key (`sk-...`) |
 | `STRIPE_SECRET_KEY` | For payments | Stripe secret key (`sk_test_...` or `sk_live_...`) |
 | `STRIPE_WEBHOOK_SECRET` | For payments | Stripe webhook signing secret (`whsec_...`) |
+| `RESEND_API_KEY` | For password reset emails | Resend API key, set in the hosting dashboard only (no value in code or docs) |
+| `EMAIL_FROM` | For password reset emails | Verified sender address for reset emails; without these two variables, no reset email is sent |
 
 ---
 
@@ -569,6 +571,20 @@ Browser → POST /api/auth/register
 → Frontend stores token in localStorage
 → AuthContext sets user state
 → Redirect to /dashboard
+```
+
+### Forgot Password
+```
+Browser (Login page) -> "Forgot password?" -> /forgot-password
+-> POST /api/auth/forgot-password { email }
+-> Always the same generic message, whether or not the email is registered
+-> If the account exists: secure random token generated, only its SHA-256
+  hash stored with a ~1-hour expiry, reset link emailed via Resend
+  (only when RESEND_API_KEY and EMAIL_FROM are set)
+-> User opens /reset-password/:token
+-> POST /api/auth/reset-password/:token { password }
+-> Token hash and expiry verified, new password hashed as on registration,
+  token cleared, user signs in from /login with the new password
 ```
 
 ### Content Generation
