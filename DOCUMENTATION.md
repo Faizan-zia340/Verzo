@@ -292,6 +292,8 @@ Stores account information and credit balance.
 | `credits` | Number | Current credit balance (default: 10) |
 | `subscription` | String | `free`, `basic`, or `pro` |
 | `stripeCustomerId` | String | Stripe customer reference |
+| `resetPasswordToken` | String | SHA-256 hash of the password-reset token (never the raw token) |
+| `resetPasswordExpires` | Date | Reset-token expiry, about 1 hour after issue |
 | `createdAt` | Date | Account creation timestamp |
 
 **Methods:**
@@ -376,6 +378,8 @@ Stores reference knowledge used to augment AI prompts before generation.
 | POST | `/register` | No | Create account, returns JWT |
 | POST | `/login` | No | Login, returns JWT |
 | GET | `/me` | JWT | Returns current user info |
+| POST | `/forgot-password` | No | Request a reset link; always returns the same generic message, whether or not the email is registered |
+| POST | `/reset-password/:token` | No | Set a new password (min. 6 characters) with a valid, unexpired reset token; clears the token on success |
 
 ### Generate — `/api/generate`
 | Method | Path | Auth | Description |
@@ -422,6 +426,10 @@ Handles user registration and login.
 - **`register`** — validates uniqueness, creates User, returns JWT + user object
 - **`login`** — compares password with bcrypt hash, returns JWT + user object
 - **`getMe`** — returns the currently authenticated user's data from `req.user`
+- **`forgotPassword`** — generates a secure random reset token, stores only its SHA-256 hash with a 1-hour expiry, and emails a `/reset-password/:token` link via Resend when `RESEND_API_KEY` and `EMAIL_FROM` are set; otherwise no email is sent and the response stays generic
+- **`resetPassword`** — verifies the token hash and expiry, sets the new password (hashed by the User pre-save hook, as on registration), and clears the token
+
+Frontend pages: `/forgot-password` (request a link), `/reset-password/:token` (set a new password), and a “Forgot password?” link on the Login page.
 
 ### `generatorController.js`
 Handles all AI content generation.

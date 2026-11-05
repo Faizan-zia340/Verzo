@@ -11,6 +11,15 @@ export const loginSchema = Joi.object({
   password: Joi.string().required(),
 });
 
+export const forgotPasswordSchema = Joi.object({
+  email: Joi.string().email().required(),
+});
+
+export const resetPasswordSchema = Joi.object({
+  // Same password rule as registration: at least 6 characters.
+  password: Joi.string().min(6).required(),
+});
+
 export const generateSchema = Joi.object({
   type: Joi.string().valid('blog', 'social', 'email', 'ad', 'product').required(),
   prompt: Joi.string().min(10).max(1000).required(),

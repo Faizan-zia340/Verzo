@@ -10,6 +10,10 @@ const userSchema = new mongoose.Schema({
   lastFreeCreditResetAt: { type: Date },
   stripeCustomerId: { type: String },
   isAdmin: { type: Boolean, default: false },
+  // Forgot-password: only the SHA-256 hash of the reset token is stored,
+  // never the raw token. Expires about 1 hour after it is issued.
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date },
   createdAt: { type: Date, default: Date.now },
 });
 
