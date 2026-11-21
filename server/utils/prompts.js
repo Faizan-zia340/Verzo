@@ -1,3 +1,5 @@
+import { getPurpose } from '../config/contentTypes.js';
+
 const LANGUAGE_MAP = {
   english_us: '',
   english_uk: '\n\nWrite in British English. Use UK spelling (colour, behaviour, realise, organise), UK idioms, and British cultural references where natural.',
@@ -8,7 +10,7 @@ const LANGUAGE_MAP = {
   spanish_latam: '\n\nEscribe en español latinoamericano neutro, fácil de entender en México, Colombia y toda Latinoamérica.',
   spanish_spain: '\n\nEscribe en español de España. Usa "vosotros" donde corresponda y expresiones del español peninsular.',
   french: '\n\nÉcris l\'intégralité de la réponse en français avec un style naturel et fluide.',
-  german: '\n\nSchreibe die gesamte Antwort auf Deutsch mit einem natürlichen, professionellen Stil.',
+  german: '\n\nSchreibe die gesamte Anleitung auf Deutsch mit einem natürlichen, professionellen Stil.',
   portuguese_brazil: '\n\nEscreva em português brasileiro com um tom natural e conversacional típico do Brasil.',
   hindi: '\n\nपूरा जवाब हिंदी में लिखें। सरल, स्पष्ट और प्रवाहमय भाषा का उपयोग करें।',
   turkish: '\n\nYanıtın tamamını Türkçe olarak yaz. Doğal ve akıcı bir dil kullan.',
@@ -38,6 +40,16 @@ Writing quality rules:
 - Keep the tone consistent but not exhausting — build energy, then let it breathe.
 - End with a clear, natural call to action (1 sentence) that feels like advice, not a shout.`;
 
+// Human-style rules: the output should read like a person wrote it, not a
+// template. Applied to every buildPrompt() alongside STYLE_RULES.
+const HUMAN_STYLE_RULES = `
+Human writing style (write like a person, not a template):
+- Vary sentence length on purpose — a 4-word sentence, then a longer one. Never let three sentences in a row start the same way or run the same length.
+- Use concrete details from the user's input (names, places, numbers, dates) instead of vague claims. If a detail was not provided, leave it out — never invent one.
+- Prefer active voice. One strong verb beats three adjectives.
+- No stacked adjectives (never "amazing, incredible, wonderful"), no generic openers ("In today's world...", "Are you looking for...?") and no generic closers ("In conclusion...", "So what are you waiting for?").
+- Do not end with a closing paragraph that just repeats the body. End on one concrete next step or one memorable line.`;
+
 // Strict output rules appended to every buildPrompt() so the model never
 // returns unfinished content (e.g. emails with "[Your Name]" left in).
 const QUALITY_RULES = `
@@ -46,6 +58,24 @@ Output quality rules (strict — never break these):
 - Use only the details provided below. Never invent facts, links, salaries, deadlines, names or contact details.
 - Do not open with a rhetorical question or filler opener ("Looking for... right?", "In today's fast-paced world...").
 - Avoid generic buzzwords and filler phrases (passionate, game-changer, cutting-edge, seamless, delve, unlock your potential). Be specific and concrete.`;
+
+// How each tone should sound. The requested tone wins over the purpose's
+// default tone — the default is only used as a fallback in the purpose block.
+const TONE_GUIDANCE = {
+  friendly: 'Warm and conversational, like a helpful neighbour. Short sentences, plain words.',
+  formal: 'Polite and professional. Full sentences, no slang, no contractions where a formal register fits.',
+  persuasive: 'Confident and benefit-led. Lead with what the reader gains, then the proof, then one clear ask.',
+  urgent: 'Direct and time-aware. Short sentences, clear deadline or scarcity where the user provided one — never invent urgency.',
+  empathetic: 'Kind and understanding. Acknowledge the reader\'s situation first, then help — no corporate coldness.',
+  professional: 'Polished and business-like. Clear, precise, no slang.',
+  casual: 'Relaxed and informal. Everyday words, contractions welcome.',
+};
+
+const READING_LEVEL_GUIDANCE = {
+  simple: 'Write at a simple reading level: short words, short sentences, one idea per sentence. A 12-year-old should follow it easily.',
+  standard: 'Write at a standard reading level: everyday vocabulary, mixed sentence lengths, clear structure.',
+  professional: 'Write at a professional reading level: precise vocabulary and longer, well-built sentences where the topic needs them — but stay clear, never dense.',
+};
 
 const DETAILS_LABELS = {
   topic: 'Topic',
@@ -58,6 +88,8 @@ const DETAILS_LABELS = {
   contact: 'Contact',
   product: 'Product',
   cta: 'Call to action',
+  recipient: 'Recipient',
+  deadline: 'Deadline',
 };
 
 // Formats the per-type details the user provided so the model uses exactly
@@ -71,46 +103,108 @@ const formatDetails = (details = {}) => {
     : '';
 };
 
-export const buildPrompt = ({ type, prompt, tone = 'professional', length = 'medium', language = 'english_us', format = 'paragraphs', details = {} }) => {
+// Purpose block: structure outline + two human-written few-shot examples
+// from server/config/contentTypes.js, injected so the model follows the
+// shape of a real piece in that purpose instead of a generic template.
+const formatPurpose = (type, purpose) => {
+  const config = purpose ? getPurpose(type, purpose) : null;
+  if (!config) return '';
+  const examples = config.examples.map((ex, i) => `Example ${i + 1} (human-written, follow its rhythm and concreteness, do not copy its content):\n"${ex}"`).join('\n\n');
+  return `\n\nPurpose: ${config.label} (${type}).
+Follow this structure: ${config.structure}
+Default tone for this purpose: ${config.defaultTone}. Target length: about ${config.lengthRange.min}–${config.lengthRange.max} words.
+${examples}`;
+};
+
+const formatWritingSample = (sample) => {
+  const text = typeof sample === 'string' ? sample.trim().slice(0, 1500) : '';
+  if (!text) return '';
+  return `\n\nWriting sample — match this voice only (sentence length, vocabulary, punctuation habits, level of formality). Do NOT copy its words, topic or content:\n"${text}"`;
+};
+
+export const buildPrompt = ({ type, prompt, tone = 'professional', length = 'medium', language = 'english_us', format = 'paragraphs', details = {}, purpose = '', readingLevel = 'standard', writingSample = '' }) => {
   const lengths = { short: '100-150 words', medium: '200-300 words', long: '400-600 words' };
   const wordCount = lengths[length] || lengths.medium;
   const langInstruction = LANGUAGE_MAP[language] ?? LANGUAGE_MAP['english_us'];
   const formatInstruction = FORMAT_MAP[format] || FORMAT_MAP.paragraphs;
+  const purposeConfig = purpose ? getPurpose(type, purpose) : null;
+  // The requested tone wins; the purpose default tone is shown in the
+  // purpose block as a fallback guide.
+  const toneInstruction = TONE_GUIDANCE[tone] ? `\nTone: ${tone} — ${TONE_GUIDANCE[tone]}` : '';
+  const readingInstruction = READING_LEVEL_GUIDANCE[readingLevel] ? `\n${READING_LEVEL_GUIDANCE[readingLevel]}` : '';
+  const purposeBlock = formatPurpose(type, purpose);
+  // A purpose's own length range is more specific than short/medium/long.
+  const lengthInstruction = purposeConfig
+    ? `Length: about ${purposeConfig.lengthRange.min}–${purposeConfig.lengthRange.max} words.`
+    : `Length: approximately ${wordCount}.`;
 
   const templates = {
     blog: `Write a ${tone} blog post about: "${prompt}".
-Length: approximately ${wordCount}.
+${lengthInstruction}
 Structure: engaging opening hook, well-organised body, strong conclusion.
 ${formatInstruction}
-${STYLE_RULES}`,
+${STYLE_RULES}
+${HUMAN_STYLE_RULES}`,
 
     social: `Write a ${tone} social media post about: "${prompt}".
 Length: short and punchy — no more than 5 lines.
 Start with a hook in the first line that makes someone stop scrolling.
 Use emojis only if they add meaning (max 3).
 End with a question or CTA to drive engagement.
-${STYLE_RULES}`,
+${STYLE_RULES}
+${HUMAN_STYLE_RULES}`,
 
     email: `Write a ${tone} email about: "${prompt}".
-Length: approximately ${wordCount}.
+${lengthInstruction}
 Include: subject line, greeting, body (2-3 short paragraphs), and a clear one-line CTA before the sign-off.
 ${formatInstruction}
-${STYLE_RULES}`,
+${STYLE_RULES}
+${HUMAN_STYLE_RULES}`,
 
     ad: `Write a ${tone} advertisement for: "${prompt}".
-Length: approximately ${wordCount}.
+${lengthInstruction}
 Structure: punchy headline (1 sentence), 2-3 sentences on the key benefit (not features), then a direct CTA.
 ${formatInstruction}
-${STYLE_RULES}`,
+${STYLE_RULES}
+${HUMAN_STYLE_RULES}`,
 
     product: `Write a ${tone} product description for: "${prompt}".
-Length: approximately ${wordCount}.
+${lengthInstruction}
 Lead with the primary benefit, not the product name. Ground claims in specifics.
 ${formatInstruction}
-${STYLE_RULES}`,
+${STYLE_RULES}
+${HUMAN_STYLE_RULES}`,
   };
 
-  return (templates[type] || templates.blog) + formatDetails(details) + QUALITY_RULES + langInstruction;
+  return (templates[type] || templates.blog)
+    + purposeBlock
+    + toneInstruction
+    + readingInstruction
+    + formatWritingSample(writingSample)
+    + formatDetails(details)
+    + QUALITY_RULES
+    + langInstruction;
+};
+
+// Pass-2 editor prompt: polish a draft, don't rewrite it. Only removes
+// robotic phrasing, repeated sentence patterns and filler — every fact,
+// name, number, link and date in the draft must survive unchanged.
+export const buildEditorPrompt = (text, { type, purpose = '' } = {}) => {
+  const purposeConfig = purpose ? getPurpose(type, purpose) : null;
+  const purposeNote = purposeConfig
+    ? `\nThis is a ${purposeConfig.label} (${type}). Keep its structure: ${purposeConfig.structure}`
+    : '';
+  return `You are a careful human editor. Edit the draft below and return ONLY the edited text — no explanation, no extra lines.
+
+Rules:
+- Remove robotic phrasing, repeated sentence patterns (never let three sentences in a row start the same way) and filler words.
+- Vary sentence length. Keep active voice. Do not add stacked adjectives or generic openers/closers.
+- Preserve EVERY fact, name, number, date, link, price and deadline exactly as written. Do not add, remove or change any fact.
+- Do not add a closing paragraph that repeats the body. Keep the same length (within 10%).
+- Never insert placeholders such as [Your Name] or {{name}}.${purposeNote}
+
+Draft to edit:
+${text}`;
 };
 
 export const buildSEOPrompt = (content) => {
@@ -154,4 +248,3 @@ Keep each section clearly labelled. Be thorough but concise.`;
 };
 
 export { LANGUAGE_MAP };
-
