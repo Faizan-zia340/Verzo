@@ -1,5 +1,6 @@
 import { generateText, generateSEO, tuneText, getModel, withSystem } from '../utils/gemini.js';
 import { buildPrompt } from '../utils/prompts.js';
+import { checkQuality, generateWithQualityCheck, retryGeneration } from '../utils/qualityCheck.js';
 import { fetchImages } from '../utils/unsplash.js';
 import { fetchAndAnalyzeImages, embedImagesInContent } from '../utils/imageService.js';
 import Content from '../models/Content.js';
@@ -51,10 +52,17 @@ const parseRealityCheck = (rawOutput) => {
   };
 };
 
-const generateContentData = async ({ type, prompt, language = 'english_us', format = 'paragraphs' }) => {
+const generateContentData = async ({ type, prompt, tone = 'professional', length = 'medium', language = 'english_us', format = 'paragraphs', details = {} }) => {
   checkKey();
 
-  const rawOutput = await generateText(buildPrompt({ type, prompt, language, format }));
+  // Quality-checked generation: retries once if the first draft has
+  // placeholders, banned phrases or other issues. Only the final text is used.
+  const { text: rawOutput, qualityReport } = await generateWithQualityCheck(generateText, {
+    prompt: buildPrompt({ type, prompt, tone, length, language, format, details }),
+    type,
+    input: details,
+    length,
+  });
   const { cleanContent, realityCheck } = parseRealityCheck(rawOutput);
   const seoData = await generateSEO(cleanContent);
   const keywords = seoData?.imageKeywords || seoData?.keywords || [];
@@ -82,6 +90,7 @@ const generateContentData = async ({ type, prompt, language = 'english_us', form
       updatedAt: new Date(),
     },
     realityCheck,
+    qualityReport,
   };
 };
 
@@ -89,7 +98,7 @@ const generateContentData = async ({ type, prompt, language = 'english_us', form
 export const streamGenerate = asyncHandler(async (req, res) => {
   try {
     checkKey();
-    const { type, prompt, tone, length, language = 'english_us', format = 'paragraphs' } = req.body;
+    const { type, prompt, tone, length, language = 'english_us', format = 'paragraphs', ...details } = req.body;
     const userId = req.user._id;
 
     res.setHeader('Content-Type', 'text/event-stream');
@@ -100,7 +109,7 @@ export const streamGenerate = asyncHandler(async (req, res) => {
 
     const sendEvent = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
 
-    const fullPrompt = buildPrompt({ type, prompt, tone, length, language, format });
+    const fullPrompt = buildPrompt({ type, prompt, tone, length, language, format, details });
 
     let fullOutput = '';
     try {
@@ -133,7 +142,36 @@ export const streamGenerate = asyncHandler(async (req, res) => {
     }
 
     // Split clean content from Reality Check section
-    const { cleanContent, realityCheck } = parseRealityCheck(fullOutput);
+    let { cleanContent, realityCheck } = parseRealityCheck(fullOutput);
+
+    // Quality check the streamed draft. If it fails (placeholders, banned
+    // phrases, ...), regenerate ONCE with the issues as feedback and keep
+    // the best attempt. Only the final text is saved — and only 1 credit
+    // is deducted for the whole request, retries included.
+    let qualityReport = checkQuality(cleanContent, { type, input: req.body, length });
+    if (!qualityReport.passed) {
+      sendEvent({ status: 'Quality check flagged issues — regenerating once...' });
+      try {
+        const retry = await retryGeneration(generateText, {
+          prompt: fullPrompt,
+          firstText: fullOutput,
+          firstReport: qualityReport,
+          type,
+          input: req.body,
+          length,
+        });
+        const parsed = parseRealityCheck(retry.text);
+        cleanContent = parsed.cleanContent;
+        realityCheck = parsed.realityCheck;
+        qualityReport = retry.qualityReport;
+      } catch (err) {
+        // Keep the streamed first attempt if the retry itself fails.
+        logger.error({ err: err.message }, 'Quality retry failed; keeping first attempt');
+        qualityReport = { passed: false, issues: qualityReport.issues, retried: true };
+      }
+    } else {
+      qualityReport = { passed: true, issues: [], retried: false };
+    }
 
     // Post-generation: SEO + images + save
     try {
@@ -170,7 +208,7 @@ export const streamGenerate = asyncHandler(async (req, res) => {
       ]);
 
       io.to(userId.toString()).emit('generation:done', { content });
-      sendEvent({ done: true, seoData, images, contentWithImages: finalOutput, realityCheck, contentId: content._id });
+      sendEvent({ done: true, seoData, images, contentWithImages: finalOutput, realityCheck, contentId: content._id, qualityReport });
     } catch (err) {
       logger.error({ err: err.message }, 'Content save error');
       sendEvent({ error: 'Content generated but failed to save. Please try again.' });
@@ -187,13 +225,19 @@ export const streamGenerate = asyncHandler(async (req, res) => {
 // ── Non-streaming generate (fallback) ───────────────────────────
 export const generate = asyncHandler(async (req, res) => {
   checkKey();
-  const { type, prompt, tone, length, language = 'english_us', format = 'paragraphs' } = req.body;
+  const { type, prompt, tone, length, language = 'english_us', format = 'paragraphs', ...details } = req.body;
   const userId = req.user._id;
 
   io.to(userId.toString()).emit('generation:start');
 
-  const fullPrompt = buildPrompt({ type, prompt, tone, length, language, format });
-  const rawOutput = await generateText(fullPrompt);
+  // Quality-checked generation: retries once if the first draft fails the
+  // check. Only the final text is saved and only 1 credit is deducted.
+  const { text: rawOutput, qualityReport } = await generateWithQualityCheck(generateText, {
+    prompt: buildPrompt({ type, prompt, tone, length, language, format, details }),
+    type,
+    input: req.body,
+    length,
+  });
   const { cleanContent, realityCheck } = parseRealityCheck(rawOutput);
 
   const seoData = await generateSEO(cleanContent);
@@ -216,7 +260,7 @@ export const generate = asyncHandler(async (req, res) => {
   ]);
 
   io.to(userId.toString()).emit('generation:done', { content });
-  res.status(200).json({ content, realityCheck });
+  res.status(200).json({ content, realityCheck, qualityReport });
 });
 
 // ── Tune existing content (no credit deduction) ──────────────────
@@ -264,7 +308,15 @@ export const generateAIContent = asyncHandler(async (req, res) => {
     ? `Context Information:\n${contextBlock}\n\nStrict Instructions: Use the above Context Information to answer accurately. Do not fabricate facts.\n\nUser Prompt: ${userPrompt}`
     : userPrompt;
 
-  const raw = await generateText(finalPrompt);
+  // Quality-checked generation: retries once if the first draft fails the
+  // check. The RAG route has no credit deduction and saves nothing, so the
+  // retry only costs one extra AI call.
+  const { text: raw, qualityReport } = await generateWithQualityCheck(generateText, {
+    prompt: finalPrompt,
+    type: 'general',
+    input: {},
+    length: 'medium',
+  });
   const { cleanContent, realityCheck } = parseRealityCheck(raw);
   res.status(200).json({
     response: cleanContent,
@@ -272,6 +324,7 @@ export const generateAIContent = asyncHandler(async (req, res) => {
     contextUsed: matchedContexts.length > 0,
     contextTitles: matchedContexts.map((c) => c.title),
     retrievalMethod,
+    qualityReport,
   });
 });
 
@@ -279,7 +332,7 @@ export const regenerateContent = asyncHandler(async (req, res) => {
   const existing = await Content.findOne({ _id: req.params.id, user: req.user._id });
   if (!existing) return res.status(404).json({ message: 'Content not found' });
 
-  const { data, realityCheck } = await generateContentData({
+  const { data, realityCheck, qualityReport } = await generateContentData({
     type: existing.type,
     prompt: existing.prompt,
     language: existing.language,
@@ -303,5 +356,6 @@ export const regenerateContent = asyncHandler(async (req, res) => {
   ]);
 
   io.to(req.user._id.toString()).emit('generation:done', { content });
-  res.status(200).json({ content, realityCheck });
+  res.status(200).json({ content, realityCheck, qualityReport });
 });
+

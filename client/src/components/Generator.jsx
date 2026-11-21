@@ -64,6 +64,7 @@ const TEMPLATES = [
     form: {
       type: 'blog', tone: 'professional', length: 'medium', language: 'english_us', format: 'headings',
       prompt: 'Write a compelling blog post about why 2026 is the best year to invest in real estate. Include 3 bullet points on market trends, mention rising demand in suburban areas, and end with a strong call to action encouraging first-time investors to act now.',
+      topic: 'Real estate investing in 2026', audience: 'First-time investors',
     },
   },
   {
@@ -74,6 +75,7 @@ const TEMPLATES = [
     form: {
       type: 'social', tone: 'friendly', length: 'short', language: 'english_us', format: 'paragraphs',
       prompt: 'Create a high-engagement Instagram caption for a motivational business post. Use 2-3 relevant emojis, write a hook in the first line, and end with a question to drive comments. Target audience: entrepreneurs aged 25-40.',
+      topic: 'Motivational business post', audience: 'Entrepreneurs aged 25-40',
     },
   },
   {
@@ -87,6 +89,64 @@ const TEMPLATES = [
     },
   },
 ];
+
+// Required detail fields per content type — mirrors REQUIRED_FIELDS in
+// server/utils/validators.js. The server is the authority: it returns 400
+// naming any missing field, and no AI call or credit is used. For email,
+// an apply link OR a contact is enough (one of the two must be filled).
+const REQUIRED_FIELDS = {
+  blog: [
+    { name: 'topic', label: 'Topic', placeholder: 'e.g. Why 2026 is the best year to invest in real estate' },
+    { name: 'audience', label: 'Audience', placeholder: 'e.g. First-time investors' },
+  ],
+  social: [
+    { name: 'topic', label: 'Topic', placeholder: 'e.g. Launch of our new summer collection' },
+    { name: 'audience', label: 'Audience', placeholder: 'e.g. Entrepreneurs aged 25-40' },
+  ],
+  email: [
+    { name: 'company', label: 'Company', placeholder: 'e.g. Acme Corp' },
+    { name: 'role', label: 'Role', placeholder: 'e.g. Software Engineer' },
+    { name: 'location', label: 'Location', placeholder: 'e.g. Toronto, ON' },
+    { name: 'senderName', label: 'Sender name', placeholder: 'e.g. Faizan Zia' },
+    { name: 'applyLink', label: 'Apply link', placeholder: 'e.g. https://company.com/careers/123' },
+    { name: 'contact', label: 'Contact (if no apply link)', placeholder: 'e.g. careers@company.com' },
+  ],
+  ad: [
+    { name: 'product', label: 'Product', placeholder: 'e.g. Noise-cancelling headphones' },
+    { name: 'audience', label: 'Audience', placeholder: 'e.g. Remote workers' },
+    { name: 'cta', label: 'Call to action (CTA)', placeholder: 'e.g. Shop now and save 20%' },
+  ],
+  product: [
+    { name: 'product', label: 'Product', placeholder: 'e.g. Noise-cancelling headphones' },
+    { name: 'audience', label: 'Audience', placeholder: 'e.g. Remote workers' },
+  ],
+};
+
+const DETAILS_DEFAULTS = {
+  topic: '', audience: '', company: '', role: '', location: '',
+  senderName: '', applyLink: '', contact: '', product: '', cta: '',
+};
+
+// Returns { missing: [labels], errors: { fieldName: message } } for the
+// required fields of the selected type that are still blank.
+const validateDetails = (form) => {
+  const fields = REQUIRED_FIELDS[form.type] || [];
+  const errors = {};
+  const missing = [];
+  const isBlank = (name) => !form[name] || !form[name].trim();
+  for (const field of fields) {
+    if (field.name === 'applyLink' || field.name === 'contact') continue; // handled as a pair below
+    if (isBlank(field.name)) {
+      errors[field.name] = `${field.label} is required.`;
+      missing.push(field.label);
+    }
+  }
+  if (form.type === 'email' && isBlank('applyLink') && isBlank('contact')) {
+    errors.applyLink = 'An apply link or a contact is required.';
+    missing.push('Apply link or contact');
+  }
+  return { missing, errors };
+};
 
 const TUNE_ACTIONS = [
   { key: 'shorten', label: '↓ Shorten' },
@@ -103,11 +163,13 @@ const hasInlineImages = (text) => /\[IMAGE:\d+\]/.test(text);
 
 export default function Generator() {
   const { deductCredit, credits } = useCredits();
-  const [form, setForm] = useState({ type: 'blog', prompt: '', tone: 'professional', length: 'medium', language: 'english_us', format: 'paragraphs' });
+  const [form, setForm] = useState({ type: 'blog', prompt: '', tone: 'professional', length: 'medium', language: 'english_us', format: 'paragraphs', ...DETAILS_DEFAULTS });
   const [output, setOutput] = useState('');
   const [seoData, setSeoData] = useState(null);
   const [images, setImages] = useState([]);
   const [realityCheck, setRealityCheck] = useState(null);
+  const [qualityReport, setQualityReport] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [fetchingImages, setFetchingImages] = useState(false);
   const [tuning, setTuning] = useState('');
@@ -115,21 +177,34 @@ export default function Generator() {
   const [copied, setCopied] = useState(false);
   const [showImages, setShowImages] = useState(false);
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+    if (fieldErrors[name]) setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
+  };
 
   const applyTemplate = (tpl) => {
-    setForm(tpl.form);
+    setForm({ ...DETAILS_DEFAULTS, ...tpl.form });
     setOutput(''); setSeoData(null); setImages([]); setError('');
+    setQualityReport(null); setFieldErrors({});
     toast('Template applied', { icon: '📋' });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Client-side required-field check: block before any AI call or credit use.
+    const { missing, errors } = validateDetails(form);
+    if (missing.length) {
+      setFieldErrors(errors);
+      toast.error(`Missing required fields: ${missing.join(', ')}`);
+      return;
+    }
+    setFieldErrors({});
     if (credits !== null && credits < 1) {
       toast.error('Not enough credits. Please buy more.');
       return;
     }
-    setLoading(true); setFetchingImages(false); setError(''); setOutput(''); setSeoData(null); setImages([]); setRealityCheck(null);
+    setLoading(true); setFetchingImages(false); setError(''); setOutput(''); setSeoData(null); setImages([]); setRealityCheck(null); setQualityReport(null);
 
     const genToast = toast.loading('Generating content...');
     try {
@@ -173,6 +248,7 @@ export default function Generator() {
               setSeoData(parsed.seoData || null);
               setImages(parsed.images || []);
               setRealityCheck(parsed.realityCheck || null);
+              setQualityReport(parsed.qualityReport || null);
               if (parsed.contentWithImages) setOutput(parsed.contentWithImages);
               setFetchingImages(false);
               deductCredit(1);
@@ -221,6 +297,7 @@ export default function Generator() {
       setImages([]);
       setSeoData(null);
       setRealityCheck(data.realityCheck || null);
+      setQualityReport(null); // tuned text has not been quality-checked
       toast.success('Content refined!', { id: tuneToast });
     } catch {
       toast.error('Tune request failed.', { id: tuneToast });
@@ -474,6 +551,33 @@ export default function Generator() {
            </div>
           </div>
 
+          {/* Required details for the selected type */}
+          <div>
+            <p className="text-xs font-medium text-gray-600 mb-2">
+              Required details <span className="text-gray-400 font-normal">(for {form.type} — no placeholders are used, so these must be real)</span>
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {(REQUIRED_FIELDS[form.type] || []).map((field) => (
+                <div key={field.name}>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                    {field.label} <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    name={field.name} value={form[field.name] || ''} onChange={handleChange}
+                    placeholder={field.placeholder}
+                    className={`w-full border rounded-lg px-3 py-2 text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400 ${fieldErrors[field.name] ? 'border-red-400' : 'border-gray-200'}`}
+                  />
+                  {fieldErrors[field.name] && (
+                    <p className="text-xs text-red-600 mt-1">{fieldErrors[field.name]}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+            {form.type === 'email' && (
+              <p className="text-xs text-gray-400 mt-2">Apply link or contact — at least one of the two is required.</p>
+            )}
+          </div>
+
           {/* Error */}
           {error && (
             <div className={`flex items-start gap-2.5 px-4 py-3 rounded-xl text-sm ${
@@ -577,6 +681,26 @@ export default function Generator() {
                 {renderContent()}
                 {loading && <span className="inline-block w-0.5 h-4 bg-indigo-500 animate-pulse ml-0.5 align-middle" />}
               </div>
+
+              {/* Quality check result */}
+              {!loading && qualityReport && (
+                qualityReport.passed ? (
+                  <div className="mt-3 flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm bg-emerald-50 border border-emerald-200 text-emerald-700">
+                    <FiCheck size={15} className="flex-shrink-0" />
+                    <span className="font-semibold">Quality check passed</span>
+                    {qualityReport.retried && <span className="text-xs opacity-80">(fixed on retry)</span>}
+                  </div>
+                ) : (
+                  <div className="mt-3 px-4 py-3 rounded-xl text-sm bg-amber-50 border border-amber-200 text-amber-800">
+                    <p className="font-semibold flex items-center gap-2">
+                      <FiAlertCircle size={15} /> Quality warnings{qualityReport.retried ? ' (still present after retry)' : ''}
+                    </p>
+                    <ul className="list-disc list-inside text-xs mt-1.5 space-y-0.5">
+                      {qualityReport.issues.map((issue, i) => <li key={i}>{issue}</li>)}
+                    </ul>
+                  </div>
+                )
+              )}
 
               {/* Social Share */}
               {!loading && output && (
@@ -758,3 +882,4 @@ export default function Generator() {
     </div>
   );
 }
+

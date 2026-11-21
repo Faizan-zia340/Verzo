@@ -12,8 +12,8 @@ const router = Router();
 
 const genLimit = userRateLimit(10);
 
-router.post('/', protect, genLimit, creditCheck(1), validate(generateSchema), generate);
-router.post('/stream', protect, genLimit, creditCheck(1), validate(generateSchema), streamGenerate);
+router.post('/', protect, genLimit, validate(generateSchema), creditCheck(1), generate);
+router.post('/stream', protect, genLimit, validate(generateSchema), creditCheck(1), streamGenerate);
 router.post('/tune', protect, genLimit, tuneContent);
 router.post('/rag', generateAIContent);
 
@@ -37,3 +37,4 @@ router.get('/ping-ai', protect, asyncHandler(async (req, res) => {
 }));
 
 export default router;
+
