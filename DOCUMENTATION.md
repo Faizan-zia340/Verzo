@@ -41,6 +41,19 @@ Express Server — port 3001
     └── Socket.io (real-time generation events)
 ```
 
+### Production Deployment (Vercel + Render)
+
+The frontend is deployed on Vercel and the Express backend on Render
+(`https://verzo-backend.onrender.com`); the backend is **not** deployed on
+Vercel. The frontend normally calls the backend directly via
+`VITE_API_URL`, but `vercel.json` also proxies `/api/*` to the Render
+backend, before the SPA catch-all rewrite to `/index.html`. That proxy is
+the fallback: without it, any `/api/*` request reaching Vercel itself was
+rewritten to `index.html` (GET returned the HTML page, POST returned
+405), so login and all API calls failed whenever `VITE_API_URL` was not
+baked into the build. Order matters — Vercel applies the first matching
+rewrite, so the `/api` rule must stay above the catch-all.
+
 ---
 
 ## Folder Structure
