@@ -38,7 +38,40 @@ Writing quality rules:
 - Keep the tone consistent but not exhausting — build energy, then let it breathe.
 - End with a clear, natural call to action (1 sentence) that feels like advice, not a shout.`;
 
-export const buildPrompt = ({ type, prompt, tone = 'professional', length = 'medium', language = 'english_us', format = 'paragraphs' }) => {
+// Strict output rules appended to every buildPrompt() so the model never
+// returns unfinished content (e.g. emails with "[Your Name]" left in).
+const QUALITY_RULES = `
+Output quality rules (strict — never break these):
+- Never use placeholders such as [Your Name], [Company], {{name}} or <insert>. If a detail was not provided, omit that line entirely instead of leaving a placeholder.
+- Use only the details provided below. Never invent facts, links, salaries, deadlines, names or contact details.
+- Do not open with a rhetorical question or filler opener ("Looking for... right?", "In today's fast-paced world...").
+- Avoid generic buzzwords and filler phrases (passionate, game-changer, cutting-edge, seamless, delve, unlock your potential). Be specific and concrete.`;
+
+const DETAILS_LABELS = {
+  topic: 'Topic',
+  audience: 'Audience',
+  company: 'Company',
+  role: 'Role',
+  location: 'Location',
+  senderName: 'Sender name',
+  applyLink: 'Apply link',
+  contact: 'Contact',
+  product: 'Product',
+  cta: 'Call to action',
+};
+
+// Formats the per-type details the user provided so the model uses exactly
+// those values (and nothing invented) in the output.
+const formatDetails = (details = {}) => {
+  const lines = Object.entries(DETAILS_LABELS)
+    .filter(([key]) => typeof details[key] === 'string' && details[key].trim())
+    .map(([key, label]) => `- ${label}: ${details[key].trim()}`);
+  return lines.length
+    ? `\n\nProvided details (use exactly these — do not invent others):\n${lines.join('\n')}`
+    : '';
+};
+
+export const buildPrompt = ({ type, prompt, tone = 'professional', length = 'medium', language = 'english_us', format = 'paragraphs', details = {} }) => {
   const lengths = { short: '100-150 words', medium: '200-300 words', long: '400-600 words' };
   const wordCount = lengths[length] || lengths.medium;
   const langInstruction = LANGUAGE_MAP[language] ?? LANGUAGE_MAP['english_us'];
@@ -77,7 +110,7 @@ ${formatInstruction}
 ${STYLE_RULES}`,
   };
 
-  return (templates[type] || templates.blog) + langInstruction;
+  return (templates[type] || templates.blog) + formatDetails(details) + QUALITY_RULES + langInstruction;
 };
 
 export const buildSEOPrompt = (content) => {
@@ -121,3 +154,4 @@ Keep each section clearly labelled. Be thorough but concise.`;
 };
 
 export { LANGUAGE_MAP };
+

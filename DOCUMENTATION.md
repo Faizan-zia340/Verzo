@@ -384,8 +384,9 @@ Stores reference knowledge used to augment AI prompts before generation.
 ### Generate — `/api/generate`
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| POST | `/` | JWT + 1 credit | Standard content generation |
-| POST | `/rag` | No | RAG-augmented generation |
+| POST | `/` | JWT + 1 credit | Standard content generation (requires per-type details, quality-checked, 1 retry) |
+| POST | `/stream` | JWT + 1 credit | Streaming generation (SSE, same validation and quality check) |
+| POST | `/rag` | No | RAG-augmented generation (quality-checked, no credits) |
 
 ### History — `/api/history`
 | Method | Path | Auth | Description |
@@ -435,6 +436,12 @@ Frontend pages: `/forgot-password` (request a link), `/reset-password/:token` (s
 Handles all AI content generation.
 - **`generate`** — standard flow: emits Socket.io event, calls OpenAI via `generateContent()`, saves Content record, deducts 1 credit, emits done event
 - **`generateAIContent`** — RAG flow: searches Context collection by keywords, builds augmented prompt if a match is found, calls GPT-4o-mini, returns `{ response, contextUsed, contextTitle }`
+- **Quality check (all generation routes)** — after the AI returns, `checkQuality()` (see `utils/qualityCheck.js`) checks the output for placeholders, banned phrases, filler openers, missing required details and length. A failed check regenerates once with the issues as feedback; if it still fails, the best attempt is returned with a `qualityReport { passed, issues, retried }` instead of failing silently. Only 1 credit is deducted per generation regardless of retries, and only the final output is saved.
+
+### Content quality checks
+- **Required fields** — `generateSchema` (in `utils/validators.js`) requires extra details per content type: blog/social need topic and audience; email needs company, role, location, sender name and an apply link or contact; ad needs product, audience and CTA; product needs product and audience. Missing fields are blocked with a 400 naming them — no AI call is made and no credit is deducted. The Generator form shows these fields dynamically with inline errors.
+- **Prompt rules** — `buildPrompt()` adds strict rules to every prompt: never use placeholders (`[Your Name]`, `[Company]`, `{{name}}`, `<insert>`), use only the details provided, never invent facts/links/salaries/deadlines, omit a line instead of making it up, and avoid filler openers and generic buzzwords.
+- **Post-generation check** — `utils/qualityCheck.js` exports `checkQuality(text, { type, input, length })` returning `{ passed, issues[] }`, plus `generateWithQualityCheck()` / `retryGeneration()` used by the controller. The banned-phrase list is a separate editable array in that file.
 
 ### `paymentController.js`
 Handles Stripe payment processing.
@@ -468,10 +475,13 @@ Catches any error passed via `next(err)` from any route or controller. Returns a
 Exports a single `generateToken(id)` function that signs a JWT with the user's MongoDB `_id` and the `JWT_SECRET`. Used in both `register` and `login`.
 
 ### `utils/validators.js`
-Defines Joi validation schemas for registration, login, and content generation requests. Exports a `validate(schema)` middleware factory that checks `req.body` and returns a 400 error with the first validation failure message if invalid.
+Defines Joi validation schemas for registration, login, and content generation requests. Exports a `validate(schema)` middleware factory that checks `req.body` and returns a 400 error with the first validation failure message if invalid. `generateSchema` also enforces per-type required detail fields (`REQUIRED_FIELDS` / `missingRequiredFields()` in the same file) and names any missing fields in the 400 message.
 
 ### `utils/prompts.js`
-Exports `buildPrompt({ type, prompt, tone, length })`. Constructs a tailored natural-language instruction for each of the 5 content types (blog, social, email, ad, product) with tone and word count guidance.
+Exports `buildPrompt({ type, prompt, tone, length })`. Constructs a tailored natural-language instruction for each of the 5 content types (blog, social, email, ad, product) with tone and word count guidance. Every prompt also carries strict output-quality rules (no placeholders, use only provided details, never invent facts/links/salaries/deadlines, no filler openers or buzzwords) and a `details` block with the user's per-type fields.
+
+### `utils/qualityCheck.js`
+Exports `checkQuality(text, { type, input, length })` returning `{ passed, issues[] }` — placeholder detection, a separate editable `BANNED_PHRASES` array, rhetorical-question opener detection, email apply-link/sender-name presence, and a length check (more than 30% off the requested range). Also exports `generateWithQualityCheck()` and `retryGeneration()`, which regenerate once with the issues as feedback and return the best attempt with a `qualityReport { passed, issues, retried }`.
 
 ### `utils/openai.js`
 Exports `generateContent({ type, prompt, tone, length })`. Calls `buildPrompt`, sends the result to `gpt-3.5-turbo` via the OpenAI SDK, and returns the generated text string.
@@ -625,3 +635,4 @@ Browser → POST /api/payment/create-intent { packageId }
 → Payment record updated to "succeeded"
 → Credit transaction logged
 ```
+
