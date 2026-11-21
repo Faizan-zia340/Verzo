@@ -1,4 +1,5 @@
 import Joi from 'joi';
+import { getPurpose } from '../config/contentTypes.js';
 
 export const registerSchema = Joi.object({
   name: Joi.string().min(2).max(50).required(),
@@ -49,9 +50,14 @@ export const REQUIRED_FIELDS = {
   ],
 };
 
-// Returns the labels of the required fields missing from `values` for `type`.
-export const missingRequiredFields = (type, values = {}) => {
-  const required = REQUIRED_FIELDS[type] || [];
+// Returns the labels of the required fields missing from `values`.
+// When `purpose` names a known purpose for `type`, its required fields
+// (server/config/contentTypes.js) are enforced instead; otherwise the
+// per-type fields above are used, so old clients without a purpose keep
+// working exactly as before.
+export const missingRequiredFields = (type, values = {}, purpose = '') => {
+  const purposeConfig = purpose ? getPurpose(type, purpose) : null;
+  const required = purposeConfig ? purposeConfig.requiredFields : REQUIRED_FIELDS[type] || [];
   const hasValue = (key) => typeof values[key] === 'string' && values[key].trim().length > 0;
   const missing = [];
   for (const field of required) {
@@ -73,6 +79,13 @@ export const generateSchema = Joi.object({
   length: Joi.string().valid('short', 'medium', 'long').optional(),
   language: Joi.string().optional(),
   format: Joi.string().valid('paragraphs', 'bullets', 'headings').optional(),
+  // Purpose sub-type (server/config/contentTypes.js). Optional for backward
+  // compatibility — when omitted, per-type required fields are enforced.
+  purpose: Joi.string().trim().max(50).allow('').optional(),
+  readingLevel: Joi.string().valid('simple', 'standard', 'professional').optional(),
+  // Optional writing sample (max 1500 chars): the model matches its voice,
+  // never copies its content.
+  writingSample: Joi.string().trim().max(1500).allow('').optional(),
   // Per-type required details, enforced by the custom check below.
   // They arrive as empty strings when the user leaves them blank.
   topic: detailField,
@@ -85,10 +98,12 @@ export const generateSchema = Joi.object({
   contact: detailField,
   product: detailField,
   cta: detailField,
+  recipient: detailField,
+  deadline: detailField,
 })
   .options({ stripUnknown: true })
   .custom((value, helpers) => {
-    const missing = missingRequiredFields(value.type, value);
+    const missing = missingRequiredFields(value.type, value, value.purpose || '');
     if (missing.length) {
       return helpers.error('any.custom', { type: value.type, missing: missing.join(', ') });
     }
