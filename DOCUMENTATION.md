@@ -231,7 +231,7 @@ Client-side routing. Handles navigation between pages (Home, Login, Dashboard, P
 ```
 
 ### `axios` ^1.3.4 *(client-side)*
-HTTP client for making API calls to the Express backend. A pre-configured instance with the base URL and a 401 interceptor (auto-logout on token expiry) lives in `src/services/api.js`.
+HTTP client for making API calls to the Express backend. A pre-configured instance with the base URL and a 401 interceptor (auto-logout on token expiry) lives in `src/services/api.js`. The interceptor does not redirect on a 401 from `GET /auth/me` (AuthProvider already handles it) or on public pages (`/`, `/login`, `/register`, `/forgot-password`, `/reset-password`, `/pricing`, `/payment-success`), so a logged-out visitor can open the password-reset link.
 ```js
 const api = axios.create({ baseURL: '/api' });
 api.get('/auth/me');
