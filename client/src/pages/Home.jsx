@@ -5,6 +5,7 @@ import {
   FiImage, FiDownload, FiShare2, FiArrowRight, FiCheck, FiStar,
 } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext.js';
+import Seo from '../components/Seo.jsx';
 
 const fade = (delay = 0) => ({
   initial: { opacity: 0, y: 24 },
@@ -44,6 +45,7 @@ export default function Home() {
 
   return (
     <main className="bg-white min-h-screen overflow-hidden">
+      <Seo title="Verzo — AI Content That Converts" description="Verzo is an AI content generator that writes, refines and organises marketing content — blogs, emails, social posts and ads — in minutes." path="/" />
 
       {/* ── Hero ───────────────────────────────────────────────── */}
       <section className="relative bg-gradient-to-b from-slate-50 via-indigo-50/30 to-white pt-20 pb-28 px-4">

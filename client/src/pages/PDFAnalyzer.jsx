@@ -4,6 +4,7 @@ import { FiUpload, FiFileText, FiX, FiDownload, FiCopy, FiCheck, FiBook, FiHelpC
 import toast from 'react-hot-toast';
 import { apiUrl } from '../services/apiUrl.js';
 import { jsPDF } from 'jspdf';
+import Seo from '../components/Seo.jsx';
 
 export default function PDFAnalyzer() {
   const [file, setFile] = useState(null);
@@ -108,6 +109,7 @@ export default function PDFAnalyzer() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-slate-50">
+      <Seo title="Verzo PDF Analyzer — Study Notes & Tests" description="Upload a PDF and get structured study notes, chapter summaries and a 10-question test bank instantly." path="/pdf" noindex />
       <div className="max-w-3xl mx-auto px-4 py-12">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
           <div className="mb-8">
