@@ -69,6 +69,41 @@ function EditModal({ user, onClose, onSave }) {
   );
 }
 
+// ── Delete User Confirmation Modal ───────────────────────────────
+// In-app replacement for window.confirm: native confirms are
+// auto-dismissed by automated browsers (so the delete never ran)
+// and are fragile UX. Follows the EditModal pattern above.
+function DeleteUserModal({ user, deleting, error, onClose, onConfirm }) {
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+      <motion.div initial={{ opacity: 0, scale: 0.95, y: 8 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+        className="bg-white rounded-2xl shadow-2xl border border-gray-100 w-full max-w-sm p-6">
+        <div className="flex items-center justify-between mb-5">
+          <h3 className="text-base font-bold text-gray-900">Delete User</h3>
+          <button onClick={onClose} disabled={deleting} className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition disabled:opacity-60">
+            <FiX size={16} />
+          </button>
+        </div>
+        <div className="bg-gray-50 rounded-xl p-4 mb-5 border border-gray-100">
+          <p className="font-semibold text-gray-900 text-sm">{user.name}</p>
+          <p className="text-xs text-gray-500 mt-0.5">{user.email}</p>
+        </div>
+        <p className="text-sm text-gray-600 mb-5">
+          This permanently removes the account and all of its content and credit history. This cannot be undone.
+        </p>
+        {error && <p className="text-red-500 text-xs mb-3 bg-red-50 px-3 py-2 rounded-lg border border-red-100">{error}</p>}
+        <div className="flex gap-2.5">
+          <button onClick={onClose} disabled={deleting} className="flex-1 border border-gray-200 text-gray-600 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 transition disabled:opacity-60">Cancel</button>
+          <button onClick={onConfirm} disabled={deleting}
+            className="flex-1 bg-red-600 text-white py-2.5 rounded-xl text-sm font-bold hover:bg-red-700 transition disabled:opacity-60 flex items-center justify-center gap-1.5 shadow-sm">
+            {deleting ? <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" /> : <><FiTrash2 size={13} /> Delete</>}
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 // ── Stat Card ──────────────────────────────────────────────────────
 function StatCard({ label, value, icon, loading, gradient, iconBg }) {
   return (
@@ -240,6 +275,8 @@ function UserManagement() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [editTarget, setEditTarget] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleteError, setDeleteError] = useState('');
   const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
@@ -262,17 +299,15 @@ function UserManagement() {
   const handleDelete = async (target) => {
     const isSelf = String(target._id) === String(currentUser?._id);
     if (target.isAdmin || isSelf) return; // backend also enforces this
-    const ok = window.confirm(
-      `Delete ${target.email}? This permanently removes the account and all of its content and credit history. This cannot be undone.`
-    );
-    if (!ok) return;
     setDeletingId(target._id);
+    setDeleteError('');
     try {
       const { data } = await api.delete(`/admin/users/${target._id}`);
       setUsers((prev) => prev.filter((u) => u._id !== target._id));
+      setDeleteTarget(null);
       toast.success(`Deleted ${data.email || target.email}`);
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to delete user');
+      setDeleteError(err.response?.data?.message || 'Failed to delete user');
     } finally {
       setDeletingId(null);
     }
@@ -357,7 +392,7 @@ function UserManagement() {
                             <FiTrash2 size={11} /> Delete
                           </button>
                         ) : (
-                          <button onClick={() => handleDelete(u)} disabled={deletingId === u._id}
+                          <button onClick={() => { setDeleteError(''); setDeleteTarget(u); }} disabled={deletingId === u._id}
                             className="flex items-center gap-1.5 text-xs bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg font-semibold transition shadow-sm disabled:opacity-60">
                             <FiTrash2 size={11} /> {deletingId === u._id ? 'Deleting…' : 'Delete'}
                           </button>
@@ -378,6 +413,15 @@ function UserManagement() {
         )}
       </div>
       {editTarget && <EditModal user={editTarget} onClose={() => setEditTarget(null)} onSave={handleSave} />}
+      {deleteTarget && (
+        <DeleteUserModal
+          user={deleteTarget}
+          deleting={deletingId === deleteTarget._id}
+          error={deleteError}
+          onClose={() => { if (deletingId !== deleteTarget._id) { setDeleteTarget(null); setDeleteError(''); } }}
+          onConfirm={() => handleDelete(deleteTarget)}
+        />
+      )}
     </div>
   );
 }
