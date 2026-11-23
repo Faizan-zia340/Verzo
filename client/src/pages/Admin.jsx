@@ -235,10 +235,12 @@ function GrantCreditsForm() {
 
 // ── User Management ────────────────────────────────────────────────
 function UserManagement() {
+  const { user: currentUser } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [editTarget, setEditTarget] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
     api.get('/admin/users')
@@ -255,6 +257,25 @@ function UserManagement() {
   const handleSave = (updated) => {
     setUsers((prev) => prev.map((u) => (u._id === updated._id ? { ...u, credits: updated.credits } : u)));
     setEditTarget(null);
+  };
+
+  const handleDelete = async (target) => {
+    const isSelf = String(target._id) === String(currentUser?._id);
+    if (target.isAdmin || isSelf) return; // backend also enforces this
+    const ok = window.confirm(
+      `Delete ${target.email}? This permanently removes the account and all of its content and credit history. This cannot be undone.`
+    );
+    if (!ok) return;
+    setDeletingId(target._id);
+    try {
+      const { data } = await api.delete(`/admin/users/${target._id}`);
+      setUsers((prev) => prev.filter((u) => u._id !== target._id));
+      toast.success(`Deleted ${data.email || target.email}`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to delete user');
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   return (
@@ -324,10 +345,24 @@ function UserManagement() {
                       {formatDistanceToNow(new Date(u.createdAt), { addSuffix: true })}
                     </td>
                     <td className="px-5 py-4">
-                      <button onClick={() => setEditTarget(u)}
-                        className="flex items-center gap-1.5 text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg font-semibold transition shadow-sm">
-                        <FiEdit2 size={11} /> Edit Credits
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => setEditTarget(u)}
+                          className="flex items-center gap-1.5 text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg font-semibold transition shadow-sm">
+                          <FiEdit2 size={11} /> Edit Credits
+                        </button>
+                        {u.isAdmin || String(u._id) === String(currentUser?._id) ? (
+                          <button disabled
+                            title={u.isAdmin ? 'Admin accounts cannot be deleted' : 'You cannot delete your own account'}
+                            className="flex items-center gap-1.5 text-xs bg-gray-100 text-gray-400 px-3 py-1.5 rounded-lg font-semibold cursor-not-allowed">
+                            <FiTrash2 size={11} /> Delete
+                          </button>
+                        ) : (
+                          <button onClick={() => handleDelete(u)} disabled={deletingId === u._id}
+                            className="flex items-center gap-1.5 text-xs bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-lg font-semibold transition shadow-sm disabled:opacity-60">
+                            <FiTrash2 size={11} /> {deletingId === u._id ? 'Deleting…' : 'Delete'}
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
