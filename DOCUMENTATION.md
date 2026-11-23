@@ -706,3 +706,30 @@ Browser → POST /api/payment/create-intent { packageId }
 → Credit transaction logged
 ```
 
+
+## Voice, Image & Cross-Language Generation
+
+- **Voice input (frontend only):** the Generator has a Speak button using the
+  browser Web Speech API. Speech is transcribed in the browser and appended
+  to the prompt; no audio is sent to any server. Recognition language follows
+  the selected output language. Unsupported browsers show a clear message.
+- **Image input:** `POST /api/generate/with-image` (multipart/form-data,
+  one `image` file, JPG/PNG/WebP, max 5 MB, 1 credit). The image is sent to
+  Gemini as inline image data for that one generation only and is never
+  stored in MongoDB. Same fields/validation as `/stream`.
+- **Cross-language accuracy:** every language has an explicit instruction
+  (`LANGUAGE_MAP`), plus a language anchor at the TOP of every prompt, so
+  output stays in the selected language even when the prompt is written in
+  another language. The system message no longer singles out Roman Urdu, and
+  leaked `Agent 1/2` role labels are stripped from saved output
+  (`stripAgentLabels` in `server/utils/qualityCheck.js`).
+- **Email categories:** `subtype` on type `email` — general, cold_outreach,
+  follow_up, newsletter, welcome, apology, job_application, thank_you,
+  meeting_request — each with its own structure. Social `subtype` captions
+  returns 3 caption options.
+- **New content types:** `cover_letter`, `resume_summary`, `linkedin`
+  (see `REQUIRED_FIELDS` in `server/utils/validators.js`).
+- **Blog image picker:** blogs fetch 6 Unsplash candidates; the first 3 are
+  embedded and all 6 are offered in the picker. `PATCH /api/history/:id/images`
+  `{ slot, optionIndex }` swaps one embedded image for another candidate
+  (no credits used).
