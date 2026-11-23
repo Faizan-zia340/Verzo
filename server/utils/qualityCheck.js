@@ -98,10 +98,21 @@ const EXPECTED_WORDS = {
   social: { min: 15, max: 80 },
 };
 
+// Internal "Agent 1 / Agent 2" role labels from the system message sometimes
+// leak into saved output. Strip any such label line before content is
+// checked, saved or returned — the labels are internal roles, not content.
+export const stripAgentLabels = (text) => {
+  const cleaned = String(text || '')
+    .split('\n')
+    .filter((line) => !/^\s*(\*\*|__)?\s*Agent\s*\d+\s*(\*\*|__)?\s*[:\-–—]?.*$/i.test(line))
+    .join('\n');
+  return cleaned.replace(/\n{3,}/g, '\n\n').trim();
+};
+
 // The generated text before the "REALITY CHECK" section (and any inline
 // [IMAGE:N] markers) is the content the user sees — that is what we check.
 const visibleBody = (text) => {
-  const clean = String(text || '').replace(/\[IMAGE:\d+\]/g, '');
+  const clean = stripAgentLabels(String(text || '').replace(/\[IMAGE:\d+\]/g, ''));
   return clean.split(/\n*-{3,}\s*\n\*\*REALITY CHECK\*\*/)[0].trim();
 };
 
@@ -286,9 +297,9 @@ export const retryGeneration = async (
   { prompt, firstText, firstReport, type, input = {}, length = 'medium', purpose = '' }
 ) => {
   const retryPrompt = `${prompt}\n\nIMPORTANT — fix these problems in your previous draft and regenerate the full content, corrected. Do not repeat them:\nFix these problems: ${firstReport.issues.join('; ')}`;
-  const secondText = await generateFn(retryPrompt);
+  const secondText = stripAgentLabels(await generateFn(retryPrompt));
   const secondReport = checkQuality(secondText, { type, purpose, input, length });
-  const bestText = secondReport.issues.length <= firstReport.issues.length ? secondText : firstText;
+  const bestText = secondReport.issues.length <= firstReport.issues.length ? secondText : stripAgentLabels(firstText);
   const { text, qualityReport } = finalizeText(bestText, { type, purpose, input, length });
   return {
     text,
@@ -307,7 +318,7 @@ export const generateWithQualityCheck = async (
   generateFn,
   { prompt, type, input = {}, length = 'medium', purpose = '' }
 ) => {
-  const firstText = await generateFn(prompt);
+  const firstText = stripAgentLabels(await generateFn(prompt));
   const firstReport = checkQuality(firstText, { type, purpose, input, length });
   if (firstReport.passed) {
     return { text: firstText, qualityReport: { passed: true, issues: [], retried: false } };
