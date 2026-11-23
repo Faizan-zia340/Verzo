@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import { CONTENT_TYPES, TONES, getPurpose, listPurposes, getPurposeFields } from '../config/contentTypes.js';
 import { missingRequiredFields, generateSchema } from '../utils/validators.js';
 import { buildPrompt, buildEditorPrompt } from '../utils/prompts.js';
-import { checkQuality } from '../utils/qualityCheck.js';
+import { checkQuality, sanitizePlaceholders, finalizeText, generateWithQualityCheck } from '../utils/qualityCheck.js';
 import { runEditorPass, runTwoPassDraft, wordCount } from '../utils/twoPass.js';
 
 const longText = (n) => Array.from({ length: n }, (_, i) => `Sentence number ${i} with some real content here.`).join(' ');
@@ -44,6 +44,10 @@ test('contentTypes: getPurpose returns null for unknown purpose', () => {
   assert.equal(getPurpose('nope', 'cold-outreach'), null);
   assert.equal(getPurpose('email', 'cold-outreach').label, 'Cold outreach');
   assert.deepEqual(getPurposeFields('email', 'thank-you').map((f) => f.key), ['senderName', 'recipient', 'topic']);
+});
+
+test('contentTypes: cold-outreach structure falls back to "Hi there" without a name', () => {
+  assert.match(getPurpose('email', 'cold-outreach').structure, /Hi there/);
 });
 
 // ── Validators ──────────────────────────────────────────────────
@@ -122,6 +126,23 @@ test('prompts: buildEditorPrompt preserves facts and forbids placeholders', () =
   assert.match(editor, /Announcement/);
 });
 
+test('prompts: buildPrompt forbids placeholders and falls back to "Hi there"', () => {
+  const prompt = buildPrompt({
+    type: 'email', prompt: 'Reach out to warehouse managers', purpose: 'cold-outreach',
+    details: { company: 'Acme', senderName: 'Ayesha Khan' },
+  });
+  assert.match(prompt, /NEVER emit a placeholder/);
+  assert.match(prompt, /Hi there/);
+  assert.match(prompt, /never invent numbers/i);
+});
+
+test('prompts: buildEditorPrompt tells the editor to remove placeholders', () => {
+  const editor = buildEditorPrompt('Hi [Warehouse Manager Name], we can help.', { type: 'email', purpose: 'cold-outreach' });
+  assert.match(editor, /Remove any bracketed placeholder/);
+  assert.match(editor, /Hi there/);
+  assert.match(editor, /Do not add any new number/);
+});
+
 // ── Quality checks ──────────────────────────────────────────────
 const cleanEmail = (overrides = {}) => {
   const base = `Subject: Driver role in Lahore
@@ -179,6 +200,96 @@ test('qualityCheck: varied sentence openings are not flagged', () => {
   assert.ok(!result.issues.some((i) => i.includes('Repetitive opening')), result.issues.join(' | '));
 });
 
+// ── Placeholder safety net ──────────────────────────────────────
+test('sanitize: bracketed greeting becomes "Hi there,"', () => {
+  const out = sanitizePlaceholders('Subject: Demo\nHi [Warehouse Manager Name],\nWe can help.');
+  assert.match(out, /Hi there,/);
+  assert.ok(!out.includes('['), out);
+});
+
+test('sanitize: mid-text brackets are removed, markdown links kept', () => {
+  const out = sanitizePlaceholders('We help [Company] cut costs. See [our demo](https://acme.com/demo) and {{name}} today.');
+  assert.ok(!out.includes('[Company]'), out);
+  assert.ok(!out.includes('{{name}}'), out);
+  assert.ok(out.includes('[our demo](https://acme.com/demo)'), out);
+});
+
+test('sanitize: clean text is unchanged', () => {
+  const clean = 'Hi there,\nWe help warehouses cut errors. Best regards,\nAyesha';
+  assert.equal(sanitizePlaceholders(clean), clean);
+});
+
+test('qualityCheck: invented percentage is flagged, supplied percentage is not', () => {
+  const input = {
+    prompt: 'Write a cold outreach email about our warehouse software.',
+    company: 'Acme', senderName: 'Ayesha Khan', applyLink: 'https://acme.com/demo',
+  };
+  const bad = checkQuality('Subject: Cut errors\nHi there,\nAcme software helps you cut picking errors by up to 25% with no new hardware. Try the demo today and see real results for your team now.\nBest regards,\nAyesha Khan\nhttps://acme.com/demo', {
+    type: 'email', purpose: 'cold-outreach', input, length: 'medium',
+  });
+  assert.ok(bad.issues.some((i) => i.includes('25%')), bad.issues.join(' | '));
+
+  const okInput = { ...input, prompt: 'Write a cold outreach email about our warehouse software that cuts errors by 25%.' };
+  const ok = checkQuality('Subject: Cut errors by 25%\nHi there,\nAcme software helps you cut picking errors by up to 25% with no new hardware. Try the demo today and see real results for your team now.\nBest regards,\nAyesha Khan\nhttps://acme.com/demo', {
+    type: 'email', purpose: 'cold-outreach', input: okInput, length: 'medium',
+  });
+  assert.ok(!ok.issues.some((i) => i.includes('25%')), ok.issues.join(' | '));
+});
+
+test('qualityCheck: invented money amount is flagged', () => {
+  const result = checkQuality('Subject: Launch offer\nHi there,\nOur plan is now just $99 a month for early teams. Sign up today and start saving right away with full access included.\nBest regards,\nAyesha Khan', {
+    type: 'email', purpose: 'cold-outreach',
+    input: { prompt: 'Write a cold outreach email about our plan.', senderName: 'Ayesha Khan' },
+    length: 'medium',
+  });
+  assert.ok(result.issues.some((i) => i.includes('$99')), result.issues.join(' | '));
+});
+
+test('qualityCheck: cold-outreach length uses the purpose range, not Medium', () => {
+  // About 100 words is inside the cold-outreach range (80–150) but far
+  // below Medium (200–300) — it must not be flagged for length.
+  const text = `Subject: Cut picking errors without new hardware
+Hi there,
+Our warehouse software helps your team pick faster with fewer mistakes every single day. It plugs into the tools you already use, so nobody has to learn a new system from scratch. Managers see every order clearly, and pickers follow one simple screen from shelf to box. The rollout takes a week, training takes an hour, and support answers within minutes when you need help. Teams usually notice calmer shifts within the first few days of going live. If that sounds useful, reply and we will book a short demo at a time that suits you.
+Best regards,
+Ayesha Khan
+https://acme.com/demo`;
+  const result = checkQuality(text, {
+    type: 'email', purpose: 'cold-outreach',
+    input: { senderName: 'Ayesha Khan', applyLink: 'https://acme.com/demo' },
+    length: 'medium',
+  });
+  assert.equal(result.passed, true, result.issues.join(' | '));
+});
+
+test('generateWithQualityCheck: placeholder draft is sanitized without a retry', async () => {
+  let calls = 0;
+  const draft = 'Cutting warehouse errors starts with the pick list. [Manager Name] should check the list before the shift begins. A clear list means fewer wrong items in every box. Teams that scan each item catch mistakes early. The scanner beeps when the wrong barcode appears. Workers then fix the error in seconds. Managers review the error log at the end of each day. Patterns in the log show which shelves cause trouble. Fixing those shelves first saves the most time. A weekly review keeps the whole system honest and fast.';
+  const generateFn = async () => { calls += 1; return draft; };
+  const { text, qualityReport } = await generateWithQualityCheck(generateFn, {
+    prompt: 'x', type: 'blog', input: {}, length: 'short',
+  });
+  assert.ok(!text.includes('['), text);
+  assert.ok(!text.includes('Manager Name'), text);
+  assert.equal(qualityReport.passed, true, qualityReport.issues.join(' | '));
+  assert.equal(qualityReport.sanitized, true);
+  assert.equal(calls, 1, 'sanitize must not spend a retry call');
+});
+
+test('generateWithQualityCheck: invented percentage triggers a retry and the clean draft wins', async () => {
+  const calls = [];
+  const badDraft = 'Subject: Cut errors\nHi there,\nAcme software helps you cut picking errors by up to 25% with no new hardware. Try the demo today and see real results.\nBest regards,\nAyesha Khan\nhttps://acme.com/demo';
+  const goodDraft = 'Subject: Cut errors\nHi there,\nAcme software helps your team cut picking errors with no new hardware. Try the demo today and see real results for your warehouse.\nBest regards,\nAyesha Khan\nhttps://acme.com/demo';
+  const generateFn = async (prompt) => { calls.push(prompt); return calls.length === 1 ? badDraft : goodDraft; };
+  const { text, qualityReport } = await generateWithQualityCheck(generateFn, {
+    prompt: 'x', type: 'email', purpose: 'cold-outreach',
+    input: { prompt: 'Write a cold outreach email.', senderName: 'Ayesha Khan', applyLink: 'https://acme.com/demo' },
+    length: 'medium',
+  });
+  assert.ok(!text.includes('25%'), text);
+  assert.equal(qualityReport.retried, true);
+});
+
 // ── Two-pass ────────────────────────────────────────────────────
 test('twoPass: short drafts skip pass 2', async () => {
   let calls = 0;
@@ -209,6 +320,16 @@ test('twoPass: editor failure keeps the original draft', async () => {
   };
   const out = await runEditorPass(generateFn, draft, { type: 'blog' });
   assert.equal(out, draft);
+});
+
+test('twoPass: editor output with a placeholder is sanitized', async () => {
+  const draft = longText(90);
+  const generateFn = async (prompt) => {
+    if (prompt.includes('careful human editor')) return 'Edited draft for [Manager Name] here.';
+    return draft;
+  };
+  const out = await runEditorPass(generateFn, draft, { type: 'blog' });
+  assert.ok(!out.includes('['), out);
 });
 
 test('twoPass: wordCount counts words', () => {
