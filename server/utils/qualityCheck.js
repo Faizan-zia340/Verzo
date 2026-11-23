@@ -1,6 +1,8 @@
 // Post-generation quality checker for AI-generated content.
 // Pure functions — no I/O, no AI calls — so they are easy to unit test.
 
+import { getPurpose } from '../config/contentTypes.js';
+
 export const BANNED_PHRASES = [
   'passionate',
   'push boundaries',
@@ -45,6 +47,47 @@ const PLACEHOLDER_PATTERNS = [
   { pattern: /\bLorem ipsum\b/gi, label: '"Lorem ipsum"' },
   { pattern: /\binsert here\b/gi, label: '"insert here"' },
 ];
+
+/**
+ * Safety net: strip every bracketed placeholder from generated text.
+ * A bracketed name in a greeting ("Hi [Warehouse Manager Name],") becomes
+ * "Hi there,"; any other bracketed slot is deleted. Markdown links
+ * ([text](url)) and [IMAGE:N] markers are not placeholders and are kept.
+ * Idempotent — running it on clean text changes nothing.
+ */
+export const sanitizePlaceholders = (text) => {
+  let out = String(text || '');
+  // Greeting with a bracketed name -> generic greeting.
+  out = out.replace(/^\s*(?:hi|hello|hey|dear)\s+\[[^\]]+\]\s*,?/gim, 'Hi there,');
+  // Remaining bracketed slots -> deleted (except markdown links and
+  // [IMAGE:N] markers, which the replacer keeps).
+  out = out.replace(/\[[^\]]+\]/g, (match, offset, str) => {
+    if (/^\[IMAGE:\d+\]$/.test(match)) return match;
+    if (str[offset + match.length] === '(') return match; // [text](url)
+    return '';
+  });
+  out = out.replace(/\{\{[^}]*\}\}/g, '');
+  out = out.replace(/<[A-Z][A-Z _]{2,}>/g, '');
+  // Tidy up whitespace left behind by the deletions.
+  out = out.replace(/[ \t]+/g, ' ');
+  out = out.replace(/[ \t]+\n/g, '\n');
+  out = out.replace(/\n{3,}/g, '\n\n');
+  return out.trim();
+};
+
+/**
+ * Sanitize then re-check. Returns { text, qualityReport } where the report
+ * describes the sanitized text and carries `sanitized: true` when anything
+ * was actually removed.
+ */
+export const finalizeText = (text, opts = {}) => {
+  const sanitized = sanitizePlaceholders(text);
+  const report = checkQuality(sanitized, opts);
+  return {
+    text: sanitized,
+    qualityReport: { passed: report.passed, issues: report.issues, retried: false, sanitized: sanitized !== String(text || '') },
+  };
+};
 
 // Expected word counts per requested length. `social` is a short post,
 // so it has its own range instead of the short/medium/long blog ranges.
@@ -131,9 +174,17 @@ export const checkQuality = (text, { type, purpose = '', input = {}, length = 'm
     }
   }
 
-  // 5. Length — flag if more than 30% off the requested range
+  // 5. Length — flag if more than 30% off the requested range. A purpose's
+  // own length range wins over short/medium/long: a cold-outreach email is
+  // 80–150 words by design, so it must not be judged against Medium's
+  // 200–300 words (that mismatch flagged a correct 89-word email).
   const words = body.split(/\s+/).filter(Boolean).length;
-  const expected = type === 'social' ? EXPECTED_WORDS.social : EXPECTED_WORDS[length] || EXPECTED_WORDS.medium;
+  const purposeConfig = purpose ? getPurpose(type, purpose) : null;
+  const expected = purposeConfig
+    ? purposeConfig.lengthRange
+    : type === 'social'
+      ? EXPECTED_WORDS.social
+      : EXPECTED_WORDS[length] || EXPECTED_WORDS.medium;
   const low = Math.floor(expected.min * 0.7);
   const high = Math.ceil(expected.max * 1.3);
   if (words < low || words > high) {
@@ -189,6 +240,36 @@ export const checkQuality = (text, { type, purpose = '', input = {}, length = 'm
     }
   }
 
+  // 8. Invented figures — a percentage or money amount in the output that
+  // the user never supplied (e.g. an email inventing "up to 25%"). Only %
+  // and currency are checked: plain counts and durations ("15-minute call")
+  // are generic phrasing and would false-positive. Scoped to email/ad/
+  // product, where a wrong figure is a factual claim (a price, a discount,
+  // a result). Numbers the user supplied — in the prompt or the details —
+  // are allowed.
+  if (['email', 'ad', 'product'].includes(type)) {
+    const suppliedText = Object.values(input || {})
+      .filter((v) => typeof v === 'string')
+      .join(' ');
+    const normNum = (s) => String(Number(String(s).replace(/,/g, '')));
+    const suppliedPercents = new Set(
+      [...suppliedText.matchAll(/(\d[\d,]*(?:\.\d+)?)\s*%/g)].map((m) => normNum(m[1]))
+    );
+    const suppliedMoney = new Set(
+      [...suppliedText.matchAll(/(?:\$|Rs\.?|£|€)\s*(\d[\d,]*(?:\.\d+)?)/g)].map((m) => normNum(m[1]))
+    );
+    const flaggedFigures = new Set();
+    for (const m of body.matchAll(/(\d[\d,]*(?:\.\d+)?)\s*%/g)) {
+      if (!suppliedPercents.has(normNum(m[1]))) flaggedFigures.add(`percentage "${m[0].trim()}"`);
+    }
+    for (const m of body.matchAll(/(?:\$|Rs\.?|£|€)\s*(\d[\d,]*(?:\.\d+)?)/g)) {
+      if (!suppliedMoney.has(normNum(m[1]))) flaggedFigures.add(`amount "${m[0].trim()}"`);
+    }
+    for (const figure of flaggedFigures) {
+      issues.push(`Contains a ${figure} that was not provided in the input. Remove it or use only figures from the input.`);
+    }
+  }
+
   return { passed: issues.length === 0, issues };
 };
 
@@ -196,6 +277,9 @@ export const checkQuality = (text, { type, purpose = '', input = {}, length = 'm
  * Regenerate ONCE with the quality issues appended as feedback.
  * `generateFn` is an async function (prompt) => raw generated text.
  * Returns the best attempt (fewest issues) plus a qualityReport.
+ * The returned text is always passed through sanitizePlaceholders first,
+ * so a bracketed placeholder can never survive into the saved output —
+ * even when the retry could not remove it.
  */
 export const retryGeneration = async (
   generateFn,
@@ -204,15 +288,11 @@ export const retryGeneration = async (
   const retryPrompt = `${prompt}\n\nIMPORTANT — fix these problems in your previous draft and regenerate the full content, corrected. Do not repeat them:\nFix these problems: ${firstReport.issues.join('; ')}`;
   const secondText = await generateFn(retryPrompt);
   const secondReport = checkQuality(secondText, { type, purpose, input, length });
-  if (secondReport.issues.length <= firstReport.issues.length) {
-    return {
-      text: secondText,
-      qualityReport: { passed: secondReport.passed, issues: secondReport.issues, retried: true },
-    };
-  }
+  const bestText = secondReport.issues.length <= firstReport.issues.length ? secondText : firstText;
+  const { text, qualityReport } = finalizeText(bestText, { type, purpose, input, length });
   return {
-    text: firstText,
-    qualityReport: { passed: firstReport.passed, issues: firstReport.issues, retried: true },
+    text,
+    qualityReport: { ...qualityReport, retried: true },
   };
 };
 
@@ -220,6 +300,8 @@ export const retryGeneration = async (
  * Generate text, quality-check it, and retry once if it fails.
  * Returns { text, qualityReport: { passed, issues, retried } }.
  * The caller saves / returns only `text` — never the failed first draft.
+ * If the draft only failed on placeholders, they are stripped and the
+ * clean text ships without spending a retry AI call.
  */
 export const generateWithQualityCheck = async (
   generateFn,
@@ -229,6 +311,10 @@ export const generateWithQualityCheck = async (
   const firstReport = checkQuality(firstText, { type, purpose, input, length });
   if (firstReport.passed) {
     return { text: firstText, qualityReport: { passed: true, issues: [], retried: false } };
+  }
+  const cleaned = finalizeText(firstText, { type, purpose, input, length });
+  if (cleaned.qualityReport.passed) {
+    return { text: cleaned.text, qualityReport: { ...cleaned.qualityReport, retried: false } };
   }
   return retryGeneration(generateFn, { prompt, firstText, firstReport, type, input, length, purpose });
 };

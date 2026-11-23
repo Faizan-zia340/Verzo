@@ -1,6 +1,6 @@
 import { generateText, generateSEO, tuneText, getModel, withSystem } from '../utils/gemini.js';
 import { buildPrompt } from '../utils/prompts.js';
-import { checkQuality, generateWithQualityCheck, retryGeneration } from '../utils/qualityCheck.js';
+import { checkQuality, generateWithQualityCheck, retryGeneration, sanitizePlaceholders } from '../utils/qualityCheck.js';
 import { runEditorPass, runTwoPassDraft } from '../utils/twoPass.js';
 import { fetchImages } from '../utils/unsplash.js';
 import { fetchAndAnalyzeImages, embedImagesInContent } from '../utils/imageService.js';
@@ -62,13 +62,15 @@ const generateContentData = async ({ type, prompt, tone = 'professional', length
   // Two-pass + quality-checked generation: pass 1 drafts, pass 2 edits,
   // then checkQuality runs; a failed check retries once. Only the final
   // text is used, and only 1 credit is deducted by the caller.
+  // The prompt is included in `input` so the invented-figure check can
+  // tell numbers the user supplied apart from numbers the model made up.
   const { text: rawOutput, qualityReport } = await generateWithQualityCheck(
     runTwoPassDraft(generateText, { type, purpose }),
     {
       prompt: buildPrompt({ type, prompt, tone, length, language, format, details, purpose, readingLevel, writingSample }),
       type,
       purpose,
-      input: details,
+      input: { ...details, prompt },
       length,
     }
   );
@@ -212,6 +214,15 @@ export const streamGenerate = asyncHandler(async (req, res) => {
       }
     } else {
       qualityReport = { passed: true, issues: [], retried: false };
+    }
+
+    // Final safety net: the saved output must never contain a bracketed
+    // placeholder, even if the editor pass and the retry could not remove
+    // one. Re-check after sanitizing so the report matches the saved text.
+    const sanitizedContent = sanitizePlaceholders(cleanContent);
+    if (sanitizedContent !== cleanContent) {
+      cleanContent = sanitizedContent;
+      qualityReport = checkQuality(cleanContent, { type, purpose, input: req.body, length });
     }
 
     // Post-generation: SEO + images + save

@@ -5,6 +5,7 @@
 // generation, however many passes or retries ran.
 
 import { buildEditorPrompt } from './prompts.js';
+import { sanitizePlaceholders } from './qualityCheck.js';
 import logger from './logger.js';
 
 // Default true; set TWO_PASS_ENABLED=false to disable the editor pass.
@@ -16,13 +17,14 @@ export const wordCount = (text) => String(text || '').split(/\s+/).filter(Boolea
 /**
  * Pass 2 (editor pass): polish a draft. Skipped when two-pass is disabled
  * or the draft is under 80 words. On any editor failure the original
- * draft is kept unchanged.
+ * draft is kept unchanged. The edited text is sanitized, so a bracketed
+ * placeholder can never survive the editor pass into the saved output.
  */
 export const runEditorPass = async (generateFn, text, { type, purpose = '' } = {}) => {
   if (!TWO_PASS_ENABLED || wordCount(text) < TWO_PASS_MIN_WORDS) return text;
   try {
     const edited = await generateFn(buildEditorPrompt(text, { type, purpose }));
-    return edited && edited.trim() ? edited.trim() : text;
+    return edited && edited.trim() ? sanitizePlaceholders(edited.trim()) : text;
   } catch (err) {
     logger.error({ err: err.message }, 'Editor pass failed; keeping first draft');
     return text;
