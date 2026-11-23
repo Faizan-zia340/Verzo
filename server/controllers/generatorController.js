@@ -11,10 +11,13 @@ import { io } from '../server.js';
 import logger from '../utils/logger.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { refundCredit } from '../utils/credits.js';
+import { mapProviderError, verzoUnavailableMessage } from '../utils/quotaMessages.js';
 
 const checkKey = () => {
   if (!process.env.GEMINI_API_KEY) {
-    const err = new Error('GEMINI_API_KEY is not configured on the server.');
+    // Real cause stays in the log; users only ever see the Verzo message.
+    logger.error('AI API key is not configured on the server.');
+    const err = new Error(verzoUnavailableMessage());
     err.statusCode = 503;
     throw err;
   }
@@ -138,13 +141,13 @@ export const streamGenerate = asyncHandler(async (req, res) => {
       }
     } catch (err) {
       const msg = err.message || '';
-      let userMsg = 'AI generation failed. Please try again.';
-      if (msg.includes('API_KEY_INVALID') || msg.includes('API key not valid')) userMsg = 'Invalid Gemini API key. Please check your GEMINI_API_KEY secret.';
-      else if (msg.includes('RESOURCE_EXHAUSTED') || msg.includes('quota') || msg.includes('429')) userMsg = 'Gemini free tier quota reached. Please wait a minute and try again.';
-      else if (msg.includes('overloaded') || msg.includes('503')) userMsg = 'Gemini is temporarily overloaded. Please try again shortly.';
-      logger.error({ msg: msg.slice(0, 200) }, 'Gemini stream error');
+      // Provider detail stays in the log; the SSE error is Verzo-branded.
+      // The credit was reserved by the middleware, so a stream failure
+      // must give it back (refundOnce guards double refunds).
+      const mapped = mapProviderError(err);
+      logger.error({ msg: msg.slice(0, 200) }, 'AI stream error');
       await refundOnce();
-      sendEvent({ error: userMsg });
+      sendEvent({ error: mapped.message, retryAfter: mapped.retryAfter });
       res.end();
       return;
     }
@@ -234,7 +237,11 @@ export const streamGenerate = asyncHandler(async (req, res) => {
   } catch (err) {
     await refundOnce();
     if (!res.headersSent) throw err;
-    res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
+    // Headers already sent (SSE in progress): never leak a raw provider or
+    // database message to the client — send a Verzo-branded error instead.
+    const mapped = mapProviderError(err);
+    logger.error({ err: err.message }, 'Stream failed after headers sent');
+    res.write(`data: ${JSON.stringify({ error: mapped.message, retryAfter: mapped.retryAfter })}\n\n`);
     res.end();
   }
 });

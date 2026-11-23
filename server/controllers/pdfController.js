@@ -1,5 +1,5 @@
 import { PDFParse } from 'pdf-parse';
-import { getModel, withSystem } from '../utils/gemini.js';
+import { getModel, withSystem, geminiError } from '../utils/gemini.js';
 import { buildPDFPrompt } from '../utils/prompts.js';
 import logger from '../utils/logger.js';
 import asyncHandler from '../utils/asyncHandler.js';
@@ -53,24 +53,31 @@ export const analyzePDF = asyncHandler(async (req, res) => {
   const chunks = chunkText(rawText);
   const model = getModel();
 
+  // Any provider failure (quota, overload, bad key) is mapped to a
+  // Verzo-branded error by geminiError — the raw message never reaches
+  // the user.
   let analysisText = '';
-  if (chunks.length === 1) {
-    const result = await model.generateContent(withSystem(buildPDFPrompt(chunks[0])));
-    analysisText = result.response.text();
-  } else {
-    const summaries = [];
-    for (const chunk of chunks.slice(0, 4)) {
-      const r = await model.generateContent(
-        withSystem(`Summarize this section of a document into key bullet points and main ideas:\n\n${chunk}`)
-      );
-      summaries.push(r.response.text());
+  try {
+    if (chunks.length === 1) {
+      const result = await model.generateContent(withSystem(buildPDFPrompt(chunks[0])));
+      analysisText = result.response.text();
+    } else {
+      const summaries = [];
+      for (const chunk of chunks.slice(0, 4)) {
+        const r = await model.generateContent(
+          withSystem(`Summarize this section of a document into key bullet points and main ideas:\n\n${chunk}`)
+        );
+        summaries.push(r.response.text());
+      }
+      const combined = summaries.join('\n\n');
+      const result = await model.generateContent(withSystem(buildPDFPrompt(combined)));
+      analysisText = result.response.text();
     }
-    const combined = summaries.join('\n\n');
-    const result = await model.generateContent(withSystem(buildPDFPrompt(combined)));
-    analysisText = result.response.text();
+  } catch (err) {
+    geminiError(err);
   }
 
-  logger.debug(`PDF Gemini response (first 300 chars): ${analysisText.slice(0, 300)}`);
+  logger.debug(`PDF analysis response (first 300 chars): ${analysisText.slice(0, 300)}`);
 
   res.status(200).json({
     pages: numPages,

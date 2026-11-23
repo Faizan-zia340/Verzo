@@ -14,12 +14,12 @@ const fade = (delay = 0) => ({
 });
 
 const FEATURES = [
-  { icon: FiZap, title: 'Streaming AI Generation', desc: 'Watch your content appear word-by-word in real time — with dual-agent quality scoring.', color: 'text-indigo-600', bg: 'bg-indigo-50', border: 'border-indigo-100' },
+  { icon: FiZap, title: 'Streaming AI Generation', desc: 'Watch your content appear word-by-word in real time — powered by Verzo AI with dual-agent quality scoring.', color: 'text-indigo-600', bg: 'bg-indigo-50', border: 'border-indigo-100' },
   { icon: FiGlobe, title: '23 Languages & Dialects', desc: 'English, Karachi/Lahore Urdu, Gulf Arabic, French, German, Hindi, Chinese, Japanese and many more.', color: 'text-violet-600', bg: 'bg-violet-50', border: 'border-violet-100' },
   { icon: FiEdit3, title: 'One-Click Tuning', desc: 'Shorten, boost engagement, add professionalism or reduce hype — refine any output without spending credits.', color: 'text-sky-600', bg: 'bg-sky-50', border: 'border-sky-100' },
   { icon: FiTrendingUp, title: 'SEO Package Built-in', desc: 'Every generation includes a meta title, meta description, and 5 targeted keywords — automatically.', color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-100' },
   { icon: FiFileText, title: 'PDF Deep Analyzer', desc: 'Upload any PDF — get structured study notes, chapter summaries, and a 10-question test bank instantly.', color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-100' },
-  { icon: FiImage, title: 'Inline Blog Images', desc: 'Real Unsplash photos downloaded, analyzed by AI vision, and embedded at the perfect spots in your blog.', color: 'text-rose-600', bg: 'bg-rose-50', border: 'border-rose-100' },
+  { icon: FiImage, title: 'Inline Blog Images', desc: 'Real Unsplash photos downloaded, analyzed by Verzo Vision, and embedded at the perfect spots in your blog.', color: 'text-rose-600', bg: 'bg-rose-50', border: 'border-rose-100' },
   { icon: FiDownload, title: 'One-Click Export', desc: 'Download your content as PDF, DOCX or TXT — or copy it to the clipboard — with one click.', color: 'text-teal-600', bg: 'bg-teal-50', border: 'border-teal-100' },
   { icon: FiShare2, title: 'Social Share', desc: 'Share directly to LinkedIn or Twitter/X without copying and pasting anything. One button.', color: 'text-pink-600', bg: 'bg-pink-50', border: 'border-pink-100' },
   { icon: FiStar, title: 'Reality Check Scoring', desc: 'A second AI reviewer scores every output out of 10 on human-ness, punchiness and clichés — so you see what to trust before you publish.', color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-100' },
@@ -55,7 +55,7 @@ export default function Home() {
           <motion.div {...fade(0)}>
             <span className="inline-flex items-center gap-2 bg-white border border-indigo-200 text-indigo-700 text-xs font-semibold px-4 py-1.5 rounded-full mb-8 shadow-sm">
               <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-              Dual-agent scoring
+              Powered by Verzo AI · Dual-agent scoring
             </span>
           </motion.div>
 

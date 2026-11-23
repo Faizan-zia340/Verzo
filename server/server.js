@@ -87,13 +87,18 @@ const limiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   validate: { xForwardedForHeader: false },
+  // Shared per-IP safety net — user-facing message is Verzo-branded.
+  handler: (req, res) => {
+    res.set('Retry-After', '900');
+    res.status(429).json({ message: 'Verzo is busy right now — please try again in a few minutes.', retryAfter: 900 });
+  },
 });
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { message: 'Too many authentication attempts. Please try again later.' },
+  message: { message: 'Too many sign-in attempts on Verzo. Please try again in a few minutes.' },
   validate: { xForwardedForHeader: false },
 });
 app.use('/api/', limiter);
