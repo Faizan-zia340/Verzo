@@ -425,6 +425,20 @@ Stores reference knowledge used to augment AI prompts before generation.
 | GET | `/profile` | JWT | Get user profile |
 | PUT | `/profile` | JWT | Update name or email |
 
+### Admin — `/api/admin`
+All routes require JWT + admin (`protect`, `isAdmin`).
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| GET | `/stats` | Admin | Platform stats (users, credits, generations, contexts) |
+| GET | `/activity` | Admin | Recent generation activity |
+| GET | `/users` | Admin | List all users |
+| PUT | `/users/:id/credits` | Admin | Adjust a user's credits |
+| DELETE | `/users/:id` | Admin | Delete a user and their Content + Credit records |
+| POST | `/grant-credits` | Admin | Grant credits by email |
+| GET/POST/DELETE | `/contexts` | Admin | Manage RAG context documents |
+
+Delete safeguards: an admin cannot delete their own account (403) and no admin account can be deleted (403); a missing user returns 404. The admin panel (User Management) shows a Delete button next to Edit Credits for regular users only — it is disabled on admin rows and on the signed-in admin's own row, asks for confirmation with the user's email, and removes the user from the list on success.
+
 ### Context — `/api/context`
 | Method | Path | Auth | Description |
 |---|---|---|---|

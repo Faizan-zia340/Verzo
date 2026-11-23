@@ -11,3 +11,7 @@ Before pushing, make sure .env, .env.local, and any file containing real secrets
 ## Production deployment
 
 Frontend on Vercel, backend (Express + MongoDB) on Render at `https://verzo-backend.onrender.com`. The frontend calls the backend directly via `VITE_API_URL`; `vercel.json` also proxies `/api/*` to Render before the SPA catch-all rewrite, so API calls work on Vercel even if `VITE_API_URL` is not baked into a build (without that proxy rule, `/api/*` was rewritten to `index.html` and login POSTs failed with 405).
+
+## Admin panel
+
+Admins (`/admin` → User Management) can delete a regular user with the Delete button next to Edit Credits; the user's content and credit records are removed too. Safeguards: an admin cannot delete their own account, and no admin account can be deleted. See `DOCUMENTATION.md` (Admin — `/api/admin`).
