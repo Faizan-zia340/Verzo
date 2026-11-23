@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import mongoose from 'mongoose';
 import protect from '../middleware/auth.js';
 import isAdmin from '../middleware/isAdmin.js';
 import User from '../models/User.js';
@@ -6,6 +7,7 @@ import Credit from '../models/Credit.js';
 import Context from '../models/Context.js';
 import { generateEmbedding } from '../utils/embeddings.js';
 import Content from '../models/Content.js';
+import { getDeleteBlockReason } from '../utils/adminDelete.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
 const router = Router();
@@ -58,6 +60,24 @@ router.put('/users/:id/credits', asyncHandler(async (req, res) => {
     description: `Admin adjustment: ${credits > 0 ? '+' : ''}${credits} credits`,
   });
   res.status(200).json({ message: 'Credits updated', user });
+}));
+
+// Delete a user (and their content + credit records, so no orphans remain).
+// Safeguards (see utils/adminDelete.js): an admin cannot delete their own
+// account, and no admin account can be deleted. Returns the deleted email.
+router.delete('/users/:id', asyncHandler(async (req, res) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+  const target = await User.findById(req.params.id).select('email isAdmin');
+  const block = getDeleteBlockReason({ requesterId: req.user?._id, target });
+  if (block) return res.status(block.status).json({ message: block.message });
+  await Promise.all([
+    Content.deleteMany({ user: target._id }),
+    Credit.deleteMany({ user: target._id }),
+  ]);
+  await User.findByIdAndDelete(target._id);
+  res.status(200).json({ message: 'User deleted', email: target.email });
 }));
 
 // Grant credits by email
