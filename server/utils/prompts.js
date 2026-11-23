@@ -201,8 +201,8 @@ export const buildPrompt = ({ type, prompt, tone = 'professional', length = 'med
   const langName = LANGUAGE_NAMES[language] || LANGUAGE_NAMES['english_us'];
   const langAnchor = `OUTPUT LANGUAGE — CRITICAL: Write the ENTIRE response in ${langName}. Do not write in any other language, do not mix languages, and do not translate the prompt itself. If the user's prompt is written in a different language than ${langName}, understand it, but still answer fully in ${langName}.\n\n`;
 
-  const emailStructure = EMAIL_SUBTYPES[subtype] || EMAIL_SUBTYPES.general;
-  const socialExtra = SOCIAL_SUBTYPES[subtype] || '';
+  const emailStructure = EMAIL_SUBTYPES[subtype || details.subtype] || EMAIL_SUBTYPES.general;
+  const socialExtra = SOCIAL_SUBTYPES[subtype || details.subtype] || '';
 
   const templates = {
     blog: `Write a ${tone} blog post about: "${prompt}".

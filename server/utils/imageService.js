@@ -91,14 +91,14 @@ export const fetchAndAnalyzeImages = async (keywords = []) => {
 
   try {
     const query = keywords.slice(0, 2).join(' ');
-    const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=3&orientation=landscape`;
+    const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=6&orientation=landscape`;
     const res = await fetch(url, {
       headers: { Authorization: `Client-ID ${process.env.UNSPLASH_ACCESS_KEY}` },
     });
     if (!res.ok) return [];
 
     const data = await res.json();
-    const photos = (data.results || []).slice(0, 3);
+    const photos = (data.results || []).slice(0, 6);
     if (!photos.length) return [];
 
     // Download + analyze all images in parallel

@@ -1,7 +1,9 @@
-import { generateText, generateSEO, tuneText, getModel, withSystem } from '../utils/gemini.js';
+import { generateText, generateSEO, tuneText, getModel, withSystem, generateWithImage } from '../utils/gemini.js';
 import { buildPrompt } from '../utils/prompts.js';
-import { checkQuality, generateWithQualityCheck, retryGeneration, sanitizePlaceholders } from '../utils/qualityCheck.js';
+import { checkQuality, generateWithQualityCheck, retryGeneration, sanitizePlaceholders, stripAgentLabels } from '../utils/qualityCheck.js';
 import { runEditorPass, runTwoPassDraft } from '../utils/twoPass.js';
+import { validateImageFile } from '../utils/imageInput.js';
+import { ALLOWED_SUBTYPES, generateSchema } from '../utils/validators.js';
 import { fetchImages } from '../utils/unsplash.js';
 import { fetchAndAnalyzeImages, embedImagesInContent } from '../utils/imageService.js';
 import Content from '../models/Content.js';
@@ -22,6 +24,13 @@ const checkKey = () => {
     err.statusCode = 503;
     throw err;
   }
+};
+
+// Unknown subtypes are treated as the default for that type so old clients
+// (which send no subtype) keep working.
+const normalizeSubtype = (type, subtype) => {
+  const allowed = ALLOWED_SUBTYPES[type] || [];
+  return allowed.includes(subtype) ? subtype : '';
 };
 
 /**
@@ -56,7 +65,7 @@ const parseRealityCheck = (rawOutput) => {
   };
 };
 
-const generateContentData = async ({ type, prompt, tone = 'professional', length = 'medium', language = 'english_us', format = 'paragraphs', details = {}, purpose = '', readingLevel = 'standard', writingSample = '' }) => {
+const generateContentData = async ({ type, prompt, tone = 'professional', length = 'medium', language = 'english_us', format = 'paragraphs', details = {}, purpose = '', readingLevel = 'standard', writingSample = '', subtype = '' }) => {
   checkKey();
 
   // Two-pass + quality-checked generation: pass 1 drafts, pass 2 edits,
@@ -67,7 +76,7 @@ const generateContentData = async ({ type, prompt, tone = 'professional', length
   const { text: rawOutput, qualityReport } = await generateWithQualityCheck(
     runTwoPassDraft(generateText, { type, purpose }),
     {
-      prompt: buildPrompt({ type, prompt, tone, length, language, format, details, purpose, readingLevel, writingSample }),
+      prompt: buildPrompt({ type, prompt, tone, length, language, format, details, purpose, readingLevel, writingSample, subtype }),
       type,
       purpose,
       input: { ...details, prompt },
@@ -79,10 +88,14 @@ const generateContentData = async ({ type, prompt, tone = 'professional', length
   const keywords = seoData?.imageKeywords || seoData?.keywords || [];
 
   let images = [];
+  let imageOptions = [];
   let finalOutput = cleanContent;
 
   if (type === 'blog' && process.env.UNSPLASH_ACCESS_KEY) {
-    images = await fetchAndAnalyzeImages(keywords);
+    // 6 candidates: the first 3 are embedded, all 6 are offered in the picker.
+    const candidates = await fetchAndAnalyzeImages(keywords);
+    imageOptions = candidates;
+    images = candidates.slice(0, 3);
     if (images.length) finalOutput = await embedImagesInContent(cleanContent, images);
   } else {
     images = await fetchImages(keywords);
@@ -91,6 +104,7 @@ const generateContentData = async ({ type, prompt, tone = 'professional', length
   return {
     data: {
       type,
+      subtype,
       prompt,
       output: finalOutput,
       creditsUsed: 1,
@@ -98,6 +112,7 @@ const generateContentData = async ({ type, prompt, tone = 'professional', length
       format,
       seoData,
       images,
+      imageOptions,
       updatedAt: new Date(),
     },
     realityCheck,
@@ -131,7 +146,8 @@ export const streamGenerate = asyncHandler(async (req, res) => {
 
   try {
     checkKey();
-    const { type, prompt, tone, length, language = 'english_us', format = 'paragraphs', purpose = '', readingLevel = 'standard', writingSample = '', ...details } = req.body;
+    const { type, prompt, tone, length, language = 'english_us', format = 'paragraphs', purpose = '', readingLevel = 'standard', writingSample = '', subtype: rawSubtype, ...details } = req.body;
+    const subtype = normalizeSubtype(type, rawSubtype);
 
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
@@ -141,7 +157,7 @@ export const streamGenerate = asyncHandler(async (req, res) => {
 
     const sendEvent = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
 
-    const fullPrompt = buildPrompt({ type, prompt, tone, length, language, format, details, purpose, readingLevel, writingSample });
+    const fullPrompt = buildPrompt({ type, prompt, tone, length, language, format, details, purpose, readingLevel, writingSample, subtype });
 
     let fullOutput = '';
     try {
@@ -177,6 +193,9 @@ export const streamGenerate = asyncHandler(async (req, res) => {
 
     // Split clean content from Reality Check section (kept from pass 1 —
     // the editor pass only edits the clean content, never the scores).
+    // Any leaked "Agent 1/2" role labels are stripped before the text is
+    // checked, saved or shown.
+    fullOutput = stripAgentLabels(fullOutput);
     let { cleanContent, realityCheck } = parseRealityCheck(fullOutput);
 
     // Pass 2 (editor pass) on the streamed draft, then quality-check the
@@ -231,11 +250,14 @@ export const streamGenerate = asyncHandler(async (req, res) => {
       const keywords = seoData?.imageKeywords || seoData?.keywords || [];
 
       let images = [];
+      let imageOptions = [];
       let finalOutput = cleanContent;
 
       if (type === 'blog' && process.env.UNSPLASH_ACCESS_KEY) {
         sendEvent({ status: 'Fetching and analyzing images...' });
-        images = await fetchAndAnalyzeImages(keywords);
+        const candidates = await fetchAndAnalyzeImages(keywords);
+        imageOptions = candidates;
+        images = candidates.slice(0, 3);
         if (images.length) {
           finalOutput = await embedImagesInContent(cleanContent, images);
         }
@@ -247,6 +269,7 @@ export const streamGenerate = asyncHandler(async (req, res) => {
         Content.create({
           user: userId,
           type,
+          subtype,
           prompt,
           output: finalOutput,
           creditsUsed: 1,
@@ -254,13 +277,14 @@ export const streamGenerate = asyncHandler(async (req, res) => {
           format,
           seoData,
           images,
+          imageOptions,
         }),
         // NOTE: no $inc here anymore — the credit was reserved by the middleware.
         Credit.create({ user: userId, amount: -1, type: 'usage', description: `Generated ${type} content` }),
       ]);
 
       io.to(userId.toString()).emit('generation:done', { content });
-      sendEvent({ done: true, seoData, images, contentWithImages: finalOutput, realityCheck, contentId: content._id, qualityReport });
+      sendEvent({ done: true, seoData, images, imageOptions, contentWithImages: finalOutput, realityCheck, contentId: content._id, qualityReport });
     } catch (err) {
       logger.error({ err: err.message }, 'Content save error');
       await refundOnce();
@@ -286,7 +310,8 @@ export const generate = asyncHandler(async (req, res) => {
 
   try {
     checkKey();
-    const { type, prompt, tone, length, language = 'english_us', format = 'paragraphs', purpose = '', readingLevel = 'standard', writingSample = '', ...details } = req.body;
+    const { type, prompt, tone, length, language = 'english_us', format = 'paragraphs', purpose = '', readingLevel = 'standard', writingSample = '', subtype: rawSubtype, ...details } = req.body;
+    const subtype = normalizeSubtype(type, rawSubtype);
 
     io.to(userId.toString()).emit('generation:start');
 
@@ -295,7 +320,7 @@ export const generate = asyncHandler(async (req, res) => {
     const { text: rawOutput, qualityReport } = await generateWithQualityCheck(
       runTwoPassDraft(generateText, { type, purpose }),
       {
-        prompt: buildPrompt({ type, prompt, tone, length, language, format, details, purpose, readingLevel, writingSample }),
+        prompt: buildPrompt({ type, prompt, tone, length, language, format, details, purpose, readingLevel, writingSample, subtype }),
         type,
         purpose,
         input: req.body,
@@ -304,21 +329,25 @@ export const generate = asyncHandler(async (req, res) => {
     );
     const { cleanContent, realityCheck } = parseRealityCheck(rawOutput);
 
+
     const seoData = await generateSEO(cleanContent);
     const keywords = seoData?.imageKeywords || seoData?.keywords || [];
 
     let images = [];
+    let imageOptions = [];
     let finalOutput = cleanContent;
 
     if (type === 'blog' && process.env.UNSPLASH_ACCESS_KEY) {
-      images = await fetchAndAnalyzeImages(keywords);
+      const candidates = await fetchAndAnalyzeImages(keywords);
+      imageOptions = candidates;
+      images = candidates.slice(0, 3);
       if (images.length) finalOutput = await embedImagesInContent(cleanContent, images);
     } else {
       images = await fetchImages(keywords);
     }
 
     const [content] = await Promise.all([
-      Content.create({ user: userId, type, prompt, output: finalOutput, creditsUsed: 1, language, format, seoData, images }),
+      Content.create({ user: userId, type, subtype, prompt, output: finalOutput, creditsUsed: 1, language, format, seoData, images, imageOptions }),
       // NOTE: no $inc here anymore — the credit was reserved by the middleware.
       Credit.create({ user: userId, amount: -1, type: 'usage', description: `Generated ${type} content` }),
     ]);
@@ -333,6 +362,81 @@ export const generate = asyncHandler(async (req, res) => {
   }
 });
 
+// ── Generate from an uploaded image (non-streaming) ──────────────
+// POST /api/generate/with-image — multipart/form-data with the same text
+// fields as /stream plus one "image" file (JPG/PNG/WebP, max 5 MB).
+// The image is sent to Gemini for this one generation only and is never
+// stored in MongoDB. Exactly 1 credit is deducted, like a normal generation.
+export const generateFromImage = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  // The credit was reserved by the middleware before this handler ran.
+  // Any failure exit below must give it back (refundOnce guards double
+  // refunds) — same rule as generate/streamGenerate.
+  let refunded = false;
+  const refundOnce = async () => {
+    if (req.creditReserved && !refunded) {
+      refunded = true;
+      await refundCredit(userId, req.creditReserved);
+    }
+  };
+
+  const imageError = validateImageFile(req.file);
+  if (imageError) {
+    await refundOnce();
+    return res.status(400).json({ message: imageError });
+  }
+
+  const { error, value } = generateSchema.validate(req.body);
+  if (error) {
+    await refundOnce();
+    return res.status(400).json({ message: error.details[0].message });
+  }
+  const { type, prompt, tone, length, language = 'english_us', format = 'paragraphs', subtype: rawSubtype, ...details } = value;
+  const subtype = normalizeSubtype(type, rawSubtype);
+
+  try {
+    checkKey();
+    io.to(userId.toString()).emit('generation:start');
+
+    const imagePart = { data: req.file.buffer.toString('base64'), mimeType: req.file.mimetype };
+    const fullPrompt = buildPrompt({ type, prompt, tone, length, language, format, subtype, details });
+    const { text: rawOutput, qualityReport } = await generateWithQualityCheck(
+      (p) => generateWithImage(p, imagePart),
+      { prompt: fullPrompt, type, input: req.body, length }
+    );
+    const { cleanContent, realityCheck } = parseRealityCheck(rawOutput);
+
+    const seoData = await generateSEO(cleanContent);
+    const keywords = seoData?.imageKeywords || seoData?.keywords || [];
+
+    let images = [];
+    let imageOptions = [];
+    let finalOutput = cleanContent;
+
+    if (type === 'blog' && process.env.UNSPLASH_ACCESS_KEY) {
+      const candidates = await fetchAndAnalyzeImages(keywords);
+      imageOptions = candidates;
+      images = candidates.slice(0, 3);
+      if (images.length) finalOutput = await embedImagesInContent(cleanContent, images);
+    } else {
+      images = await fetchImages(keywords);
+    }
+
+    const [content] = await Promise.all([
+      Content.create({ user: userId, type, subtype, prompt, output: finalOutput, creditsUsed: 1, language, format, seoData, images, imageOptions }),
+      // NOTE: no $inc here anymore — the credit was reserved by the middleware.
+      Credit.create({ user: userId, amount: -1, type: 'usage', description: `Generated ${type} content (with image)` }),
+    ]);
+
+    io.to(userId.toString()).emit('generation:done', { content });
+    res.status(200).json({ content, realityCheck, qualityReport });
+  } catch (err) {
+    // Generation or save failed: give the reserved credit back.
+    await refundOnce();
+    throw err;
+  }
+});
+
 // ── Tune existing content (no credit deduction) ──────────────────
 export const tuneContent = asyncHandler(async (req, res) => {
   checkKey();
@@ -342,7 +446,7 @@ export const tuneContent = asyncHandler(async (req, res) => {
   if (!validActions.includes(action)) return res.status(400).json({ message: 'Invalid action' });
 
   const raw = await tuneText(text, action);
-  const { cleanContent, realityCheck } = parseRealityCheck(raw);
+  const { cleanContent, realityCheck } = parseRealityCheck(stripAgentLabels(raw));
   res.status(200).json({ output: cleanContent, realityCheck });
 });
 
@@ -388,7 +492,7 @@ export const generateAIContent = asyncHandler(async (req, res) => {
     input: {},
     length: 'medium',
   });
-  const { cleanContent, realityCheck } = parseRealityCheck(raw);
+  const { cleanContent, realityCheck } = parseRealityCheck(stripAgentLabels(raw));
 
   // SECURITY (H1): the RAG route now charges 1 credit like the other
   // generate endpoints (it was previously free and unauthenticated).
@@ -418,6 +522,7 @@ export const regenerateContent = asyncHandler(async (req, res) => {
   try {
     const { data, realityCheck, qualityReport } = await generateContentData({
       type: existing.type,
+      subtype: existing.subtype || '',
       prompt: existing.prompt,
       language: existing.language,
       format: existing.format,
