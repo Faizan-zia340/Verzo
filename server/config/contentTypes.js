@@ -17,7 +17,7 @@ export const CONTENT_TYPES = {
       'cold-outreach': {
         label: 'Cold outreach',
         requiredFields: [F('company', 'Company'), F('senderName', 'Sender name'), F('audience', 'Audience'), F('applyLink', 'Apply link or contact', 'contact')],
-        structure: 'Subject line naming one specific benefit → one-line personal opener tied to the recipient\'s work → 2 sentences on the concrete value → one soft ask → sign-off with sender name.',
+        structure: 'Subject line naming one specific benefit → greeting by name only if the recipient name was provided, otherwise start with "Hi there," → one-line personal opener tied to the recipient\'s work → 2 sentences on the concrete value → one soft ask → sign-off with sender name.',
         defaultTone: 'friendly',
         lengthRange: { min: 80, max: 150 },
         examples: [

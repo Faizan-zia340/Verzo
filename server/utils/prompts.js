@@ -52,9 +52,16 @@ Human writing style (write like a person, not a template):
 
 // Strict output rules appended to every buildPrompt() so the model never
 // returns unfinished content (e.g. emails with "[Your Name]" left in).
+// Strengthened after a live cold-outreach email came back with
+// "[Warehouse Manager Name]" in the greeting and an invented "up to 25%":
+// the model must never emit a bracketed slot at all, and must never invent
+// a number — if a detail is missing it uses a generic greeting or omits
+// the line instead.
 const QUALITY_RULES = `
 Output quality rules (strict — never break these):
-- Never use placeholders such as [Your Name], [Company], {{name}} or <insert>. If a detail was not provided, omit that line entirely instead of leaving a placeholder.
+- NEVER emit a placeholder of any kind: no [Your Name], [Company], [Name], [Recipient Name], [Warehouse Manager Name], no {{name}}, no <insert>. A bracketed slot is never acceptable — not even in a greeting or a subject line.
+- If the recipient's name was not provided, greet with "Hi there," — never invent a name and never leave a bracketed name in the greeting. If a company, role, date or other detail was not provided, omit that line or use generic wording — never invent it.
+- Never invent numbers: no percentages, prices, statistics or counts that were not provided in the input. If a figure was not provided, leave it out — do not make one up. Use only the numbers that appear in the provided details below.
 - Use only the details provided below. Never invent facts, links, salaries, deadlines, names or contact details.
 - Do not open with a rhetorical question or filler opener ("Looking for... right?", "In today's fast-paced world...").
 - Avoid generic buzzwords and filler phrases (passionate, game-changer, cutting-edge, seamless, delve, unlock your potential). Be specific and concrete.`;
@@ -156,7 +163,7 @@ ${HUMAN_STYLE_RULES}`,
 
     email: `Write a ${tone} email about: "${prompt}".
 ${lengthInstruction}
-Include: subject line, greeting, body (2-3 short paragraphs), and a clear one-line CTA before the sign-off.
+Include: subject line, greeting (by name only if the recipient name was provided, otherwise start with 'Hi there,'), body (2-3 short paragraphs), and a clear one-line CTA before the sign-off.
 ${formatInstruction}
 ${STYLE_RULES}
 ${HUMAN_STYLE_RULES}`,
@@ -198,6 +205,8 @@ export const buildEditorPrompt = (text, { type, purpose = '' } = {}) => {
 
 Rules:
 - Remove robotic phrasing, repeated sentence patterns (never let three sentences in a row start the same way) and filler words.
+- Remove any bracketed placeholder already in the draft (e.g. [Name], [Company]): replace a placeholder greeting with "Hi there," and delete any other bracketed slot — never leave one in the edited text.
+- Do not add any new number, percentage, price or statistic. If the draft states a figure, keep it exactly as written — never round it, inflate it or replace it.
 - Vary sentence length. Keep active voice. Do not add stacked adjectives or generic openers/closers.
 - Preserve EVERY fact, name, number, date, link, price and deadline exactly as written. Do not add, remove or change any fact.
 - Do not add a closing paragraph that repeats the body. Keep the same length (within 10%).
