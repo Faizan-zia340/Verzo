@@ -56,9 +56,12 @@ export const forgotPassword = asyncHandler(async (req, res) => {
     user.resetPasswordToken = crypto.createHash('sha256').update(rawToken).digest('hex');
     user.resetPasswordExpires = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
     await user.save();
-    // Use the calling frontend's origin when available (so a preview
-    // deployment links back to itself), falling back to CLIENT_URL.
-    const base = (req.get('origin') || process.env.CLIENT_URL || '').replace(/\/$/, '');
+    // SECURITY (C1): the reset link must NEVER be built from the request
+    // Origin — an attacker could POST forgot-password with
+    // Origin: https://evil.com and the email would link the victim to the
+    // attacker's site carrying the real token. Use only the trusted
+    // CLIENT_URL (falling back to the known production frontend).
+    const base = (process.env.CLIENT_URL || 'https://verzo-ecru.vercel.app').replace(/\/$/, '');
     if (base) {
       await sendPasswordResetEmail({
         to: user.email,
