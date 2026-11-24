@@ -1,6 +1,7 @@
 # PROJECT_CONTEXT.md
 
-Last verified against actual code: July 10, 2026 (post-cleanup). This file is a living document — update it whenever a feature, architectural decision, or significant fix is made.
+Last verified against actual code: 24 Nov 2026 (docs update — Replit references removed, open PRs + known issues added). This file is a living document — update it whenever a feature, architectural decision, or significant fix is made.
+
 
 ---
 
@@ -38,7 +39,8 @@ Verzo is a full-stack SaaS web app that generates AI-written content (blog posts
 
 ### Database
 - **MongoDB Atlas** via Mongoose — this is the only database used by this app.
-- Network Access whitelist must include `0.0.0.0/0` because Replit's outbound IP changes.
+- Network Access whitelist is set to `0.0.0.0/0` (manual Atlas dashboard setting). It was set while Replit was in use (dynamic outbound IP); Replit was dropped 21 Nov 2026, so whether it can be tightened should be reviewed.
+
 - There is no Postgres/Drizzle setup — an earlier, unused scaffold for one was removed during cleanup (July 2026).
 
 ### Auth Method
@@ -55,8 +57,10 @@ The frontend and backend are deployed as **two separate services**, not as a sin
 - **Why split**: the backend uses **Socket.io** (live activity feed) and **Server-Sent Events / streaming responses** (`/api/generate/stream`) for real-time features. Vercel's serverless functions cannot hold these long-lived connections open, so the backend must run on a persistent Node process (Render), while the static frontend build is served from Vercel's CDN.
 - **How they connect**:
   - Frontend → Backend: the client reads `VITE_API_URL` (a build-time env var) to know the backend's URL (`client/src/services/apiUrl.js`, `client/src/services/api.js`). If unset, it falls back to relative paths (used in local dev via the Vite proxy).
-  - CORS: the backend whitelists allowed origins via the `CLIENT_URL` env var (plus `localhost:5173`/`localhost:5000` for dev) in `server/server.js`. Socket.io's CORS config mirrors the same whitelist. `CLIENT_URL` currently holds a **placeholder** value (`https://your-project-name.vercel.app`) in the Replit environment (`.replit` → `[userenv.shared]`) — it must be updated to the real Vercel domain once deployed.
-  - Local dev (Replit): frontend runs on port 5000 (Vite dev server, proxies `/api` to `localhost:3001`), backend runs on port 3001 — both as separate Replit workflows on the same container, no split needed in dev.
+  - CORS: the backend whitelists allowed origins via the `CLIENT_URL` env var (plus `localhost:5173`/`localhost:5000` for dev) in `server/server.js`. Socket.io's CORS config mirrors the same whitelist. `CLIENT_URL` is the real Vercel domain (`https://verzo-ecru.vercel.app`) in the Render environment. The placeholder (`https://your-project-name.vercel.app`) still sits in the leftover `.replit` file — that file is stale (Replit dropped 21 Nov 2026) and must not be used as a source of truth. Note: on main, `server.js` also allows any `*.vercel.app` / `*.replit.dev` origin by regex — see Known issues (section 11); PR #8 replaces this with an exact allowlist.
+
+  - Local dev: plain Vite + Express, no Replit (dropped 21 Nov 2026). Frontend: `cd client && npm run dev` — Vite on port 5000, proxies `/api` to `localhost:3001`. Backend: `cd server && node server.js` — port 3001 (`PORT` env var or 3001).
+
 
 ---
 
@@ -70,7 +74,9 @@ The frontend and backend are deployed as **two separate services**, not as a sin
 │   │   │   ├── ContentHistory.jsx
 │   │   │   ├── CreditsDisplay.jsx
 │   │   │   ├── Dashboard.jsx
+│   │   │   ├── DashboardChart.jsx
 │   │   │   ├── Generator.jsx
+
 │   │   │   ├── LoadingSpinner.jsx
 │   │   │   ├── Navbar.jsx
 │   │   │   └── Pricing.jsx
@@ -134,8 +140,13 @@ The frontend and backend are deployed as **two separate services**, not as a sin
 │   │   ├── payment.js
 │   │   ├── pdf.js
 │   │   └── user.js                  # mounted in server.js at /api/user
+│   ├── jobs/
+│   │   └── dailyCreditReset.js        # daily free-credit reset
+│   ├── tests/
+│   │   └── adminDeleteUser.test.js
 │   └── utils/
 │       ├── asyncHandler.js
+
 │       ├── embeddings.js            # generateEmbedding/cosineSimilarity/findRelevantContexts, gemini-embedding-001
 │       ├── gemini.js                # dual-agent system prompt, getModel, withSystem, generateText/SEO/tuneText
 │       ├── imageService.js          # fetches + embeds Unsplash images into generated content
@@ -156,10 +167,14 @@ The frontend and backend are deployed as **two separate services**, not as a sin
 ├── render.yaml                      # ACTIVE backend deploy config (Render)
 ├── vercel.json                      # ACTIVE frontend deploy config (Vercel)
 ├── .env.example
-├── .replit                          # Replit workspace config: two dev workflows (client on 5000, server on 3001), autoscale deployment target, CLIENT_URL placeholder
-├── README.md                        # older/possibly stale project readme, not actively maintained
-├── DOCUMENTATION.md                 # older/possibly stale doc file, not actively maintained
-└── replit.md                        # the actively maintained project README/status doc for this Replit workspace
+├── .replit                          # LEFTOVER Replit workspace config — stale (Replit dropped 21 Nov 2026). Do not use; local dev is plain Vite + Express.
+
+├── README.md                        # maintained project readme (rewritten 24 Nov 2026)
+
+├── DOCUMENTATION.md                 # full reference doc; OpenAI references corrected to Gemini 24 Nov 2026 (see note at its top)
+
+└── replit.md                        # legacy Replit-era status doc — no longer maintained, do not use as a source of truth
+
 ```
 
 **Cleanup note (July 2026):** the following were removed as unused leftovers from earlier scaffolding and no longer exist: a duplicate root-level React app (`src/`, plus stray root `index.html`/`vite.config.js`/`tailwind.config.js`/`postcss.config.js` that belonged to it), an unused Postgres/Drizzle setup (`drizzle.config.js`, `server/db/`, `server/models/Subscription.js`), an unused alternate Express entrypoint (`server/index.js` and the `server/routes/users.js` it alone used), and the unused `openai` package plus its wrapper files (`server/config/openai.js`, `server/utils/openai.js`). The root `package.json` was rewritten to be a thin orchestrator with no duplicated dependencies. App was verified working end-to-end (register/login, health checks, homepage render) after this cleanup.
@@ -171,7 +186,8 @@ The frontend and backend are deployed as **two separate services**, not as a sin
 - **JWT moved to httpOnly cookie** instead of localStorage — reduces XSS token-theft risk. All frontend requests now send `credentials: 'include'` / `withCredentials: true`.
 - **Stripe left unconfigured on purpose** — `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET` are not set; the billing code path exists (`routes/billing.js`, `controllers/paymentController.js`, `config/stripe.js`) but is dormant. This was an explicit choice, not an oversight — set the two secrets to activate it.
 - **CORS locked to an explicit whitelist** — `CLIENT_URL` env var + hardcoded localhost dev origins, replacing an earlier open/permissive CORS setup. Socket.io CORS uses the identical whitelist logic.
-- **MongoDB Atlas IP whitelist set to `0.0.0.0/0`** — required because Replit's outbound IP is dynamic; this is a manual setting in the Atlas dashboard, not something the app config controls.
+- **MongoDB Atlas IP whitelist set to `0.0.0.0/0`** — this is a manual setting in the Atlas dashboard, not something the app config controls. It was set while Replit was in use (dynamic outbound IP); Replit was dropped 21 Nov 2026, so whether it can be tightened should be reviewed.
+
 - **Frontend/backend split across Vercel + Render** — chosen specifically because Socket.io and SSE streaming need a persistent server process, which Vercel serverless functions cannot provide.
 - **RAG retrieval upgraded from pure keyword match to embedding-based semantic search** — `gemini-embedding-001` embeddings + cosine similarity (threshold 0.65, top-3), with automatic fallback to the original keyword match (`Context.findOne({ keywords: $in })`) when no context has an embedding or nothing clears the threshold.
 - **`text-embedding-004` does not work** on the currently configured Gemini API key/SDK — returns 404 regardless of API version (`v1` or `v1beta`). `gemini-embedding-001` on `v1` is the confirmed working model.
@@ -179,6 +195,9 @@ The frontend and backend are deployed as **two separate services**, not as a sin
 - **Error handler distinguishes operational vs. programmer errors** — 4xx codes and 503 (upstream AI overload) show the real, honest error message to the user; genuinely unexpected 5xx errors are replaced with a generic message and logged with full stack trace + request ID.
 - **Per-user rate limiting added on generation endpoints** (10 requests/hour) on top of the existing global limiter (150 requests/15 min), to stop a single user from exhausting the shared Gemini quota.
 - **Startup environment validation added** — the server refuses to boot if `MONGODB_URI`, `JWT_SECRET`, or an AI key is missing, rather than failing unpredictably mid-request later.
+- **Replit dropped 21 Nov 2026** — work is GitHub + Render + Vercel only. `.replit` and `replit.md` are leftovers; do not use Replit for this project.
+- **Admin delete-user merged 23 Nov 2026** (PR #6, main `d9fc369`) — admins can delete regular users from `/admin`; safeguards: no self-delete, no admin delete.
+
 
 ---
 
@@ -201,18 +220,22 @@ The frontend and backend are deployed as **two separate services**, not as a sin
 - Security headers via Helmet
 - Startup environment variable validation
 - Health check endpoints (`/health`, `/api/health`) for deployment platform monitoring
+- Password reset via emailed link (Resend; token stored as SHA-256 hash, ~1h expiry, generic response either way)
+- Admin can delete regular users (PR #6, merged 23 Nov 2026); safeguards: no self-delete, no admin delete
+
 
 ---
 
 ## 7. In Progress / Not Yet Built
 
-- Automated testing (Jest) — not started
+- Automated testing — partial: `server/tests/` has one test file (`adminDeleteUser.test.js`); no full suite or CI yet
+
 - Further documentation/code cleanup — not started
 - "Phase 2" feature set (2A–2D, not yet scoped/started in this file — see `replit.md` roadmap section for the latest status)
 - Stripe billing — code exists but is not live (secrets not configured)
 - Email verification on registration
-- Password reset flow
 - User profile page (change name/password)
+
 - Recurring subscription billing
 - Credit auto-refill/top-up
 - Team/workspace accounts
@@ -222,19 +245,27 @@ The frontend and backend are deployed as **two separate services**, not as a sin
 - Image generation (as opposed to stock photo fetching)
 - Custom brand voice training
 - Per-user usage analytics
+- Open PRs and known issues — see sections 10 and 11
+
 
 ---
 
 ## 8. Known Constraints
 
-- **MongoDB Atlas IP whitelist is manual** — set to `0.0.0.0/0` to tolerate Replit's dynamic outbound IP; if this is ever tightened, the app will lose DB connectivity until it's reopened.
-- **`CLIENT_URL` is currently a placeholder** (`https://your-project-name.vercel.app`) in the Replit dev environment — CORS will reject the real deployed frontend's origin until this is updated to the actual Vercel domain.
+- **MongoDB Atlas IP whitelist is manual** — set to `0.0.0.0/0` (set while Replit was in use); if this is ever tightened, the app will lose DB connectivity until it's reopened.
+
+- **`CLIENT_URL`** — the real Vercel domain (`https://verzo-ecru.vercel.app`) is set in the Render environment. The placeholder (`https://your-project-name.vercel.app`) still exists only in the stale leftover `.replit` file.
+
 - **Render free tier** (per `render.yaml`, `plan: free`) — free web services on Render spin down after inactivity and cold-start on the next request, which will cause a noticeable delay on the first request after idling.
 - **Gemini has occasional transient 503 overload errors** — the app now surfaces these honestly to the user ("temporarily overloaded, try again shortly") rather than pretending it's a app-side bug, but they are outside this app's control.
 - **Stripe is not live** — `STRIPE_SECRET_KEY`/`STRIPE_WEBHOOK_SECRET` are unset; any billing UI that references pricing/checkout will not actually process payments until these are configured.
 - **OpenAI is not an active provider** — the unused `openai` package and its wrapper files were removed during the July 2026 cleanup; only Gemini is wired in.
-- **`railway.toml`/`nixpacks.toml`** are unused alternate deploy configs (Render + Vercel is the active split); `README.md`/`DOCUMENTATION.md` are older docs not actively kept in sync — `replit.md` is the maintained one.
-- **No automated tests exist yet** — all verification so far has been manual (curl requests, manual DB inspection), so regressions are only caught by hand-testing.
+- **Known issues** (quota, pricing mismatch, H3, credit race, open `/rag` and `/api/context`) — see section 11.
+
+- **`railway.toml`/`nixpacks.toml`** are unused alternate deploy configs (Render + Vercel is the active split). `README.md` and `DOCUMENTATION.md` were updated 24 Nov 2026; `replit.md` is a legacy Replit-era doc, no longer maintained.
+
+- **Automated tests are partial** — `server/tests/` has one test file (`adminDeleteUser.test.js`); most verification is still manual (curl, live browser tests), so regressions are mostly caught by hand-testing.
+
 
 ---
 
@@ -245,5 +276,29 @@ The frontend and backend are deployed as **two separate services**, not as a sin
 - **Do not** assume OpenAI is an active AI provider — only Gemini (`gemini-2.5-flash-lite` for generation, `gemini-embedding-001` for embeddings) is actually wired into the live code paths.
 - **Do not** suggest switching the database from MongoDB to Postgres — this has been explicitly decided against (see `replit.md` User Preferences).
 - **Do not** suggest moving JWT back to localStorage — the httpOnly cookie approach was a deliberate security fix.
-- **Do** treat `replit.md` as the actively maintained status/roadmap doc, and this file (`PROJECT_CONTEXT.md`) as the portable, AI-facing snapshot — keep both in sync when making significant changes.
+- **Do** treat `README.md` as the maintained entry-point doc and this file (`PROJECT_CONTEXT.md`) as the portable, AI-facing snapshot — keep both in sync when making significant changes. `replit.md` is legacy; do not use it as a source of truth.
+
 - **Do** verify claims against the actual code before adding to this file — this document exists specifically to avoid guessing.
+- **Do not** use Replit for this project — it was dropped 21 Nov 2026. Work is GitHub + Render + Vercel only.
+
+---
+
+## 10. Open PRs (24 Nov 2026 — all UNMERGED)
+
+Merge only on Faizy's decision. Agreed order: #8 → #7 → #9 → #5 → #10.
+
+- **PR #5** (`feature/purpose-templates`) — 26 purpose-based templates, human-style prompts, two-pass generation. Needs main synced in before merge.
+- **PR #7** (`feature/seo-batch`) — sitemap reduced to `/` + `/pricing`, per-page SEO with react-helmet-async.
+- **PR #8** (`feature/security-critical-fixes`) — fixes C1 (reset-URL poisoning), C2 (CORS wildcard), H1 (open `/rag`), H2 (public `/api/context`).
+- **PR #9** (`feature/user-quota-messages`) — per-user quota limits, quota errors branded "Verzo" (never "Gemini"). Must be rebased onto main after #8 (both touch `generate.js` and `package.json`).
+- **PR #10** (`feature/voice-image-crosslang`) — voice input, image input, cross-language drift fix, email subtypes, new content types, blog image picker. Must be rebased onto main after #5, with its email subtypes merged into #5's purposes system (no duplicate email-type system).
+
+## 11. Known Issues (24 Nov 2026)
+
+- **Gemini free-tier quota (429):** the shared quota exhausts fast under load; the live 429 error still says "Gemini" (PR #9 rebrands it to Verzo). No key rotation to evade quota — against Google's terms.
+- **Pricing mismatch:** the Pricing page says Pro $10 = 100 credits and Enterprise $40 = 500, but the payment code grants starter 499 → 50, growth 999 → 120, pro 1999 → 300 credits. Needs one source of truth for packages.
+- **H3 — Stripe webhook double-credit:** the webhook credits the user on every `payment_intent.succeeded` event with no idempotency check, so a redelivered event double-credits.
+- **Credit-check race:** `creditCheck` only reads the balance; the deduction is a separate `$inc` after generation, so two concurrent requests can both pass with 1 credit.
+- **Open endpoints on main:** `POST /api/generate/rag` has no auth, rate limit, or credit check (`server/routes/generate.js`); `/api/context` is public (`server/server.js` mounts it with no auth). Both fixed in unmerged PR #8.
+- **CORS wildcard on main:** `server/server.js` allows any `*.vercel.app` and `*.replit.dev` origin by regex. Fixed in unmerged PR #8.
+
