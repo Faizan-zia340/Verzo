@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AuthProvider, useAuth } from './context/AuthContext.js';
 import { CreditProvider } from './context/CreditContext.js';
 import Navbar from './components/Navbar.jsx';
+import Footer from './components/Footer.jsx';
 import Home from './pages/Home.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
@@ -93,6 +94,7 @@ export default function App() {
           />
           <Navbar />
           <AnimatedRoutes />
+          <Footer />
         </BrowserRouter>
       </CreditProvider>
     </AuthProvider>
