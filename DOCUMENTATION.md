@@ -1,5 +1,8 @@
 # Verzo — Full Project Documentation
 
+> **Verification note (24 Nov 2026, main @ d9fc369):** the AI provider was corrected from OpenAI to Gemini throughout this file — the app uses Google Gemini (`gemini-2.5-flash-lite`, `@google/generative-ai`, `server/config/gemini.js`); OpenAI is not used anywhere. Local ports were corrected to Vite 5000 / Express 3001. Some older sections (folder tree, API tables) may still lag the code — verify against the code before relying on them.
+
+
 ## Table of Contents
 1. [Project Overview](#project-overview)
 2. [Architecture](#architecture)
@@ -20,7 +23,8 @@
 
 ## Project Overview
 
-An AI-powered content generation SaaS platform. Users register, receive credits, and spend them to generate blog posts, social media captions, emails, ads, and product descriptions using OpenAI. Payments are handled via Stripe and all data is stored in MongoDB. A RAG (Retrieval-Augmented Generation) system allows the AI to pull accurate local information from the database before generating a response.
+An AI-powered content generation SaaS platform. Users register, receive credits, and spend them to generate blog posts, social media captions, emails, ads, and product descriptions using Google Gemini (`gemini-2.5-flash-lite`).
+ Payments are handled via Stripe and all data is stored in MongoDB. A RAG (Retrieval-Augmented Generation) system allows the AI to pull accurate local information from the database before generating a response.
 
 ---
 
@@ -36,7 +40,8 @@ Vite Dev Server — port 5000
 Express Server — port 3001
     │
     ├── MongoDB Atlas (Mongoose)
-    ├── OpenAI API (GPT-4o-mini / GPT-3.5-turbo)
+    ├── Gemini API (gemini-2.5-flash-lite)
+
     ├── Stripe API
     └── Socket.io (real-time generation events)
 ```
@@ -59,7 +64,8 @@ rewrite, so the `/api` rule must stay above the catch-all.
 ## Folder Structure
 
 ```
-ai-content-generator/
+verzo/
+
 │
 ├── client/                          # React frontend (Vite)
 │   ├── index.html                   # HTML entry point for Vite
@@ -76,14 +82,21 @@ ai-content-generator/
 │       │   ├── ContentHistory.jsx   # Lists past generated content
 │       │   ├── Pricing.jsx          # Pricing cards component
 │       │   ├── Dashboard.jsx        # Stats and usage chart
+│       │   ├── DashboardChart.jsx   # Dashboard usage chart
 │       │   └── LoadingSpinner.jsx   # Reusable loading indicator
+
 │       ├── pages/
 │       │   ├── Home.jsx             # Landing page
 │       │   ├── Login.jsx            # Login form
 │       │   ├── Register.jsx         # Registration form
+│       │   ├── ForgotPassword.jsx   # Request a password-reset link
+│       │   ├── ResetPassword.jsx    # Set a new password from a reset link
 │       │   ├── Dashboard.jsx        # Main dashboard page
+│       │   ├── Admin.jsx            # Admin dashboard
 │       │   ├── Pricing.jsx          # Pricing page
+│       │   ├── PDFAnalyzer.jsx      # PDF Deep Analyzer page
 │       │   └── PaymentSuccess.jsx   # Stripe redirect success page
+
 │       ├── context/
 │       │   ├── AuthContext.js       # Global auth state (user, login, logout)
 │       │   └── CreditContext.js     # Global credit balance state
@@ -99,15 +112,16 @@ ai-content-generator/
     ├── .env.example                 # Template for environment variables
     ├── config/
     │   ├── database.js              # MongoDB connection via Mongoose
-    │   ├── openai.js                # OpenAI API client setup
+    │   ├── gemini.js                # Gemini API client setup (MODEL='gemini-2.5-flash-lite')
     │   └── stripe.js                # Stripe API client setup
+
     ├── models/
     │   ├── User.js                  # User accounts and credit balance
     │   ├── Content.js               # Generated content records
     │   ├── Credit.js                # Credit transaction log
     │   ├── Payment.js               # Stripe payment records
-    │   ├── Subscription.js          # Stripe subscription records
     │   └── Context.js               # RAG reference data store
+
     ├── routes/
     │   ├── auth.js                  # /api/auth/*
     │   ├── generate.js              # /api/generate/*
@@ -126,7 +140,8 @@ ai-content-generator/
     │   ├── creditCheck.js           # Blocks requests if credits < required
     │   └── errorHandler.js          # Global Express error handler
     └── utils/
-        ├── openai.js                # generateContent() helper function
+        ├── gemini.js                # getModel, generateText/SEO/tuneText, dual-agent system prompt
+
         ├── prompts.js               # buildPrompt() for each content type
         ├── validators.js            # Joi validation schemas + validate()
         └── jwt.js                   # generateToken() helper
@@ -152,16 +167,18 @@ await mongoose.connect(process.env.MONGODB_URI);
 ```
 
 ### `cors` ^2.8.5
-Cross-Origin Resource Sharing middleware. Allows the React frontend (running on port 5000) to make HTTP requests to the Express backend (port 3001) without browser security blocks.
+Cross-Origin Resource Sharing middleware. Allows the React frontend (running on port 5000) to make HTTP requests to the Express backend (port 3001) without browser security blocks. Allowed origins are whitelisted in `server/server.js` from the `CLIENT_URL` env var plus `http://localhost:5173`/`http://localhost:5000` for dev (on main, a `*.vercel.app` / `*.replit.dev` regex also matches — see Known issues in `PROJECT_CONTEXT.md`; PR #8 replaces this with an exact allowlist).
 ```js
-app.use(cors({ origin: 'http://localhost:5000' }));
+app.use(cors({ origin: corsOriginCheck, credentials: true }));
 ```
+
 
 ### `dotenv` ^16.0.3
 Loads environment variables from the `.env` file into `process.env`. Keeps secrets like API keys out of the source code.
 ```js
 import 'dotenv/config';
-process.env.OPENAI_API_KEY; // now accessible
+process.env.GEMINI_API_KEY; // now accessible
+
 ```
 
 ### `jsonwebtoken` ^9.0.0
@@ -180,13 +197,16 @@ const hashed = await bcrypt.hash(password, 12);
 const match = await bcrypt.compare(candidatePassword, hashed);
 ```
 
-### `openai` ^3.2.1
-The official OpenAI SDK (v3). Used to send prompts to GPT-3.5-turbo and GPT-4o-mini and receive generated text responses.
+### `@google/generative-ai` (Gemini)
+Google's Gemini SDK. Used to send prompts to `gemini-2.5-flash-lite` and receive generated text responses. The client is configured in `server/config/gemini.js` (`MODEL='gemini-2.5-flash-lite'`, `API_VERSION='v1'`).
 ```js
-import { Configuration, OpenAIApi } from 'openai';
-const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_API_KEY }));
-await openai.createChatCompletion({ model: 'gpt-4o-mini', messages: [...] });
+import { GoogleGenerativeAI } from '@google/generative-ai';
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-lite' }, { apiVersion: 'v1' });
 ```
+
+OpenAI is not used anywhere in this codebase — the unused `openai` package and its wrapper files were removed during cleanup (July 2026).
+
 
 ### `stripe` ^11.10.0
 Stripe's Node.js SDK. Used to create payment intents (charge users for credit packs) and verify incoming webhook events from Stripe to securely credit user accounts after payment.
@@ -461,8 +481,10 @@ Frontend pages: `/forgot-password` (request a link), `/reset-password/:token` (s
 
 ### `generatorController.js`
 Handles all AI content generation.
-- **`generate`** — standard flow: emits Socket.io event, calls OpenAI via `generateContent()`, saves Content record, deducts 1 credit, emits done event
-- **`generateAIContent`** — RAG flow: searches Context collection by keywords, builds augmented prompt if a match is found, calls GPT-4o-mini, returns `{ response, contextUsed, contextTitle }`
+- **`generate`** — standard flow: emits Socket.io event, calls Gemini via `generateText()`, saves Content record, deducts 1 credit, emits done event
+
+- **`generateAIContent`** — RAG flow: searches Context collection by keywords, builds augmented prompt if a match is found, calls `gemini-2.5-flash-lite`, returns `{ response, contextUsed, contextTitle }`
+
 - **Quality check (all generation routes)** — after the AI returns, `checkQuality()` (see `utils/qualityCheck.js`) checks the output for placeholders, banned phrases, filler openers, missing required details and length. A failed check regenerates once with the issues as feedback; if it still fails, the best attempt is returned with a `qualityReport { passed, issues, retried }` instead of failing silently. Only 1 credit is deducted per generation regardless of retries, and only the final output is saved.
 
 ### Content quality checks
@@ -486,7 +508,8 @@ Handles user profile management.
 ## Middleware
 
 ### `auth.js` — JWT Protect
-Reads the `Authorization: Bearer <token>` header, verifies it with `jsonwebtoken`, loads the user from MongoDB, and attaches them to `req.user`. Returns 401 if missing or invalid.
+Reads the JWT from the `token` httpOnly cookie (`req.cookies.token`), verifies it with `jsonwebtoken`, loads the user from MongoDB, and attaches them to `req.user`. Returns 401 if missing or invalid.
+
 
 ### `creditCheck.js` — Credit Guard
 Checks that `req.user.credits` is at least the required amount (default: 1). Returns 402 Payment Required if the user is out of credits. Applied before any generation route.
@@ -510,8 +533,9 @@ Exports `buildPrompt({ type, prompt, tone, length })`. Constructs a tailored nat
 ### `utils/qualityCheck.js`
 Exports `checkQuality(text, { type, input, length })` returning `{ passed, issues[] }` — placeholder detection, a separate editable `BANNED_PHRASES` array, rhetorical-question opener detection, email apply-link/sender-name presence, and a length check (more than 30% off the requested range). Also exports `generateWithQualityCheck()` and `retryGeneration()`, which regenerate once with the issues as feedback and return the best attempt with a `qualityReport { passed, issues, retried }`.
 
-### `utils/openai.js`
-Exports `generateContent({ type, prompt, tone, length })`. Calls `buildPrompt`, sends the result to `gpt-3.5-turbo` via the OpenAI SDK, and returns the generated text string.
+### `utils/gemini.js`
+Exports `getModel`, `withSystem`, `generateText` / `generateSEO` / `tuneText`. Calls `buildPrompt`, sends the result to `gemini-2.5-flash-lite` via the Gemini SDK, and returns the generated text string. Holds the dual-agent system prompt (Expert Copywriter + Brutal AI Reviewer "REALITY CHECK").
+
 
 ---
 
@@ -521,10 +545,12 @@ Exports `generateContent({ type, prompt, tone, length })`. Calls `buildPrompt`, 
 Global authentication state available to the entire React app.
 
 - **State:** `user` (object or null), `loading` (boolean)
-- **On mount:** reads token from `localStorage`, fetches `/api/auth/me` to restore session
-- **`login(email, password)`** — POST to `/api/auth/login`, saves token, sets user state
-- **`register(name, email, password)`** — POST to `/api/auth/register`, saves token, sets user state
-- **`logout()`** — clears token from localStorage and resets user state
+- **On mount:** fetches `/api/auth/me` (the JWT travels in the httpOnly cookie, sent with credentials) to restore session
+
+- **`login(email, password)`** — POST to `/api/auth/login`; the server sets the JWT in an httpOnly cookie; sets user state
+- **`register(name, email, password)`** — POST to `/api/auth/register`; the server sets the JWT in an httpOnly cookie; sets user state
+- **`logout()`** — POST to `/api/auth/logout` (clears the cookie) and resets user state
+
 
 ### `CreditContext.js`
 Global credit balance state available throughout the app.
@@ -558,7 +584,8 @@ RAG (Retrieval-Augmented Generation) prevents the AI from hallucinating facts by
               Use raw userPrompt as-is
         │
         ▼
-3. Send final prompt → OpenAI gpt-4o-mini
+3. Send final prompt → Gemini gemini-2.5-flash-lite
+
         │
         ▼
 4. Return: { response, contextUsed: true/false, contextTitle }
@@ -587,7 +614,10 @@ All stored in `server/.env`.
 | `JWT_EXPIRES_IN` | No | Token expiry duration (default: `7d`) |
 | `PORT` | No | Express server port (default: `3001`) |
 | `CLIENT_URL` | No | Frontend origin for CORS (default: `http://localhost:5000`) |
-| `OPENAI_API_KEY` | For generation | Your OpenAI API key (`sk-...`) |
+| `GEMINI_API_KEY` | For generation | Your Gemini API key (Google AI Studio) |
+| `FREE_DAILY_CREDITS` | No | Free credits granted per day (default: `10`) |
+| `UNSPLASH_ACCESS_KEY` | For blog images | Unsplash access key for stock photos in generated blogs |
+
 | `STRIPE_SECRET_KEY` | For payments | Stripe secret key (`sk_test_...` or `sk_live_...`) |
 | `STRIPE_WEBHOOK_SECRET` | For payments | Stripe webhook signing secret (`whsec_...`) |
 | `RESEND_API_KEY` | For password reset emails | Resend API key, set in the hosting dashboard only (no value in code or docs) |
@@ -604,8 +634,8 @@ Browser → POST /api/auth/register
 → Check email uniqueness in MongoDB
 → bcrypt hashes password
 → User saved to MongoDB (10 free credits)
-→ JWT generated and returned
-→ Frontend stores token in localStorage
+→ JWT generated and set in an httpOnly cookie by the server
+
 → AuthContext sets user state
 → Redirect to /dashboard
 ```
@@ -631,7 +661,8 @@ Browser (Dashboard) → POST /api/generate
 → creditCheck confirms credits ≥ 1
 → Joi validates { type, prompt, tone, length }
 → buildPrompt() creates instruction string
-→ OpenAI GPT-3.5-turbo generates text
+→ Gemini gemini-2.5-flash-lite generates text
+
 → Content saved to MongoDB
 → User credits decremented in MongoDB
 → Credit transaction logged in MongoDB
@@ -646,7 +677,7 @@ Client → POST /api/generate/rag { userPrompt, topicKeywords }
 → MongoDB: Context.findOne({ keywords: { $in: topicKeywords } })
 → If found: inject context into prompt with strict instructions
 → If not found: use userPrompt directly
-→ OpenAI GPT-4o-mini generates response
+→ Gemini gemini-2.5-flash-lite generates response
 → Return { response, contextUsed, contextTitle }
 ```
 
