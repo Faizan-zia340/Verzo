@@ -57,7 +57,7 @@ export default function Navbar() {
               <div className="flex items-center gap-1.5 bg-indigo-50 border border-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg mx-1">
                 <FiZap size={11} className="text-indigo-500" />
                 <span className="text-sm font-bold">{credits ?? user.credits}</span>
-                <span className="text-xs text-indigo-400 font-medium">cr</span>
+                <span className="text-xs text-indigo-400 font-medium">credits</span>
               </div>
               <button
                 onClick={handleLogout}

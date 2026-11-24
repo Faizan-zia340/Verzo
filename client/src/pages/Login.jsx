@@ -11,7 +11,7 @@ const FEATURES = [
   '23 languages including Roman Urdu & Arabic',
   'Reality Check scoring on every output',
   'SEO package included with every generation',
-  'Inline images with Gemini Vision analysis',
+  'Inline images with AI vision analysis',
 ];
 
 export default function Login() {
