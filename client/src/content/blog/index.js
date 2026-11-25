@@ -18,7 +18,11 @@ export function parsePost(raw) {
   for (const line of match[1].split('\n')) {
     const idx = line.indexOf(':');
     if (idx === -1) continue;
-    meta[line.slice(0, idx).trim()] = line.slice(idx + 1).trim();
+    let value = line.slice(idx + 1).trim();
+    if (value.length >= 2 && ((value.startsWith("'") && value.endsWith("'")) || (value.startsWith('"') && value.endsWith('"')))) {
+      value = value.slice(1, -1);
+    }
+    meta[line.slice(0, idx).trim()] = value;
   }
   for (const key of ['title', 'description', 'slug', 'date', 'keyword']) {
     if (!meta[key]) throw new Error(`Blog post is missing frontmatter field: ${key}`);
