@@ -121,11 +121,11 @@ export default function Pricing() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch">
             {displayPlans.map((plan) => (
               <div
                 key={plan.id}
-                className={`relative rounded-2xl border p-8 flex flex-col bg-white shadow-sm transition hover:shadow-md
+                className={`relative rounded-2xl border p-6 flex flex-col bg-white shadow-sm transition hover:shadow-md
                   ${plan.popular ? 'border-indigo-500 ring-2 ring-indigo-500' : 'border-gray-200'}`}
               >
                 {plan.popular && (
@@ -146,7 +146,7 @@ export default function Pricing() {
                   </div>
                 </div>
 
-                <ul className="space-y-3 mb-8 flex-1">
+                <ul className="space-y-2.5 mb-6 flex-1">
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-start gap-2 text-sm text-gray-600">
                       <FiCheck className="text-green-500 flex-shrink-0 mt-0.5" size={15} />
@@ -158,7 +158,7 @@ export default function Pricing() {
                 <button
                   onClick={() => handleBuy(plan)}
                   disabled={loadingPlan === plan.id}
-                  className={`w-full py-3 rounded-xl font-semibold text-sm transition disabled:opacity-60 flex items-center justify-center gap-2
+                  className={`w-full mt-auto py-3 rounded-xl font-semibold text-sm transition disabled:opacity-60 flex items-center justify-center gap-2
                     ${plan.popular
                       ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md'
                       : plan.free

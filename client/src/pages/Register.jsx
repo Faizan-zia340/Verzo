@@ -43,7 +43,7 @@ export default function Register() {
     <div className="min-h-screen flex">
 
       {/* ── Left: Feature panel ──────────────────────────────── */}
-      <div className="hidden lg:flex w-[44%] bg-gradient-to-br from-gray-950 via-indigo-950 to-gray-900 flex-col justify-between p-12 flex-shrink-0">
+      <div className="hidden lg:flex w-[44%] bg-gradient-to-br from-gray-950 via-indigo-950 to-gray-900 flex-col justify-center gap-12 p-12 flex-shrink-0 lg:sticky lg:top-0 lg:h-screen">
         <Link to="/" className="flex items-center gap-2.5">
           <img src="/brand/penlix-icon.svg" alt="Penlix" className="w-9 h-9 rounded-xl" />
           <span className="text-white font-black text-2xl tracking-tight">Penlix</span>

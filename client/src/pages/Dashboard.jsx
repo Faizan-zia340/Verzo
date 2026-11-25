@@ -80,7 +80,7 @@ export default function Dashboard() {
         {/* Tab bar */}
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.1 }}
-          className="flex gap-1 p-1 bg-white border border-gray-200 rounded-xl shadow-sm mb-6 w-fit"
+          className="flex gap-1 p-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm mb-6 w-fit"
         >
           {[
             { key: 'generate', label: 'Generate', icon: FiEdit3 },
@@ -92,7 +92,7 @@ export default function Dashboard() {
               className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
                 tab === key
                   ? 'bg-indigo-600 text-white shadow-sm'
-                  : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800'
               }`}
             >
               <Icon size={14} /> {label}

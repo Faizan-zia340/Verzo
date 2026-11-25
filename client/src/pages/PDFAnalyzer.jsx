@@ -153,6 +153,21 @@ export default function PDFAnalyzer() {
             )}
           </div>
 
+          {/* How it works */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
+            {[
+              { n: '1', title: 'Upload your PDF', desc: 'Drop any PDF up to 10MB.' },
+              { n: '2', title: 'AI reads & structures it', desc: 'Chapters, key concepts and definitions extracted.' },
+              { n: '3', title: 'Study, revise, test', desc: 'Study notes, chapter summaries and a 10-question test bank.' },
+            ].map(({ n, title, desc }) => (
+              <div key={n} className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
+                <p className="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-600 text-xs font-black flex items-center justify-center mb-2">{n}</p>
+                <p className="text-sm font-semibold text-gray-900">{title}</p>
+                <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{desc}</p>
+              </div>
+            ))}
+          </div>
+
           {file && !result && (
             <motion.button
               initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
