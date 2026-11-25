@@ -556,10 +556,156 @@ function SystemSettings() {
   );
 }
 
+// ── Translation Suggestions (user-submitted glossary terms) ───────
+// Approving does NOT edit glossary.json (a repo file) — the response
+// carries the exact JSON snippet, shown below for the admin to copy in.
+function TranslationSuggestions() {
+  const [status, setStatus] = useState('pending');
+  const [suggestions, setSuggestions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [actingId, setActingId] = useState(null);
+  const [snippet, setSnippet] = useState(null);
+
+  useEffect(() => {
+    setLoading(true);
+    api.get('/glossary/suggestions', { params: { status } })
+      .then(({ data }) => setSuggestions(Array.isArray(data) ? data : []))
+      .catch(() => setSuggestions([]))
+      .finally(() => setLoading(false));
+  }, [status]);
+
+  const decide = async (id, action) => {
+    setActingId(id);
+    try {
+      const { data } = await api.post(`/glossary/suggestions/${id}/${action}`);
+      setSuggestions((prev) => prev.map((s) => (s._id === id ? { ...s, status: data.status } : s)));
+      if (action === 'approve' && data.glossary) {
+        setSnippet(data.glossary);
+        toast.success('Approved — copy the snippet into glossary.json.');
+      } else {
+        toast('Suggestion rejected.', { icon: '🗑️' });
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Could not update suggestion');
+    } finally {
+      setActingId(null);
+    }
+  };
+
+  const copySnippet = async () => {
+    try {
+      await navigator.clipboard.writeText(snippet.snippet);
+      toast.success('Snippet copied');
+    } catch { toast.error('Copy failed — select the text manually'); }
+  };
+
+  const statusBadge = (s) => ({
+    pending: 'bg-amber-100 text-amber-700 border-amber-200',
+    approved: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+    rejected: 'bg-red-100 text-red-700 border-red-200',
+  }[s] || 'bg-gray-100 text-gray-600 border-gray-200');
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-black text-gray-900 mb-0.5">Translation Suggestions</h2>
+        <p className="text-sm text-gray-500">Users suggest better words — approve to add them to the dictionary</p>
+      </div>
+
+      <div className="flex gap-2">
+        {['pending', 'approved', 'rejected'].map((s) => (
+          <button key={s} onClick={() => setStatus(s)}
+            className={`px-4 py-2 rounded-xl text-sm font-medium capitalize transition ${
+              status === s ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+            }`}>
+            {s}
+          </button>
+        ))}
+      </div>
+
+      {snippet && (
+        <div className="bg-white border border-emerald-200 rounded-2xl shadow-sm p-6">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-bold text-gray-900 text-sm">Copy into glossary.json (under terms)</h3>
+            <button onClick={copySnippet}
+              className="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg font-semibold transition">
+              Copy snippet
+            </button>
+          </div>
+          <pre className="bg-gray-900 text-gray-100 text-xs rounded-xl p-4 overflow-x-auto">{snippet.snippet}</pre>
+          <p className="text-xs text-gray-500 mt-2">{snippet.hint}</p>
+        </div>
+      )}
+
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <FiGlobe size={14} className="text-indigo-500" />
+            <h3 className="font-bold text-gray-900 text-sm capitalize">{status} suggestions</h3>
+          </div>
+          <span className="text-xs text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full font-medium">{suggestions.length} total</span>
+        </div>
+        {loading ? (
+          <div className="py-16 flex flex-col items-center gap-3">
+            <span className="animate-spin h-6 w-6 border-2 border-indigo-500 border-t-transparent rounded-full" />
+            <p className="text-sm text-gray-400">Loading...</p>
+          </div>
+        ) : !suggestions.length ? (
+          <div className="text-center py-16">
+            <FiGlobe size={28} className="text-gray-200 mx-auto mb-2" />
+            <p className="text-sm text-gray-400">No {status} suggestions.</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-gray-50">
+            {suggestions.map((s) => (
+              <div key={s._id} className="px-6 py-4 hover:bg-gray-50/80 transition">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-gray-900 text-sm">
+                      {s.word} <span className="text-gray-400 font-medium">→</span>{' '}
+                      <span className="text-indigo-700">{s.suggestedTranslation}</span>{' '}
+                      <span className="text-xs font-medium text-gray-500">({s.language})</span>
+                    </p>
+                    {s.note && <p className="text-xs text-gray-500 mt-1 leading-relaxed">{s.note}</p>}
+                    <p className="text-xs text-gray-400 mt-2">
+                      by {s.suggestedBy?.name || s.suggestedBy?.email || 'unknown'} ·{' '}
+                      {s.createdAt ? formatDistanceToNow(new Date(s.createdAt), { addSuffix: true }) : ''}
+                      {s.status !== 'pending' && ` · ${s.status}`}
+                      {s.rejectReason && ` · reason: ${s.rejectReason}`}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <span className={`text-xs px-2.5 py-1 rounded-full font-medium border capitalize ${statusBadge(s.status)}`}>
+                      {s.status}
+                    </span>
+                    {s.status === 'pending' && (
+                      <>
+                        <button onClick={() => decide(s._id, 'approve')} disabled={actingId === s._id}
+                          className="inline-flex items-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-2 rounded-lg font-semibold transition disabled:opacity-50">
+                          <FiCheck size={12} /> Approve
+                        </button>
+                        <button onClick={() => decide(s._id, 'reject')} disabled={actingId === s._id}
+                          className="inline-flex items-center gap-1 bg-white border border-red-200 hover:bg-red-50 text-red-600 text-xs px-3 py-2 rounded-lg font-semibold transition disabled:opacity-50">
+                          <FiX size={12} /> Reject
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── Sidebar Nav ────────────────────────────────────────────────────
 const NAV = [
   { key: 'overview', label: 'Overview', icon: FiBarChart2 },
   { key: 'users', label: 'User Management', icon: FiUsers },
+  { key: 'suggestions', label: 'Translation Suggestions', icon: FiGlobe },
   { key: 'settings', label: 'System Settings', icon: FiSettings },
 ];
 
@@ -641,6 +787,7 @@ export default function Admin() {
         <div className="max-w-5xl mx-auto px-8 py-7">
           {section === 'overview' && <Overview stats={stats} loadingStats={loadingStats} />}
           {section === 'users' && <UserManagement />}
+          {section === 'suggestions' && <TranslationSuggestions />}
           {section === 'settings' && <SystemSettings />}
         </div>
       </main>
