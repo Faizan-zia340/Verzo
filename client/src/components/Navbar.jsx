@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.js';
 import { useCredits } from '../context/CreditContext.js';
-import { FiEdit3, FiLogOut, FiGrid, FiShield, FiFileText, FiZap, FiMoon, FiSun } from 'react-icons/fi';
+import { FiLogOut, FiGrid, FiShield, FiFileText, FiZap, FiMoon, FiSun } from 'react-icons/fi';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -22,9 +22,8 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-[60px]">
 
         <Link to="/" className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-indigo-200 group-hover:shadow-md transition-shadow">
-            <FiEdit3 size={14} className="text-white" />
-          </div>
+          <img src="/brand/logo-mark.svg" alt="Verzo" className="h-8 w-auto dark:hidden" />
+          <img src="/brand/logo-square.svg" alt="Verzo" className="h-8 w-8 hidden dark:block rounded-lg" />
           <span className="font-black text-gray-900 dark:text-white text-xl tracking-tight">Verzo</span>
         </Link>
 
