@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.js';
 import toast from 'react-hot-toast';
-import { FiEdit3, FiAlertCircle, FiCheck, FiArrowLeft, FiZap } from 'react-icons/fi';
+import { FiAlertCircle, FiCheck, FiArrowLeft, FiZap } from 'react-icons/fi';
 
 const PERKS = [
   '10 free credits instantly — no card needed',
@@ -45,9 +45,7 @@ export default function Register() {
       {/* ── Left: Feature panel ──────────────────────────────── */}
       <div className="hidden lg:flex w-[44%] bg-gradient-to-br from-gray-950 via-indigo-950 to-gray-900 flex-col justify-between p-12 flex-shrink-0">
         <Link to="/" className="flex items-center gap-2.5">
-          <div className="w-9 h-9 bg-white/10 border border-white/20 rounded-xl flex items-center justify-center">
-            <FiEdit3 size={17} className="text-white" />
-          </div>
+          <img src="/brand/logo-square.svg" alt="Verzo" className="w-9 h-9 rounded-xl" />
           <span className="text-white font-black text-2xl tracking-tight">Verzo</span>
         </Link>
 
@@ -89,9 +87,7 @@ export default function Register() {
 
           {/* Mobile logo */}
           <Link to="/" className="flex items-center gap-2 mb-10 lg:hidden">
-            <div className="w-8 h-8 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-lg flex items-center justify-center">
-              <FiEdit3 size={14} className="text-white" />
-            </div>
+            <img src="/brand/logo-mark.svg" alt="Verzo" className="h-8 w-auto" />
             <span className="font-black text-gray-900 text-xl">Verzo</span>
           </Link>
 
