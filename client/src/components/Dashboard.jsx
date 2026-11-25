@@ -8,8 +8,8 @@ const DashboardChart = lazy(() => import('./DashboardChart.jsx'));
 
 const PLAN_COLORS = {
   free: 'text-gray-600 bg-gray-100',
-  pro: 'text-indigo-700 bg-indigo-100',
-  enterprise: 'text-violet-700 bg-violet-100',
+  pro: 'text-brand-700 bg-brand-100',
+  enterprise: 'text-accent-700 bg-accent-100',
 };
 
 export default function DashboardStats() {
@@ -32,8 +32,8 @@ export default function DashboardStats() {
       label: 'Plan',
       value: plan.charAt(0).toUpperCase() + plan.slice(1),
       sub: 'Current plan',
-      iconBg: 'bg-violet-100',
-      iconColor: 'text-violet-600',
+      iconBg: 'bg-accent-100',
+      iconColor: 'text-accent-600',
       valueCls: `font-black capitalize text-2xl ${PLAN_COLORS[plan]?.split(' ')[0] || 'text-gray-900'}`,
     },
     {
@@ -41,9 +41,9 @@ export default function DashboardStats() {
       label: 'Credits',
       value: user?.credits ?? '—',
       sub: 'Available to use',
-      iconBg: 'bg-indigo-100',
-      iconColor: 'text-indigo-600',
-      valueCls: 'font-black text-2xl text-indigo-600',
+      iconBg: 'bg-brand-100',
+      iconColor: 'text-brand-600',
+      valueCls: 'font-black text-2xl text-brand-600',
     },
     {
       icon: FiTrendingUp,
@@ -69,7 +69,7 @@ export default function DashboardStats() {
               <div className={`w-10 h-10 ${iconBg} rounded-xl flex items-center justify-center`}>
                 <Icon size={17} className={iconColor} />
               </div>
-              <span className="text-xs text-gray-400 font-medium">{sub}</span>
+              <span className="text-xs text-gray-500 font-medium">{sub}</span>
             </div>
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">{label}</p>
             <p className={valueCls}>{value}</p>

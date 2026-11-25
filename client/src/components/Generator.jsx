@@ -71,8 +71,8 @@ const TEMPLATES = [
   {
     Icon: FiSmartphone,
     label: 'Social Media Post',
-    color: 'text-violet-600',
-    bg: 'bg-violet-50',
+    color: 'text-accent-600',
+    bg: 'bg-accent-50',
     form: {
       type: 'social', tone: 'friendly', length: 'short', language: 'english_us', format: 'paragraphs',
       prompt: 'Create a high-engagement Instagram caption for a motivational business post. Use 2-3 relevant emojis, write a hook in the first line, and end with a question to drive comments. Target audience: entrepreneurs aged 25-40.',
@@ -82,8 +82,8 @@ const TEMPLATES = [
   {
     Icon: FiMail,
     label: 'Cold Email',
-    color: 'text-indigo-600',
-    bg: 'bg-indigo-50',
+    color: 'text-brand-600',
+    bg: 'bg-brand-50',
     form: {
       type: 'email', tone: 'professional', length: 'short', language: 'english_us', format: 'paragraphs',
       prompt: 'Write a cold outreach email to a potential B2B SaaS client. Include a personalized opener, state the value proposition in 2 sentences, and close with a soft CTA to schedule a 15-minute discovery call. Keep it under 150 words.',
@@ -156,7 +156,7 @@ const TUNE_ACTIONS = [
   { key: 'reduce_hype', label: '🎯 Reduce Hype' },
 ];
 
-const selectClass = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500';
+const selectClass = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500';
 
 const stripMarkers = (text) => text.replace(/\[IMAGE:\d+\]/g, '').replace(/\n{3,}/g, '\n\n').trim();
 
@@ -427,7 +427,7 @@ export default function Generator() {
                       📝 <span className="font-medium">Text in image (EN):</span> "{img.extractedText}"
                     </p>
                   )}
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-gray-500">
                     📷{' '}
                     <a href={img.creditUrl} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-gray-600 transition">
                       {img.credit}
@@ -449,7 +449,7 @@ export default function Generator() {
     <div className="space-y-5">
       {/* Quick Templates */}
       <div>
-        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Quick Templates</p>
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Quick Templates</p>
         <div className="grid grid-cols-3 gap-3">
           {TEMPLATES.map(({ Icon, label, color, bg, form: tplForm }) => (
             <motion.button
@@ -457,14 +457,14 @@ export default function Generator() {
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => applyTemplate({ form: tplForm })}
-              className="bg-white border border-gray-200 rounded-xl p-4 text-left hover:border-indigo-300 hover:shadow-md transition flex items-start gap-3"
+              className="bg-white border border-gray-200 rounded-xl p-4 text-left hover:border-brand-300 hover:shadow-md transition flex items-start gap-3"
             >
               <div className={`w-9 h-9 ${bg} rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5`}>
                 <Icon size={16} className={color} />
               </div>
               <div>
                 <p className="text-sm font-semibold text-gray-800 leading-tight">{label}</p>
-                <p className="text-xs text-gray-400 mt-0.5">Quick template</p>
+                <p className="text-xs text-gray-500 mt-0.5">Quick template</p>
               </div>
             </motion.button>
           ))}
@@ -494,7 +494,7 @@ export default function Generator() {
 
           {/* Row 2: Language (grouped) */}
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Language & Dialect <span className="text-gray-400 font-normal">(23 options)</span></label>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Language & Dialect <span className="text-gray-500 font-normal">(23 options)</span></label>
             <select name="language" value={form.language} onChange={handleChange} className={selectClass}>
               {LANGUAGES.map(({ group, options }) => (
                 <optgroup key={group} label={group}>
@@ -510,9 +510,9 @@ export default function Generator() {
             <textarea
               name="prompt" value={form.prompt} onChange={handleChange} rows={4} required
               placeholder="Describe what you want to generate, or pick a quick template above..."
-              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none placeholder-gray-400"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 resize-none placeholder-gray-500"
             />
-           <div className="flex items-center justify-between mt-1.5 text-xs text-gray-400">
+           <div className="flex items-center justify-between mt-1.5 text-xs text-gray-500">
              <span>{form.prompt.length.toLocaleString()} characters</span>
              <span>{form.prompt.trim() ? form.prompt.trim().split(/\s+/).length.toLocaleString() : 0} words</span>
            </div>
@@ -521,7 +521,7 @@ export default function Generator() {
           {/* Required details for the selected type */}
           <div>
             <p className="text-xs font-medium text-gray-600 mb-2">
-              Required details <span className="text-gray-400 font-normal">(for {form.type} — no placeholders are used, so these must be real)</span>
+              Required details <span className="text-gray-500 font-normal">(for {form.type} — no placeholders are used, so these must be real)</span>
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {(REQUIRED_FIELDS[form.type] || []).map((field) => (
@@ -532,7 +532,7 @@ export default function Generator() {
                   <input
                     name={field.name} value={form[field.name] || ''} onChange={handleChange}
                     placeholder={field.placeholder}
-                    className={`w-full border rounded-lg px-3 py-2 text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400 ${fieldErrors[field.name] ? 'border-red-400' : 'border-gray-200'}`}
+                    className={`w-full border rounded-lg px-3 py-2 text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 placeholder-gray-500 ${fieldErrors[field.name] ? 'border-red-400' : 'border-gray-200'}`}
                   />
                   {fieldErrors[field.name] && (
                     <p className="text-xs text-red-600 mt-1">{fieldErrors[field.name]}</p>
@@ -541,17 +541,17 @@ export default function Generator() {
               ))}
             </div>
             {form.type === 'email' && (
-              <p className="text-xs text-gray-400 mt-2">Apply link or contact — at least one of the two is required.</p>
+              <p className="text-xs text-gray-500 mt-2">Apply link or contact — at least one of the two is required.</p>
             )}
           </div>
 
           {/* Error */}
           {error && (
             <div className={`flex items-start gap-2.5 px-4 py-3 rounded-xl text-sm ${
-              isRateLimit ? 'bg-amber-50 border border-amber-200 text-amber-800' : 'bg-red-50 border border-red-200 text-red-700'
+              isRateLimit ? 'bg-gold-50 border border-gold-200 text-gold-800' : 'bg-red-50 border border-red-200 text-red-700'
             }`}>
               {isRateLimit
-                ? <FiRefreshCw size={15} className="mt-0.5 flex-shrink-0 text-amber-500" />
+                ? <FiRefreshCw size={15} className="mt-0.5 flex-shrink-0 text-gold-600" />
                 : <FiAlertCircle size={15} className="mt-0.5 flex-shrink-0 text-red-500" />
               }
               <div className="flex-1">
@@ -564,7 +564,7 @@ export default function Generator() {
           <motion.button
             type="submit" disabled={loading}
             whileTap={{ scale: 0.98 }}
-            className="w-full bg-indigo-600 text-white py-3 rounded-xl font-semibold hover:bg-indigo-700 transition disabled:opacity-60 flex items-center justify-center gap-2 text-sm shadow-sm"
+            className="w-full bg-brand-600 text-white py-3 rounded-xl font-semibold hover:bg-brand-700 transition disabled:opacity-60 flex items-center justify-center gap-2 text-sm shadow-sm"
           >
             {loading
               ? <><span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />{fetchingImages ? 'Analyzing images...' : 'Generating...'}</>
@@ -597,12 +597,12 @@ export default function Generator() {
               {[0, 1, 2].map((i) => (
                 <motion.div
                   key={i}
-                  className="w-2 h-2 rounded-full bg-indigo-400"
+                  className="w-2 h-2 rounded-full bg-brand-400"
                   animate={{ y: [0, -5, 0], opacity: [0.4, 1, 0.4] }}
                   transition={{ duration: 0.65, repeat: Infinity, delay: i * 0.13, ease: 'easeInOut' }}
                 />
               ))}
-              <span className="text-xs text-gray-400 ml-1">AI is writing…</span>
+              <span className="text-xs text-gray-500 ml-1">AI is writing…</span>
             </div>
           </motion.div>
         )}
@@ -630,7 +630,7 @@ export default function Generator() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <FontPicker script={script} value={font} onChange={setFont} />
-                  <button onClick={handleCopy} className="flex items-center gap-1.5 text-xs bg-gray-100 hover:bg-indigo-50 hover:text-indigo-700 text-gray-600 px-3 py-1.5 rounded-lg transition font-medium">
+                  <button onClick={handleCopy} className="flex items-center gap-1.5 text-xs bg-gray-100 hover:bg-brand-50 hover:text-brand-700 text-gray-600 px-3 py-1.5 rounded-lg transition font-medium">
                     {copied ? <><FiCheck size={12} /> Copied!</> : <><FiCopy size={12} /> Copy</>}
                   </button>
                   <button onClick={handleDownloadTxt} className="flex items-center gap-1.5 text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition font-medium">
@@ -651,7 +651,7 @@ export default function Generator() {
                 style={{ fontFamily: stack, lineHeight }}
               >
                 {renderContent()}
-                {loading && <span className="inline-block w-0.5 h-4 bg-indigo-500 animate-pulse ml-0.5 align-middle" />}
+                {loading && <span className="inline-block w-0.5 h-4 bg-brand-500 animate-pulse ml-0.5 align-middle" />}
               </div>
 
               {/* Quality check result */}
@@ -663,7 +663,7 @@ export default function Generator() {
                     {qualityReport.retried && <span className="text-xs opacity-80">(fixed on retry)</span>}
                   </div>
                 ) : (
-                  <div className="mt-3 px-4 py-3 rounded-xl text-sm bg-amber-50 border border-amber-200 text-amber-800">
+                  <div className="mt-3 px-4 py-3 rounded-xl text-sm bg-gold-50 border border-gold-200 text-gold-800">
                     <p className="font-semibold flex items-center gap-2">
                       <FiAlertCircle size={15} /> Quality warnings{qualityReport.retried ? ' (still present after retry)' : ''}
                     </p>
@@ -689,7 +689,7 @@ export default function Generator() {
               {/* Tune buttons */}
               {!loading && output && (
                 <div className="mt-4 pt-4 border-t border-gray-100">
-                  <p className="text-xs text-gray-400 font-medium mb-2 flex items-center gap-1.5">
+                  <p className="text-xs text-gray-500 font-medium mb-2 flex items-center gap-1.5">
                     <FiSliders size={11} /> Refine output — no credits used
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -698,10 +698,10 @@ export default function Generator() {
                         key={key}
                         onClick={() => handleTune(key)}
                         disabled={!!tuning}
-                        className="text-xs border border-gray-200 bg-white text-gray-700 hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-1.5 rounded-lg transition disabled:opacity-40 font-medium"
+                        className="text-xs border border-gray-200 bg-white text-gray-700 hover:border-brand-400 hover:text-brand-600 hover:bg-brand-50 px-3 py-1.5 rounded-lg transition disabled:opacity-40 font-medium"
                       >
                         {tuning === key
-                          ? <span className="flex items-center gap-1"><span className="animate-spin h-3 w-3 border border-indigo-400 border-t-transparent rounded-full" /> Rewriting...</span>
+                          ? <span className="flex items-center gap-1"><span className="animate-spin h-3 w-3 border border-brand-400 border-t-transparent rounded-full" /> Rewriting...</span>
                           : label
                         }
                       </button>
@@ -716,8 +716,8 @@ export default function Generator() {
               {/* SEO Panel */}
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                 <div className="flex items-center gap-2 mb-4">
-                  <div className="w-7 h-7 bg-indigo-100 rounded-lg flex items-center justify-center">
-                    <FiZap size={13} className="text-indigo-600" />
+                  <div className="w-7 h-7 bg-brand-100 rounded-lg flex items-center justify-center">
+                    <FiZap size={13} className="text-brand-600" />
                   </div>
                   <h3 className="font-semibold text-gray-900 text-sm">SEO Package</h3>
                 </div>
@@ -727,19 +727,19 @@ export default function Generator() {
                     {[1, 0.8, 0.6].map((w, i) => (
                       <div key={i} className="h-2.5 bg-gray-100 rounded-full animate-pulse" style={{ width: `${w * 100}%` }} />
                     ))}
-                    <p className="text-xs text-gray-400 mt-2">Generating SEO metadata...</p>
+                    <p className="text-xs text-gray-500 mt-2">Generating SEO metadata...</p>
                   </div>
                 )}
 
                 {!loading && !seoData && (
-                  <p className="text-xs text-gray-400">SEO metadata appears here after generation.</p>
+                  <p className="text-xs text-gray-500">SEO metadata appears here after generation.</p>
                 )}
 
                 {seoData && (
                   <div className="space-y-3">
                     <div>
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Meta Title</p>
-                      <div className="bg-indigo-50 border border-indigo-100 rounded-lg px-3 py-2">
+                      <div className="bg-brand-50 border border-brand-100 rounded-lg px-3 py-2">
                         <p className="text-sm text-gray-800 font-medium">{seoData.title || '—'}</p>
                       </div>
                     </div>
@@ -753,7 +753,7 @@ export default function Generator() {
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Keywords</p>
                       <div className="flex flex-wrap gap-1.5">
                         {(seoData.keywords || []).map((kw, i) => (
-                          <span key={i} className="bg-indigo-100 text-indigo-700 text-xs px-2.5 py-0.5 rounded-full font-medium">{kw}</span>
+                          <span key={i} className="bg-brand-100 text-brand-700 text-xs px-2.5 py-0.5 rounded-full font-medium">{kw}</span>
                         ))}
                       </div>
                     </div>
@@ -770,7 +770,7 @@ export default function Generator() {
                 >
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 bg-violet-100 rounded-lg flex items-center justify-center">
+                      <div className="w-7 h-7 bg-accent-100 rounded-lg flex items-center justify-center">
                         <span className="text-xs">⚡</span>
                       </div>
                       <h3 className="font-semibold text-gray-900 text-sm">Reality Check</h3>
@@ -778,7 +778,7 @@ export default function Generator() {
                     {realityCheck.rating != null && (
                       <div className={`text-sm font-bold px-2.5 py-1 rounded-lg ${
                         realityCheck.rating >= 8 ? 'bg-emerald-100 text-emerald-700' :
-                        realityCheck.rating >= 6 ? 'bg-amber-100 text-amber-700' :
+                        realityCheck.rating >= 6 ? 'bg-gold-100 text-gold-700' :
                         'bg-red-100 text-red-700'
                       }`}>
                         {realityCheck.rating}/10
@@ -788,8 +788,8 @@ export default function Generator() {
                   <div className="space-y-3">
                     {realityCheck.pillars.map((pillar) => {
                       const pct = Math.round((pillar.score / 10) * 100);
-                      const color = pillar.score >= 8 ? 'bg-emerald-500' : pillar.score >= 6 ? 'bg-amber-400' : 'bg-red-400';
-                      const textColor = pillar.score >= 8 ? 'text-emerald-700' : pillar.score >= 6 ? 'text-amber-700' : 'text-red-600';
+                      const color = pillar.score >= 8 ? 'bg-emerald-500' : pillar.score >= 6 ? 'bg-gold-400' : 'bg-red-400';
+                      const textColor = pillar.score >= 8 ? 'text-emerald-700' : pillar.score >= 6 ? 'text-gold-700' : 'text-red-600';
                       return (
                         <div key={pillar.name}>
                           <div className="flex items-center justify-between mb-1">
@@ -799,7 +799,7 @@ export default function Generator() {
                           <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden mb-1">
                             <div className={`h-full ${color} rounded-full transition-all`} style={{ width: `${pct}%` }} />
                           </div>
-                          <p className="text-xs text-gray-400 leading-snug">{pillar.verdict}</p>
+                          <p className="text-xs text-gray-500 leading-snug">{pillar.verdict}</p>
                         </div>
                       );
                     })}
@@ -826,7 +826,7 @@ export default function Generator() {
                       </div>
                       <h3 className="font-semibold text-gray-900 text-sm">Stock Photos</h3>
                     </div>
-                    <button onClick={() => setShowImages(!showImages)} className="text-xs text-indigo-600 hover:text-indigo-800 font-medium">
+                    <button onClick={() => setShowImages(!showImages)} className="text-xs text-brand-600 hover:text-brand-800 font-medium">
                       {showImages ? 'Hide' : 'Show'}
                     </button>
                   </div>
@@ -836,14 +836,14 @@ export default function Generator() {
                         {images.map((img, i) => (
                           <a key={i} href={img.photographerUrl} target="_blank" rel="noopener noreferrer" className="block group">
                             <img src={img.thumb || img.url} alt={img.alt} className="w-full h-24 object-cover rounded-lg group-hover:opacity-90 transition" />
-                            <p className="text-xs text-gray-400 mt-1">📷 {img.photographer} · Unsplash</p>
+                            <p className="text-xs text-gray-500 mt-1">📷 {img.photographer} · Unsplash</p>
                           </a>
                         ))}
                       </motion.div>
                     )}
                   </AnimatePresence>
                   {!showImages && (
-                    <p className="text-xs text-gray-400">{images.length} photos matched your content.</p>
+                    <p className="text-xs text-gray-500">{images.length} photos matched your content.</p>
                   )}
                 </motion.div>
               )}

@@ -52,18 +52,18 @@ export default function Navbar() {
                 <FiFileText size={13} /> PDF Analyzer
               </Link>
               {user.isAdmin && (
-                <Link to="/admin" className="text-violet-600 hover:text-violet-800 text-sm font-medium px-3 py-2 rounded-lg hover:bg-violet-50 transition flex items-center gap-1.5">
+                <Link to="/admin" className="text-accent-600 dark:text-accent-300 hover:text-accent-800 dark:hover:text-accent-200 text-sm font-medium px-3 py-2 rounded-lg hover:bg-accent-50 transition flex items-center gap-1.5">
                   <FiShield size={13} /> Admin
                 </Link>
               )}
-              <div className="flex items-center gap-1.5 bg-indigo-50 border border-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg mx-1">
-                <FiZap size={11} className="text-indigo-500" />
+              <div className="flex items-center gap-1.5 bg-brand-50 border border-brand-100 text-brand-700 px-3 py-1.5 rounded-lg mx-1">
+                <FiZap size={11} className="text-brand-500" />
                 <span className="text-sm font-bold">{credits ?? user.credits}</span>
-                <span className="text-xs text-indigo-400 font-medium">credits</span>
+                <span className="text-xs text-brand-600 font-medium">credits</span>
               </div>
               <button
                 onClick={handleLogout}
-                className="text-gray-400 hover:text-red-500 hover:bg-red-50 flex items-center gap-1.5 text-sm px-3 py-2 rounded-lg transition font-medium"
+                className="text-gray-500 dark:text-gray-400 hover:text-red-500 hover:bg-red-50 flex items-center gap-1.5 text-sm px-3 py-2 rounded-lg transition font-medium"
               >
                 <FiLogOut size={13} /> Logout
               </button>
@@ -73,7 +73,7 @@ export default function Navbar() {
               <Link to="/login" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition">
                 Sign in
               </Link>
-              <Link to="/register" className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition shadow-sm ml-1">
+              <Link to="/register" className="bg-brand-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-brand-700 transition shadow-sm ml-1">
                 Get started free
               </Link>
             </>
