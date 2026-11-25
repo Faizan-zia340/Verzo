@@ -28,10 +28,10 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gray-50/80 dark:bg-gray-950">
 
       {/* ── Welcome banner ─────────────────────────────────── */}
-      <div className="bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600">
+      <div className="bg-gradient-to-r from-brand-600 via-brand-600 to-accent-600">
         <div className="max-w-5xl mx-auto px-4 py-6 flex items-center justify-between flex-wrap gap-4">
           <motion.div initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}>
-            <p className="text-indigo-200 text-sm font-medium">{greet()}</p>
+            <p className="text-brand-100 text-sm font-medium">{greet()}</p>
             <h1 className="text-2xl font-black text-white tracking-tight">{user?.name}</h1>
           </motion.div>
           <motion.div initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}
@@ -91,7 +91,7 @@ export default function Dashboard() {
               onClick={() => setTab(key)}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
                 tab === key
-                  ? 'bg-indigo-600 text-white shadow-sm'
+                  ? 'bg-brand-600 text-white shadow-sm'
                   : 'text-gray-500 hover:text-gray-800 hover:bg-gray-50'
               }`}
             >

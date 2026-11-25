@@ -4,7 +4,7 @@ import api from '../services/api.js';
 import toast from 'react-hot-toast';
 import { FiAlertCircle, FiArrowLeft, FiMail } from 'react-icons/fi';
 
-const inputClass = 'w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white transition placeholder-gray-400';
+const inputClass = 'w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition placeholder-gray-500';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -45,7 +45,7 @@ export default function ForgotPassword() {
         )}
 
         {sent ? (
-          <div className="bg-indigo-50 border border-indigo-100 text-indigo-800 text-sm px-4 py-3.5 rounded-xl mb-5">
+          <div className="bg-brand-50 border border-brand-100 text-brand-800 text-sm px-4 py-3.5 rounded-xl mb-5">
             If an account exists with that email, a password reset link has been sent. Please check your inbox (and spam folder) — the link expires in 1 hour.
           </div>
         ) : (
@@ -65,7 +65,7 @@ export default function ForgotPassword() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-xl font-bold transition disabled:opacity-60 text-sm shadow-lg shadow-indigo-200 mt-2 flex items-center justify-center gap-2"
+              className="w-full bg-brand-600 hover:bg-brand-700 text-white py-3.5 rounded-xl font-bold transition disabled:opacity-60 text-sm shadow-lg shadow-brand-200 mt-2 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
@@ -78,12 +78,12 @@ export default function ForgotPassword() {
         )}
 
         <div className="mt-6 pt-6 border-t border-gray-100 flex items-center justify-between text-sm">
-          <Link to="/login" className="text-gray-400 hover:text-gray-600 flex items-center gap-1 transition">
+          <Link to="/login" className="text-gray-500 hover:text-gray-600 flex items-center gap-1 transition">
             <FiArrowLeft size={12} /> Back to sign in
           </Link>
           <span className="text-gray-500">
             No account?{' '}
-            <Link to="/register" className="text-indigo-600 hover:text-indigo-800 font-semibold transition">
+            <Link to="/register" className="text-brand-600 hover:text-brand-800 font-semibold transition">
               Sign up free
             </Link>
           </span>

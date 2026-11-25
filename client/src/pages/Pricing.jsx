@@ -78,7 +78,7 @@ export default function Pricing() {
           name: pkg.name,
           price: `$${(pkg.amount / 100).toFixed(2)}`,
           credits: pkg.credits,
-          color: pkg.id === 'pro' ? 'violet' : 'indigo',
+          color: pkg.id === 'pro' ? 'accent' : 'brand',
           features: PAID_FEATURES[pkg.id] || [`${pkg.credits} credits`, 'All content types', 'Content history'],
           cta: 'Buy Now',
           popular: pkg.popular,
@@ -87,10 +87,10 @@ export default function Pricing() {
     : [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-brand-50 to-white">
       <div className="max-w-5xl mx-auto px-4 py-16">
         <div className="text-center mb-14">
-          <span className="inline-block bg-indigo-100 text-indigo-700 text-sm font-semibold px-4 py-1.5 rounded-full mb-4">
+          <span className="inline-block bg-brand-100 text-brand-700 text-sm font-semibold px-4 py-1.5 rounded-full mb-4">
             Pricing
           </span>
           <h1 className="text-4xl font-extrabold text-gray-900 mb-3">
@@ -114,7 +114,7 @@ export default function Pricing() {
             <div>
               <button
                 onClick={loadPlans}
-                className="py-2.5 px-6 rounded-xl font-semibold text-sm bg-indigo-600 text-white hover:bg-indigo-700 transition"
+                className="py-2.5 px-6 rounded-xl font-semibold text-sm bg-brand-600 text-white hover:bg-brand-700 transition"
               >
                 Retry
               </button>
@@ -126,10 +126,10 @@ export default function Pricing() {
               <div
                 key={plan.id}
                 className={`relative rounded-2xl border p-8 flex flex-col bg-white shadow-sm transition hover:shadow-md
-                  ${plan.popular ? 'border-indigo-500 ring-2 ring-indigo-500' : 'border-gray-200'}`}
+                  ${plan.popular ? 'border-brand-500 ring-2 ring-brand-500' : 'border-gray-200'}`}
               >
                 {plan.popular && (
-                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-xs font-bold px-4 py-1 rounded-full shadow">
+                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-brand-600 text-white text-xs font-bold px-4 py-1 rounded-full shadow">
                     Most Popular
                   </span>
                 )}
@@ -141,8 +141,8 @@ export default function Pricing() {
                     {!plan.free && <span className="text-gray-400 text-sm mb-1">one-time</span>}
                   </div>
                   <div className="flex items-center gap-1.5 mt-2">
-                    <FiZap className="text-indigo-500" size={14} />
-                    <span className="text-sm font-semibold text-indigo-600">{plan.credits} credits</span>
+                    <FiZap className="text-brand-500" size={14} />
+                    <span className="text-sm font-semibold text-brand-600">{plan.credits} credits</span>
                   </div>
                 </div>
 
@@ -160,10 +160,10 @@ export default function Pricing() {
                   disabled={loadingPlan === plan.id}
                   className={`w-full py-3 rounded-xl font-semibold text-sm transition disabled:opacity-60 flex items-center justify-center gap-2
                     ${plan.popular
-                      ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md'
+                      ? 'bg-brand-600 text-white hover:bg-brand-700 shadow-md'
                       : plan.free
                         ? 'border border-gray-300 text-gray-700 hover:bg-gray-50'
-                        : 'bg-violet-600 text-white hover:bg-violet-700'
+                        : 'bg-accent-600 text-white hover:bg-accent-700'
                     }`}
                 >
                   {loadingPlan === plan.id ? <LoadingSpinner size="sm" /> : plan.cta}
@@ -173,7 +173,7 @@ export default function Pricing() {
           </div>
         )}
 
-        <p className="text-center text-xs text-gray-400 mt-10">
+        <p className="text-center text-xs text-gray-500 mt-10">
           Payments are processed securely by Stripe. Credits never expire.
         </p>
       </div>

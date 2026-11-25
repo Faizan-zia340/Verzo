@@ -37,26 +37,26 @@ export default function Register() {
     }
   };
 
-  const inputClass = 'w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white transition placeholder-gray-400';
+  const inputClass = 'w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition placeholder-gray-500';
 
   return (
     <div className="min-h-screen flex">
 
       {/* ── Left: Feature panel ──────────────────────────────── */}
-      <div className="hidden lg:flex w-[44%] bg-gradient-to-br from-gray-950 via-indigo-950 to-gray-900 flex-col justify-between p-12 flex-shrink-0">
+      <div className="hidden lg:flex w-[44%] bg-gradient-to-br from-gray-950 via-brand-950 to-gray-900 flex-col justify-between p-12 flex-shrink-0">
         <Link to="/" className="flex items-center gap-2.5">
-          <img src="/brand/logo-square.svg" alt="Verzo" className="w-9 h-9 rounded-xl" />
+          <img src="/logo.png" alt="Verzo logo" className="w-9 h-9 rounded-xl" />
           <span className="text-white font-black text-2xl tracking-tight">Verzo</span>
         </Link>
 
         <div>
-          <div className="inline-flex items-center gap-2 bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-xs font-bold px-4 py-1.5 rounded-full mb-6">
+          <div className="inline-flex items-center gap-2 bg-brand-500/20 border border-brand-400/30 text-brand-300 text-xs font-bold px-4 py-1.5 rounded-full mb-6">
             <FiZap size={11} /> 20 free credits — no credit card
           </div>
           <h2 className="text-4xl font-black text-white leading-tight mb-4 tracking-tight">
             Your AI content<br />studio awaits.
           </h2>
-          <p className="text-indigo-300 text-sm mb-8 leading-relaxed">
+          <p className="text-brand-300 text-sm mb-8 leading-relaxed">
             Create an account in 30 seconds and start generating content that your audience actually reads.
           </p>
           <div className="space-y-3">
@@ -87,7 +87,7 @@ export default function Register() {
 
           {/* Mobile logo */}
           <Link to="/" className="flex items-center gap-2 mb-10 lg:hidden">
-            <img src="/brand/logo-mark.svg" alt="Verzo" className="h-8 w-auto" />
+            <img src="/logo.png" alt="Verzo logo" className="w-8 h-8 rounded-lg" />
             <span className="font-black text-gray-900 text-xl">Verzo</span>
           </Link>
 
@@ -119,7 +119,7 @@ export default function Register() {
             </div>
 
             <button type="submit" disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-xl font-bold transition disabled:opacity-60 text-sm shadow-lg shadow-indigo-200 mt-2 flex items-center justify-center gap-2">
+              className="w-full bg-brand-600 hover:bg-brand-700 text-white py-3.5 rounded-xl font-bold transition disabled:opacity-60 text-sm shadow-lg shadow-brand-200 mt-2 flex items-center justify-center gap-2">
               {loading ? (
                 <><span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" /> Creating account...</>
               ) : (
@@ -128,17 +128,17 @@ export default function Register() {
             </button>
           </form>
 
-          <p className="text-xs text-gray-400 text-center mt-4 leading-relaxed">
+          <p className="text-xs text-gray-500 text-center mt-4 leading-relaxed">
             By creating an account you agree to our terms of service.
           </p>
 
           <div className="mt-6 pt-6 border-t border-gray-100 flex items-center justify-between text-sm">
-            <Link to="/" className="text-gray-400 hover:text-gray-600 flex items-center gap-1 transition">
+            <Link to="/" className="text-gray-500 hover:text-gray-600 flex items-center gap-1 transition">
               <FiArrowLeft size={12} /> Home
             </Link>
             <span className="text-gray-500">
               Have an account?{' '}
-              <Link to="/login" className="text-indigo-600 hover:text-indigo-800 font-semibold transition">
+              <Link to="/login" className="text-brand-600 hover:text-brand-800 font-semibold transition">
                 Sign in
               </Link>
             </span>
