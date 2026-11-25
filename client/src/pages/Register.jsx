@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { FiEdit3, FiAlertCircle, FiCheck, FiArrowLeft, FiZap } from 'react-icons/fi';
 
 const PERKS = [
-  '10 free credits instantly — no card needed',
+  '20 free credits instantly — no card needed',
   'Stream AI content in 23 languages',
   'Reality Check scores every generation',
   'SEO package + inline images for blogs',
@@ -53,7 +53,7 @@ export default function Register() {
 
         <div>
           <div className="inline-flex items-center gap-2 bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-xs font-bold px-4 py-1.5 rounded-full mb-6">
-            <FiZap size={11} /> 10 free credits — no credit card
+            <FiZap size={11} /> 20 free credits — no credit card
           </div>
           <h2 className="text-4xl font-black text-white leading-tight mb-4 tracking-tight">
             Your AI content<br />studio awaits.
@@ -96,7 +96,7 @@ export default function Register() {
           </Link>
 
           <h1 className="text-3xl font-black text-gray-950 mb-1 tracking-tight">Create your account</h1>
-          <p className="text-gray-500 text-sm mb-8">Get 10 free credits — no card needed</p>
+          <p className="text-gray-500 text-sm mb-8">Get 20 free credits — no card needed</p>
 
           {error && (
             <div className="flex items-start gap-3 bg-red-50 border border-red-100 text-red-700 text-sm px-4 py-3.5 rounded-xl mb-5">

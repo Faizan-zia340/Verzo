@@ -79,7 +79,7 @@ export default function Home() {
               <>
                 <Link to="/register"
                   className="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-xl font-bold text-base transition shadow-xl shadow-indigo-200/60">
-                  Start free — 10 credits <FiArrowRight size={16} />
+                  Start free — 20 credits <FiArrowRight size={16} />
                 </Link>
                 <Link to="/login"
                   className="inline-flex items-center justify-center border-2 border-gray-200 hover:border-gray-300 text-gray-700 px-8 py-4 rounded-xl font-bold text-base bg-white transition">
@@ -172,7 +172,7 @@ export default function Home() {
               </>
             ) : (
               <>
-                <p className="text-indigo-200 mb-8 max-w-xs mx-auto">Get 10 free credits instantly. No credit card required.</p>
+                <p className="text-indigo-200 mb-8 max-w-xs mx-auto">Get 20 free credits instantly. No credit card required.</p>
                 <Link to="/register"
                   className="inline-flex items-center gap-2 bg-white text-indigo-700 font-bold px-8 py-4 rounded-xl hover:bg-indigo-50 transition shadow-lg text-sm">
                   Create free account <FiArrowRight size={15} />

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { generate, streamGenerate, tuneContent, generateAIContent } from '../controllers/generatorController.js';
 import protect from '../middleware/auth.js';
-import creditCheck from '../middleware/creditCheck.js';
+import reserveCredit from '../middleware/reserveCredit.js';
 import userRateLimit from '../middleware/userRateLimit.js';
 import { validate, generateSchema } from '../utils/validators.js';
 import getClient, { MODEL, API_VERSION } from '../config/gemini.js';
@@ -12,8 +12,8 @@ const router = Router();
 
 const genLimit = userRateLimit(10);
 
-router.post('/', protect, genLimit, validate(generateSchema), creditCheck(1), generate);
-router.post('/stream', protect, genLimit, validate(generateSchema), creditCheck(1), streamGenerate);
+router.post('/', protect, genLimit, validate(generateSchema), reserveCredit(1), generate);
+router.post('/stream', protect, genLimit, validate(generateSchema), reserveCredit(1), streamGenerate);
 router.post('/tune', protect, genLimit, tuneContent);
 router.post('/rag', generateAIContent);
 

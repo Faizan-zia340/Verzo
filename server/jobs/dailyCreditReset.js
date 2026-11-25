@@ -2,8 +2,9 @@ import cron from 'node-cron';
 import mongoose from 'mongoose';
 import User from '../models/User.js';
 import logger from '../utils/logger.js';
+import { FREE_SIGNUP_CREDITS } from '../config/pricing.js';
 
-const FREE_DAILY_CREDITS = Number(process.env.FREE_DAILY_CREDITS || 10);
+const FREE_DAILY_CREDITS = Number(process.env.FREE_DAILY_CREDITS || FREE_SIGNUP_CREDITS);
 
 export const resetDailyFreeCredits = async () => {
   const now = new Date();
