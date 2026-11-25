@@ -5,6 +5,9 @@
 import romanUrduBlogWriter from './roman-urdu-blog-writer.md?raw';
 import freeAiEmailGenerator from './free-ai-email-generator.md?raw';
 import urduContentGenerator from './urdu-content-generator.md?raw';
+import aiContentSeo from './does-ai-generated-content-hurt-seo.md?raw';
+import aiContentUrdu from './ai-content-generator-in-urdu.md?raw';
+import aiBlogWriterRomanUrdu from './ai-blog-writer-in-roman-urdu.md?raw';
 
 // Minimal frontmatter parser — only the flat `key: value` lines we author.
 // Posts are repo-authored, so no need for a full YAML dependency.
@@ -23,7 +26,7 @@ export function parsePost(raw) {
   return { ...meta, body: match[2].trim() };
 }
 
-const SOURCES = [romanUrduBlogWriter, freeAiEmailGenerator, urduContentGenerator];
+const SOURCES = [romanUrduBlogWriter, freeAiEmailGenerator, urduContentGenerator, aiContentSeo, aiContentUrdu, aiBlogWriterRomanUrdu];
 
 export const POSTS = SOURCES.map(parsePost).sort(
   (a, b) => new Date(b.date) - new Date(a.date)
