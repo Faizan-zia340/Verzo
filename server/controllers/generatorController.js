@@ -5,12 +5,12 @@ import { fetchImages } from '../utils/unsplash.js';
 import { fetchAndAnalyzeImages, embedImagesInContent } from '../utils/imageService.js';
 import Content from '../models/Content.js';
 import Credit from '../models/Credit.js';
-import User from '../models/User.js';
 import Context from '../models/Context.js';
 import { findRelevantContexts } from '../utils/embeddings.js';
 import { io } from '../server.js';
 import logger from '../utils/logger.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import { refundCredit } from '../utils/credits.js';
 
 const checkKey = () => {
   if (!process.env.GEMINI_API_KEY) {
@@ -96,10 +96,23 @@ const generateContentData = async ({ type, prompt, tone = 'professional', length
 
 // ── Streaming generation via SSE ─────────────────────────────────
 export const streamGenerate = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+
+  // The credit was reserved by the middleware before this handler ran.
+  // Any failure exit below must give it back (refundOnce guards double
+  // refunds). Defined outside the try so the outer catch can refund too
+  // (e.g. a missing API key fails before any headers are sent).
+  let refunded = false;
+  const refundOnce = async () => {
+    if (req.creditReserved && !refunded) {
+      refunded = true;
+      await refundCredit(userId, req.creditReserved);
+    }
+  };
+
   try {
     checkKey();
     const { type, prompt, tone, length, language = 'english_us', format = 'paragraphs', ...details } = req.body;
-    const userId = req.user._id;
 
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
@@ -130,12 +143,14 @@ export const streamGenerate = asyncHandler(async (req, res) => {
       else if (msg.includes('RESOURCE_EXHAUSTED') || msg.includes('quota') || msg.includes('429')) userMsg = 'Gemini free tier quota reached. Please wait a minute and try again.';
       else if (msg.includes('overloaded') || msg.includes('503')) userMsg = 'Gemini is temporarily overloaded. Please try again shortly.';
       logger.error({ msg: msg.slice(0, 200) }, 'Gemini stream error');
+      await refundOnce();
       sendEvent({ error: userMsg });
       res.end();
       return;
     }
 
     if (!fullOutput) {
+      await refundOnce();
       sendEvent({ error: 'No content was generated. Please try again.' });
       res.end();
       return;
@@ -203,7 +218,7 @@ export const streamGenerate = asyncHandler(async (req, res) => {
           seoData,
           images,
         }),
-        User.findByIdAndUpdate(userId, { $inc: { credits: -1 } }),
+        // NOTE: no $inc here anymore — the credit was reserved by the middleware.
         Credit.create({ user: userId, amount: -1, type: 'usage', description: `Generated ${type} content` }),
       ]);
 
@@ -211,11 +226,13 @@ export const streamGenerate = asyncHandler(async (req, res) => {
       sendEvent({ done: true, seoData, images, contentWithImages: finalOutput, realityCheck, contentId: content._id, qualityReport });
     } catch (err) {
       logger.error({ err: err.message }, 'Content save error');
+      await refundOnce();
       sendEvent({ error: 'Content generated but failed to save. Please try again.' });
     }
 
     res.end();
   } catch (err) {
+    await refundOnce();
     if (!res.headersSent) throw err;
     res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
     res.end();
@@ -224,43 +241,51 @@ export const streamGenerate = asyncHandler(async (req, res) => {
 
 // ── Non-streaming generate (fallback) ───────────────────────────
 export const generate = asyncHandler(async (req, res) => {
-  checkKey();
-  const { type, prompt, tone, length, language = 'english_us', format = 'paragraphs', ...details } = req.body;
   const userId = req.user._id;
 
-  io.to(userId.toString()).emit('generation:start');
+  try {
+    checkKey();
+    const { type, prompt, tone, length, language = 'english_us', format = 'paragraphs', ...details } = req.body;
 
-  // Quality-checked generation: retries once if the first draft fails the
-  // check. Only the final text is saved and only 1 credit is deducted.
-  const { text: rawOutput, qualityReport } = await generateWithQualityCheck(generateText, {
-    prompt: buildPrompt({ type, prompt, tone, length, language, format, details }),
-    type,
-    input: req.body,
-    length,
-  });
-  const { cleanContent, realityCheck } = parseRealityCheck(rawOutput);
+    io.to(userId.toString()).emit('generation:start');
 
-  const seoData = await generateSEO(cleanContent);
-  const keywords = seoData?.imageKeywords || seoData?.keywords || [];
+    // Quality-checked generation: retries once if the first draft fails the
+    // check. Only the final text is saved and only 1 credit is deducted.
+    const { text: rawOutput, qualityReport } = await generateWithQualityCheck(generateText, {
+      prompt: buildPrompt({ type, prompt, tone, length, language, format, details }),
+      type,
+      input: req.body,
+      length,
+    });
+    const { cleanContent, realityCheck } = parseRealityCheck(rawOutput);
 
-  let images = [];
-  let finalOutput = cleanContent;
+    const seoData = await generateSEO(cleanContent);
+    const keywords = seoData?.imageKeywords || seoData?.keywords || [];
 
-  if (type === 'blog' && process.env.UNSPLASH_ACCESS_KEY) {
-    images = await fetchAndAnalyzeImages(keywords);
-    if (images.length) finalOutput = await embedImagesInContent(cleanContent, images);
-  } else {
-    images = await fetchImages(keywords);
+    let images = [];
+    let finalOutput = cleanContent;
+
+    if (type === 'blog' && process.env.UNSPLASH_ACCESS_KEY) {
+      images = await fetchAndAnalyzeImages(keywords);
+      if (images.length) finalOutput = await embedImagesInContent(cleanContent, images);
+    } else {
+      images = await fetchImages(keywords);
+    }
+
+    const [content] = await Promise.all([
+      Content.create({ user: userId, type, prompt, output: finalOutput, creditsUsed: 1, language, format, seoData, images }),
+      // NOTE: no $inc here anymore — the credit was reserved by the middleware.
+      Credit.create({ user: userId, amount: -1, type: 'usage', description: `Generated ${type} content` }),
+    ]);
+
+    io.to(userId.toString()).emit('generation:done', { content });
+    res.status(200).json({ content, realityCheck, qualityReport });
+  } catch (err) {
+    // Generation or save failed: give the reserved credit back.
+    // checkKey is inside the try too — a missing API key must not cost a credit.
+    if (req.creditReserved) await refundCredit(userId, req.creditReserved);
+    throw err;
   }
-
-  const [content] = await Promise.all([
-    Content.create({ user: userId, type, prompt, output: finalOutput, creditsUsed: 1, language, format, seoData, images }),
-    User.findByIdAndUpdate(userId, { $inc: { credits: -1 } }),
-    Credit.create({ user: userId, amount: -1, type: 'usage', description: `Generated ${type} content` }),
-  ]);
-
-  io.to(userId.toString()).emit('generation:done', { content });
-  res.status(200).json({ content, realityCheck, qualityReport });
 });
 
 // ── Tune existing content (no credit deduction) ──────────────────
@@ -330,32 +355,40 @@ export const generateAIContent = asyncHandler(async (req, res) => {
 
 export const regenerateContent = asyncHandler(async (req, res) => {
   const existing = await Content.findOne({ _id: req.params.id, user: req.user._id });
-  if (!existing) return res.status(404).json({ message: 'Content not found' });
+  if (!existing) {
+    // Nothing was generated, but the middleware already reserved a credit.
+    if (req.creditReserved) await refundCredit(req.user._id, req.creditReserved);
+    return res.status(404).json({ message: 'Content not found' });
+  }
 
-  const { data, realityCheck, qualityReport } = await generateContentData({
-    type: existing.type,
-    prompt: existing.prompt,
-    language: existing.language,
-    format: existing.format,
-  });
+  try {
+    const { data, realityCheck, qualityReport } = await generateContentData({
+      type: existing.type,
+      prompt: existing.prompt,
+      language: existing.language,
+      format: existing.format,
+    });
 
-  const content = await Content.findOneAndUpdate(
-    { _id: existing._id, user: req.user._id },
-    { $set: data },
-    { new: true, runValidators: true }
-  );
+    const content = await Content.findOneAndUpdate(
+      { _id: existing._id, user: req.user._id },
+      { $set: data },
+      { new: true, runValidators: true }
+    );
 
-  await Promise.all([
-    User.findByIdAndUpdate(req.user._id, { $inc: { credits: -1 } }),
-    Credit.create({
+    // NOTE: no $inc here anymore — the credit was reserved by the middleware.
+    await Credit.create({
       user: req.user._id,
       amount: -1,
       type: 'usage',
       description: `Regenerated ${existing.type} content`,
-    }),
-  ]);
+    });
 
-  io.to(req.user._id.toString()).emit('generation:done', { content });
-  res.status(200).json({ content, realityCheck, qualityReport });
+    io.to(req.user._id.toString()).emit('generation:done', { content });
+    res.status(200).json({ content, realityCheck, qualityReport });
+  } catch (err) {
+    // Regeneration failed: give the reserved credit back.
+    if (req.creditReserved) await refundCredit(req.user._id, req.creditReserved);
+    throw err;
+  }
 });
 

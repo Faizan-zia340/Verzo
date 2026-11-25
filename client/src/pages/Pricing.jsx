@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.js';
 import api from '../services/api.js';
@@ -6,43 +6,41 @@ import { FiCheck, FiZap } from 'react-icons/fi';
 import LoadingSpinner from '../components/LoadingSpinner.jsx';
 import toast from 'react-hot-toast';
 
-const PLANS = [
-  {
-    id: 'starter',
-    name: 'Starter',
-    price: 'Free',
-    credits: 10,
-    color: 'gray',
-    features: ['10 credits on signup', 'All content types', 'Content history', 'Community support'],
-    cta: 'Get Started Free',
-    free: true,
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    price: '$10',
-    credits: 100,
-    color: 'indigo',
-    features: ['100 credits', 'All content types', 'Content history', 'Priority support', 'RAG generation'],
-    cta: 'Buy Now',
-    popular: true,
-  },
-  {
-    id: 'enterprise',
-    name: 'Enterprise',
-    price: '$40',
-    credits: 500,
-    color: 'violet',
-    features: ['500 credits', 'All content types', 'Content history', 'Priority support', 'RAG generation', 'Dedicated support'],
-    cta: 'Buy Now',
-  },
-];
+// Feature lists are marketing copy, not prices — they stay in the page,
+// keyed by plan id. Prices and credit amounts come from the API
+// (GET /api/billing/packages), which reads the single source of truth
+// in server/config/pricing.js.
+const PAID_FEATURES = {
+  starter: ['50 credits', 'All content types', 'Content history', 'Community support'],
+  growth: ['120 credits', 'All content types', 'Content history', 'Priority support', 'RAG generation'],
+  pro: ['300 credits', 'All content types', 'Content history', 'Priority support', 'RAG generation', 'Dedicated support'],
+};
 
 export default function Pricing() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loadingPlan, setLoadingPlan] = useState(null);
   const [error, setError] = useState('');
+  const [plans, setPlans] = useState(null);
+  const [loadingPlans, setLoadingPlans] = useState(true);
+  const [loadError, setLoadError] = useState('');
+
+  const loadPlans = async () => {
+    setLoadingPlans(true);
+    setLoadError('');
+    try {
+      const { data } = await api.get('/billing/packages');
+      setPlans(data);
+    } catch (err) {
+      setLoadError(err.response?.data?.message || 'Could not load pricing. Please try again.');
+    } finally {
+      setLoadingPlans(false);
+    }
+  };
+
+  useEffect(() => {
+    loadPlans();
+  }, []);
 
   const handleBuy = async (plan) => {
     if (plan.free) { navigate('/register'); return; }
@@ -60,6 +58,33 @@ export default function Pricing() {
       setLoadingPlan(null);
     }
   };
+
+  // Free tier is not a paid package: it comes from the API's freeCredits
+  // so the signup offer can never disagree with the server either.
+  const displayPlans = plans
+    ? [
+        {
+          id: 'free',
+          name: 'Starter',
+          price: 'Free',
+          credits: plans.freeCredits,
+          color: 'gray',
+          features: [`${plans.freeCredits} credits on signup`, 'All content types', 'Content history', 'Community support'],
+          cta: 'Get Started Free',
+          free: true,
+        },
+        ...plans.packages.map((pkg) => ({
+          id: pkg.id,
+          name: pkg.name,
+          price: `$${(pkg.amount / 100).toFixed(2)}`,
+          credits: pkg.credits,
+          color: pkg.id === 'pro' ? 'violet' : 'indigo',
+          features: PAID_FEATURES[pkg.id] || [`${pkg.credits} credits`, 'All content types', 'Content history'],
+          cta: 'Buy Now',
+          popular: pkg.popular,
+        })),
+      ]
+    : [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white">
@@ -79,56 +104,74 @@ export default function Pricing() {
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {PLANS.map((plan) => (
-            <div
-              key={plan.id}
-              className={`relative rounded-2xl border p-8 flex flex-col bg-white shadow-sm transition hover:shadow-md
-                ${plan.popular ? 'border-indigo-500 ring-2 ring-indigo-500' : 'border-gray-200'}`}
-            >
-              {plan.popular && (
-                <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-xs font-bold px-4 py-1 rounded-full shadow">
-                  Most Popular
-                </span>
-              )}
-
-              <div className="mb-6">
-                <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">{plan.name}</p>
-                <div className="flex items-end gap-1">
-                  <span className="text-4xl font-extrabold text-gray-900">{plan.price}</span>
-                  {!plan.free && <span className="text-gray-400 text-sm mb-1">one-time</span>}
-                </div>
-                <div className="flex items-center gap-1.5 mt-2">
-                  <FiZap className="text-indigo-500" size={14} />
-                  <span className="text-sm font-semibold text-indigo-600">{plan.credits} credits</span>
-                </div>
-              </div>
-
-              <ul className="space-y-3 mb-8 flex-1">
-                {plan.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-gray-600">
-                    <FiCheck className="text-green-500 flex-shrink-0 mt-0.5" size={15} />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-
+        {loadingPlans ? (
+          <div className="flex justify-center py-16">
+            <LoadingSpinner />
+          </div>
+        ) : loadError ? (
+          <div className="text-center py-16">
+            <p className="text-red-500 text-sm bg-red-50 inline-block px-4 py-2 rounded-lg mb-4">{loadError}</p>
+            <div>
               <button
-                onClick={() => handleBuy(plan)}
-                disabled={loadingPlan === plan.id}
-                className={`w-full py-3 rounded-xl font-semibold text-sm transition disabled:opacity-60 flex items-center justify-center gap-2
-                  ${plan.popular
-                    ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md'
-                    : plan.free
-                      ? 'border border-gray-300 text-gray-700 hover:bg-gray-50'
-                      : 'bg-violet-600 text-white hover:bg-violet-700'
-                  }`}
+                onClick={loadPlans}
+                className="py-2.5 px-6 rounded-xl font-semibold text-sm bg-indigo-600 text-white hover:bg-indigo-700 transition"
               >
-                {loadingPlan === plan.id ? <LoadingSpinner size="sm" /> : plan.cta}
+                Retry
               </button>
             </div>
-          ))}
-        </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {displayPlans.map((plan) => (
+              <div
+                key={plan.id}
+                className={`relative rounded-2xl border p-8 flex flex-col bg-white shadow-sm transition hover:shadow-md
+                  ${plan.popular ? 'border-indigo-500 ring-2 ring-indigo-500' : 'border-gray-200'}`}
+              >
+                {plan.popular && (
+                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-xs font-bold px-4 py-1 rounded-full shadow">
+                    Most Popular
+                  </span>
+                )}
+
+                <div className="mb-6">
+                  <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">{plan.name}</p>
+                  <div className="flex items-end gap-1">
+                    <span className="text-4xl font-extrabold text-gray-900">{plan.price}</span>
+                    {!plan.free && <span className="text-gray-400 text-sm mb-1">one-time</span>}
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-2">
+                    <FiZap className="text-indigo-500" size={14} />
+                    <span className="text-sm font-semibold text-indigo-600">{plan.credits} credits</span>
+                  </div>
+                </div>
+
+                <ul className="space-y-3 mb-8 flex-1">
+                  {plan.features.map((f) => (
+                    <li key={f} className="flex items-start gap-2 text-sm text-gray-600">
+                      <FiCheck className="text-green-500 flex-shrink-0 mt-0.5" size={15} />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+
+                <button
+                  onClick={() => handleBuy(plan)}
+                  disabled={loadingPlan === plan.id}
+                  className={`w-full py-3 rounded-xl font-semibold text-sm transition disabled:opacity-60 flex items-center justify-center gap-2
+                    ${plan.popular
+                      ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md'
+                      : plan.free
+                        ? 'border border-gray-300 text-gray-700 hover:bg-gray-50'
+                        : 'bg-violet-600 text-white hover:bg-violet-700'
+                    }`}
+                >
+                  {loadingPlan === plan.id ? <LoadingSpinner size="sm" /> : plan.cta}
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
 
         <p className="text-center text-xs text-gray-400 mt-10">
           Payments are processed securely by Stripe. Credits never expire.

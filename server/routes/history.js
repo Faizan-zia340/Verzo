@@ -4,7 +4,7 @@ import Content from '../models/Content.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { regenerateContent } from '../controllers/generatorController.js';
 import userRateLimit from '../middleware/userRateLimit.js';
-import creditCheck from '../middleware/creditCheck.js';
+import reserveCredit from '../middleware/reserveCredit.js';
 import PDFDocument from 'pdfkit';
 import { deleteMedia, mediaResourceType } from '../utils/mediaStorage.js';
 
@@ -85,7 +85,7 @@ router.patch('/:id/favorite', protect, asyncHandler(async (req, res) => {
   res.status(200).json({ content });
 }));
 
-router.post('/:id/regenerate', protect, userRateLimit(10), creditCheck(1), regenerateContent);
+router.post('/:id/regenerate', protect, userRateLimit(10), reserveCredit(1), regenerateContent);
 
 router.delete('/:id', protect, asyncHandler(async (req, res) => {
   const content = await Content.findOne({ _id: req.params.id, user: req.user._id });

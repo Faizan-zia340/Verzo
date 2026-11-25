@@ -3,12 +3,9 @@ import Payment from '../models/Payment.js';
 import User from '../models/User.js';
 import Credit from '../models/Credit.js';
 import asyncHandler from '../utils/asyncHandler.js';
-
-const CREDIT_PACKAGES = {
-  starter: { amount: 499, credits: 50 },
-  growth: { amount: 999, credits: 120 },
-  pro: { amount: 1999, credits: 300 },
-};
+import logger from '../utils/logger.js';
+import { CREDIT_PACKAGES } from '../config/pricing.js';
+import { claimPaymentIntent } from '../utils/webhookIdempotency.js';
 
 export const createPaymentIntent = asyncHandler(async (req, res) => {
   const { packageId } = req.body;
@@ -39,15 +36,44 @@ export const webhook = asyncHandler(async (req, res) => {
   }
 
   if (event.type === 'payment_intent.succeeded') {
-    const { userId, credits } = event.data.object.metadata;
+    const pi = event.data.object;
+    const { userId, credits } = pi.metadata || {};
+    const amount = parseInt(credits, 10);
+    if (!userId || !Number.isFinite(amount) || amount <= 0) {
+      logger.warn({ pi: pi.id }, 'payment_intent.succeeded without usable metadata; skipping credit');
+      return res.status(200).json({ received: true });
+    }
+
+    // Idempotency (H3): only the first delivery credits. The conditional
+    // update flips pending -> succeeded atomically; a redelivery finds it
+    // already 'succeeded' and skips the credit.
+    const { claimed, payment } = await claimPaymentIntent(Payment, pi.id);
+    if (!claimed && payment) return res.status(200).json({ received: true }); // duplicate delivery
+    if (!claimed && !payment) {
+      // No Payment row (intent created outside our checkout) — create it once.
+      // The unique index on stripePaymentIntentId guards the race; 11000 means
+      // another delivery just created it.
+      try {
+        await Payment.create({
+          user: userId,
+          stripePaymentIntentId: pi.id,
+          amount: pi.amount,
+          creditsAdded: amount,
+          status: 'succeeded',
+        });
+      } catch (err) {
+        if (err.code === 11000) return res.status(200).json({ received: true });
+        throw err;
+      }
+    }
+
     await Promise.all([
-      User.findByIdAndUpdate(userId, { $inc: { credits: parseInt(credits) } }),
-      Payment.findOneAndUpdate({ stripePaymentIntentId: event.data.object.id }, { status: 'succeeded' }),
-      Credit.create({ user: userId, amount: parseInt(credits), type: 'purchase', description: 'Credit purchase' }),
+      User.findByIdAndUpdate(userId, { $inc: { credits: amount } }),
+      Credit.create({ user: userId, amount, type: 'purchase', description: 'Credit purchase' }),
     ]);
   }
 
-  res.status(200).json({ received: true });
+  return res.status(200).json({ received: true });
 });
 
 export const getPaymentHistory = asyncHandler(async (req, res) => {

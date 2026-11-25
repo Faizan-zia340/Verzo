@@ -1,11 +1,12 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import { FREE_SIGNUP_CREDITS } from '../config/pricing.js';
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true, trim: true },
   email: { type: String, required: true, index: { unique: true }, lowercase: true, trim: true },
   password: { type: String, required: true, minlength: 6 },
-  credits: { type: Number, default: 10 },
+  credits: { type: Number, default: FREE_SIGNUP_CREDITS },
   subscription: { type: String, enum: ['free', 'basic', 'pro'], default: 'free' },
   lastFreeCreditResetAt: { type: Date },
   stripeCustomerId: { type: String },
