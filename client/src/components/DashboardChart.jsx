@@ -18,10 +18,11 @@ export default function DashboardChart({ data }) {
       <ResponsiveContainer width="100%" height={130}>
         <BarChart data={data} barSize={28}>
           <XAxis dataKey="label" tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
-          <YAxis tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} width={24} />
+          <YAxis allowDecimals={false} tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} width={24} />
           <Tooltip
             cursor={{ fill: '#f3f4f6', radius: 6 }}
             contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)', fontSize: 12 }}
+            formatter={(value) => [`${value} credit${value === 1 ? '' : 's'} used`, 'Used']}
           />
           <Bar dataKey="used" radius={[6, 6, 0, 0]}>
             {data.map((_, i) => (

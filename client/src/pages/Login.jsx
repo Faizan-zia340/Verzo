@@ -47,7 +47,7 @@ export default function Login() {
     <div className="min-h-screen flex">
 
       {/* ── Left: Feature panel ──────────────────────────────── */}
-      <div className="hidden lg:flex w-[44%] bg-gradient-to-br from-gray-950 via-indigo-950 to-gray-900 flex-col justify-between p-12 flex-shrink-0">
+      <div className="hidden lg:flex w-[44%] bg-gradient-to-br from-gray-950 via-indigo-950 to-gray-900 flex-col justify-center gap-12 p-12 flex-shrink-0 lg:sticky lg:top-0 lg:h-screen">
         <Link to="/" className="flex items-center gap-2.5">
           <div className="w-9 h-9 bg-white/10 border border-white/20 rounded-xl flex items-center justify-center">
             <FiEdit3 size={17} className="text-white" />

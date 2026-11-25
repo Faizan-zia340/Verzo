@@ -151,7 +151,6 @@ function Overview({ stats, loadingStats }) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-black text-gray-900 mb-0.5">Overview</h2>
         <p className="text-sm text-gray-500">Platform stats at a glance</p>
       </div>
 
@@ -316,7 +315,6 @@ function UserManagement() {
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-xl font-black text-gray-900 mb-0.5">User Management</h2>
         <p className="text-sm text-gray-500">{users.length} registered users</p>
       </div>
 
@@ -467,7 +465,6 @@ function SystemSettings() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-black text-gray-900 mb-0.5">System Settings</h2>
         <p className="text-sm text-gray-500">Manage RAG context documents the AI references when generating</p>
       </div>
 
@@ -598,7 +595,7 @@ export default function Admin() {
         </div>
 
         <p className="text-xs font-bold text-gray-600 uppercase tracking-widest px-3 mb-2">Navigation</p>
-        <nav className="space-y-0.5 flex-1">
+        <nav className="space-y-0.5">
           {NAV.map(({ key, label, icon: Icon }) => (
             <button key={key} onClick={() => setSection(key)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition ${
@@ -611,7 +608,7 @@ export default function Admin() {
           ))}
         </nav>
 
-        <div className="mt-auto pt-4 border-t border-white/10">
+        <div className="mt-8 pt-4 border-t border-white/10">
           <div className="px-3 mb-3">
             <p className="text-xs text-gray-600 mb-0.5">Signed in as</p>
             <p className="text-xs font-semibold text-gray-300 truncate">{user?.email}</p>

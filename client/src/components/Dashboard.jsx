@@ -7,9 +7,9 @@ import { FiZap, FiPackage, FiTrendingUp } from 'react-icons/fi';
 const DashboardChart = lazy(() => import('./DashboardChart.jsx'));
 
 const PLAN_COLORS = {
-  free: 'text-gray-600 bg-gray-100',
-  pro: 'text-indigo-700 bg-indigo-100',
-  enterprise: 'text-violet-700 bg-violet-100',
+  free: 'text-gray-600 dark:text-gray-300',
+  pro: 'text-indigo-700 dark:text-indigo-400',
+  enterprise: 'text-violet-700 dark:text-violet-400',
 };
 
 export default function DashboardStats() {
@@ -22,7 +22,9 @@ export default function DashboardStats() {
   const plan = user?.subscription || 'free';
 
   const usageData = usageLogs.slice(0, 7).map((l, i) => ({
-    label: `#${usageLogs.length - i}`,
+    label: l.createdAt
+      ? new Date(l.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      : `#${usageLogs.length - i}`,
     used: Math.abs(l.amount),
   })).reverse();
 
@@ -32,27 +34,27 @@ export default function DashboardStats() {
       label: 'Plan',
       value: plan.charAt(0).toUpperCase() + plan.slice(1),
       sub: 'Current plan',
-      iconBg: 'bg-violet-100',
-      iconColor: 'text-violet-600',
-      valueCls: `font-black capitalize text-2xl ${PLAN_COLORS[plan]?.split(' ')[0] || 'text-gray-900'}`,
+      iconBg: 'bg-violet-100 dark:bg-violet-500/10',
+      iconColor: 'text-violet-600 dark:text-violet-400',
+      valueCls: `font-black capitalize text-2xl ${PLAN_COLORS[plan] || 'text-gray-900 dark:text-white'}`,
     },
     {
       icon: FiZap,
       label: 'Credits',
       value: user?.credits ?? '—',
       sub: 'Available to use',
-      iconBg: 'bg-indigo-100',
-      iconColor: 'text-indigo-600',
-      valueCls: 'font-black text-2xl text-indigo-600',
+      iconBg: 'bg-indigo-100 dark:bg-indigo-500/10',
+      iconColor: 'text-indigo-600 dark:text-indigo-400',
+      valueCls: 'font-black text-2xl text-indigo-600 dark:text-indigo-400',
     },
     {
       icon: FiTrendingUp,
       label: 'Generated',
       value: totalUsed,
       sub: 'Total pieces',
-      iconBg: 'bg-emerald-100',
-      iconColor: 'text-emerald-600',
-      valueCls: 'font-black text-2xl text-gray-900',
+      iconBg: 'bg-emerald-100 dark:bg-emerald-500/10',
+      iconColor: 'text-emerald-600 dark:text-emerald-400',
+      valueCls: 'font-black text-2xl text-gray-900 dark:text-white',
     },
   ];
 
