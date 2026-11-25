@@ -26,6 +26,12 @@ const contentSchema = new mongoose.Schema({
     geminiDescription: { type: String, default: '' },
   }],
   creditsUsed: { type: Number, default: 1 },
+  // Optional media saved with this history entry (Cloudinary). Only the URL
+  // + public_id live here — the file itself is never stored in MongoDB.
+  // mediaType '' = no media attached.
+  mediaUrl: { type: String, default: '' },
+  mediaPublicId: { type: String, default: '' },
+  mediaType: { type: String, default: '', enum: ['', 'image', 'audio'] },
   favorite: { type: Boolean, default: false, index: true },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
