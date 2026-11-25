@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useCredits } from '../context/CreditContext.js';
 import { apiUrl } from '../services/apiUrl.js';
 import toast from 'react-hot-toast';
-import { jsPDF } from 'jspdf';
+import FontPicker from './FontPicker.jsx';
+import { scriptOf, googleFontsUrl, useContentFont } from '../utils/fonts.js';
 import {
   FiZap, FiCopy, FiDownload, FiCheck, FiHome, FiSmartphone, FiMail,
   FiAlertCircle, FiRefreshCw, FiSliders, FiFileText, FiShare2, FiImage,
@@ -177,6 +178,10 @@ export default function Generator() {
   const [copied, setCopied] = useState(false);
   const [showImages, setShowImages] = useState(false);
 
+  // Content font for the selected language's script (persisted per script).
+  const script = scriptOf(form.language);
+  const { font, setFont, stack, dir, lineHeight } = useContentFont(script);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -324,92 +329,54 @@ export default function Generator() {
     toast('Downloaded as TXT', { icon: '📄' });
   };
 
-  const handleDownloadPDF = () => {
-    const doc = new jsPDF();
-    const margin = 15;
-    const pageWidth = doc.internal.pageSize.getWidth() - margin * 2;
-    let y = 42;
-
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.text(`${form.type.toUpperCase()} — AI Generated`, margin, 20);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.setTextColor(100);
-    doc.text(`Prompt: ${form.prompt.slice(0, 100)}`, margin, 30);
-    doc.setTextColor(0);
-    doc.setFontSize(11);
-
+  // Export body: generated text with inline images, as HTML.
+  const exportBodyHtml = () => {
     if (images.length && hasInlineImages(output)) {
-      const parts = output.split(/(\[IMAGE:\d+\])/);
-      for (const part of parts) {
+      let body = '';
+      for (const part of output.split(/(\[IMAGE:\d+\])/)) {
         const match = part.match(/\[IMAGE:(\d+)\]/);
         if (match) {
           const img = images[parseInt(match[1])];
           if (img?.dataUrl) {
-            const imgH = pageWidth * 0.5;
-            if (y + imgH > 270) { doc.addPage(); y = 20; }
-            try {
-              doc.addImage(img.dataUrl, 'JPEG', margin, y, pageWidth, imgH);
-              y += imgH + 2;
-            } catch {}
-            doc.setFontSize(7); doc.setTextColor(150);
-            doc.text(img.credit || '', margin, y);
-            doc.setTextColor(0); doc.setFontSize(11);
-            y += 8;
-            if (img.extractedText) {
-              doc.setFontSize(8); doc.setTextColor(80);
-              doc.text(`Text in image: "${img.extractedText.slice(0, 100)}"`, margin, y);
-              doc.setTextColor(0); doc.setFontSize(11);
-              y += 7;
-            }
+            body += `<div style="margin:14px 0;page-break-inside:avoid;">`;
+            body += `<img src="${img.dataUrl}" style="max-width:100%;border-radius:4px;" alt="${img.alt || ''}"/>`;
+            body += `<p style="font-size:8pt;color:#999;margin:3px 0;">${img.credit || ''}</p>`;
+            if (img.extractedText) body += `<p style="font-size:8pt;color:#666;font-style:italic;">Text in image (EN): "${img.extractedText}"</p>`;
+            body += `</div>`;
           }
-        } else if (part.trim()) {
-          const lines = doc.splitTextToSize(part.trim(), pageWidth);
-          if (y + lines.length * 5 > 270) { doc.addPage(); y = 20; }
-          doc.text(lines, margin, y);
-          y += lines.length * 5 + 4;
+        } else {
+          body += `<span>${part.replace(/\n/g, '<br/>')}</span>`;
         }
       }
-    } else {
-      const lines = doc.splitTextToSize(stripMarkers(output), pageWidth);
-      doc.text(lines, margin, y);
-      y += lines.length * 5 + 4;
+      return body;
     }
+    return stripMarkers(output).replace(/\n/g, '<br/>');
+  };
 
-    if (seoData?.title && y < 275) {
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(79, 70, 229);
-      doc.text('SEO: ' + seoData.title, margin, Math.min(y, 275));
-    }
-    doc.save(`content-${form.type}-${Date.now()}.pdf`);
-    toast.success('Exported as PDF!');
+  // Full export document in the chosen content font, with the right text
+  // direction. Shared by the PDF (print) and DOCX downloads.
+  const exportDocHtml = () => {
+    const fontLink = font ? `<link rel="stylesheet" href="${googleFontsUrl(font)}">` : '';
+    const seoLine = seoData?.title ? `<hr/><p style="color:#4f46e5;"><b>SEO:</b> ${seoData.title}</p>` : '';
+    return `<html><head><meta charset="utf-8">${fontLink}<style>body{font-family:${stack};font-size:11pt;line-height:${lineHeight || 1.6};margin:2cm;} h1{color:#4f46e5;} p{margin:0.5em 0;}</style></head><body dir="${dir}"><h1>${form.type.toUpperCase()} Content</h1><p><b>Prompt:</b> ${form.prompt}</p><hr/>${exportBodyHtml()}${seoLine}</body></html>`;
+  };
+
+  // jsPDF's built-in fonts are Latin-only and it cannot shape Arabic-script
+  // or Indic text, so a PDF made that way renders Urdu/Hindi as broken
+  // glyphs. The browser's print-to-PDF shapes the text properly and honours
+  // the chosen webfont — the user picks "Save as PDF" in the print dialog.
+  const handleDownloadPDF = () => {
+    const win = window.open('', '_blank');
+    if (!win) { toast.error('Allow pop-ups to export a PDF.'); return; }
+    win.document.write(exportDocHtml());
+    win.document.close();
+    win.focus();
+    setTimeout(() => win.print(), 600);
+    toast('Choose "Save as PDF" in the print dialog', { icon: '🖨️' });
   };
 
   const handleDownloadDocx = () => {
-    let bodyContent = '';
-    if (images.length && hasInlineImages(output)) {
-      const parts = output.split(/(\[IMAGE:\d+\])/);
-      for (const part of parts) {
-        const match = part.match(/\[IMAGE:(\d+)\]/);
-        if (match) {
-          const img = images[parseInt(match[1])];
-          if (img?.dataUrl) {
-            bodyContent += `<div style="margin:14px 0;page-break-inside:avoid;">`;
-            bodyContent += `<img src="${img.dataUrl}" style="max-width:100%;border-radius:4px;" alt="${img.alt || ''}"/>`;
-            bodyContent += `<p style="font-size:8pt;color:#999;margin:3px 0;">${img.credit || ''}</p>`;
-            if (img.extractedText) bodyContent += `<p style="font-size:8pt;color:#666;font-style:italic;">Text in image (EN): "${img.extractedText}"</p>`;
-            bodyContent += `</div>`;
-          }
-        } else {
-          bodyContent += `<span>${part.replace(/\n/g, '<br/>')}</span>`;
-        }
-      }
-    } else {
-      bodyContent = stripMarkers(output).replace(/\n/g, '<br/>');
-    }
-
-    const html = `<html><head><meta charset="utf-8"><style>body{font-family:Calibri,sans-serif;font-size:11pt;line-height:1.6;margin:2cm;} h1{color:#4f46e5;} p{margin:0.5em 0;}</style></head><body><h1>${form.type.toUpperCase()} Content</h1><p><b>Prompt:</b> ${form.prompt}</p><hr/>${bodyContent}</body></html>`;
-    const blob = new Blob([html], { type: 'application/vnd.ms-word' });
+    const blob = new Blob([exportDocHtml()], { type: 'application/vnd.ms-word' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -662,6 +629,7 @@ export default function Generator() {
                   )}
                 </div>
                 <div className="flex flex-wrap gap-2">
+                  <FontPicker script={script} value={font} onChange={setFont} />
                   <button onClick={handleCopy} className="flex items-center gap-1.5 text-xs bg-gray-100 hover:bg-indigo-50 hover:text-indigo-700 text-gray-600 px-3 py-1.5 rounded-lg transition font-medium">
                     {copied ? <><FiCheck size={12} /> Copied!</> : <><FiCopy size={12} /> Copy</>}
                   </button>
@@ -677,7 +645,11 @@ export default function Generator() {
                 </div>
               </div>
 
-              <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 text-sm text-gray-800 leading-relaxed min-h-[140px]">
+              <div
+                className="bg-gray-50 border border-gray-100 rounded-xl p-4 text-sm text-gray-800 leading-relaxed min-h-[140px]"
+                dir={dir}
+                style={{ fontFamily: stack, lineHeight }}
+              >
                 {renderContent()}
                 {loading && <span className="inline-block w-0.5 h-4 bg-indigo-500 animate-pulse ml-0.5 align-middle" />}
               </div>
