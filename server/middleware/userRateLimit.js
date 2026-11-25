@@ -2,7 +2,7 @@ const buckets = new Map();
 
 const WINDOW_MS = 60 * 60 * 1000;
 
-const userRateLimit = (maxPerHour = 10) => (req, res, next) => {
+const userRateLimit = (maxPerHour = 10, label = 'Generation') => (req, res, next) => {
   const userId = req.user?.id || req.user?._id?.toString();
   if (!userId) return next();
 
@@ -18,7 +18,7 @@ const userRateLimit = (maxPerHour = 10) => (req, res, next) => {
     const retryAfterSec = Math.ceil((bucket.resetAt - now) / 1000);
     res.set('Retry-After', String(retryAfterSec));
     return res.status(429).json({
-      message: `Generation limit reached (${maxPerHour}/hour). Try again in ${Math.ceil(retryAfterSec / 60)} minute(s).`,
+      message: `${label} limit reached (${maxPerHour}/hour). Try again in ${Math.ceil(retryAfterSec / 60)} minute(s).`,
     });
   }
 

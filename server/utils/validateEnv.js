@@ -6,6 +6,10 @@ const OPTIONAL = [
   'RESEND_API_KEY',
   'EMAIL_FROM',
   'UNSPLASH_ACCESS_KEY',
+  // Media uploads (Cloudinary) are disabled when these are not set.
+  'CLOUDINARY_CLOUD_NAME',
+  'CLOUDINARY_API_KEY',
+  'CLOUDINARY_API_SECRET',
   'STRIPE_SECRET_KEY',
   'STRIPE_WEBHOOK_SECRET',
   'JWT_EXPIRES_IN',

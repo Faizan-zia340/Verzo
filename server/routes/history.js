@@ -6,6 +6,7 @@ import { regenerateContent } from '../controllers/generatorController.js';
 import userRateLimit from '../middleware/userRateLimit.js';
 import creditCheck from '../middleware/creditCheck.js';
 import PDFDocument from 'pdfkit';
+import { deleteMedia, mediaResourceType } from '../utils/mediaStorage.js';
 
 const router = Router();
 
@@ -87,6 +88,12 @@ router.patch('/:id/favorite', protect, asyncHandler(async (req, res) => {
 router.post('/:id/regenerate', protect, userRateLimit(10), creditCheck(1), regenerateContent);
 
 router.delete('/:id', protect, asyncHandler(async (req, res) => {
+  const content = await Content.findOne({ _id: req.params.id, user: req.user._id });
+  if (content?.mediaPublicId) {
+    // Best-effort: history delete must succeed even if Cloudinary is down
+    // or unconfigured — a leftover file is never a reason to keep the entry.
+    await deleteMedia(content.mediaPublicId, { resourceType: mediaResourceType(content.mediaType) });
+  }
   await Content.findOneAndDelete({ _id: req.params.id, user: req.user._id });
   res.status(200).json({ success: true });
 }));
