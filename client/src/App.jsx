@@ -15,6 +15,8 @@ import Pricing from './pages/Pricing.jsx';
 import PaymentSuccess from './pages/PaymentSuccess.jsx';
 import Admin from './pages/Admin.jsx';
 import PDFAnalyzer from './pages/PDFAnalyzer.jsx';
+import BlogList from './pages/BlogList.jsx';
+import BlogPost from './pages/BlogPost.jsx';
 
 const pageVariants = {
   initial: { opacity: 0, y: 10 },
@@ -70,6 +72,8 @@ function AnimatedRoutes() {
         <Route path="/forgot-password" element={<PageWrapper><ForgotPassword /></PageWrapper>} />
         <Route path="/reset-password/:token" element={<PageWrapper><ResetPassword /></PageWrapper>} />
         <Route path="/pricing" element={<PageWrapper><Pricing /></PageWrapper>} />
+        <Route path="/blog" element={<PageWrapper><BlogList /></PageWrapper>} />
+        <Route path="/blog/:slug" element={<PageWrapper><BlogPost /></PageWrapper>} />
         <Route path="/payment-success" element={<PageWrapper><PaymentSuccess /></PageWrapper>} />
         <Route path="/dashboard" element={<PrivateRoute><PageWrapper><Dashboard /></PageWrapper></PrivateRoute>} />
         <Route path="/pdf" element={<PrivateRoute><PageWrapper><PDFAnalyzer /></PageWrapper></PrivateRoute>} />

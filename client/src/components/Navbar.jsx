@@ -39,6 +39,9 @@ export default function Navbar() {
           <Link to="/pricing" className="text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white text-sm font-medium px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition">
             Pricing
           </Link>
+          <Link to="/blog" className="text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white text-sm font-medium px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+            Blog
+          </Link>
 
           {user ? (
             <>
