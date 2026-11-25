@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useCredits } from '../context/CreditContext.js';
 import { useAuth } from '../context/AuthContext.js';
@@ -17,10 +17,8 @@ const greet = () => {
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const { fetchCredits, credits, loading: creditsLoading } = useCredits();
+  const { credits, loading: creditsLoading } = useCredits();
   const [tab, setTab] = useState('generate');
-
-  useEffect(() => { fetchCredits(); }, [fetchCredits]);
 
   const dashboardLoading = creditsLoading;
 
@@ -100,9 +98,15 @@ export default function Dashboard() {
           ))}
         </motion.div>
 
-        {/* Tab content */}
+        {/* Tab content — both tabs stay mounted so switching never wipes
+            a paid Generator output (form, output, SEO, Reality Check). */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.15 }}>
-          {tab === 'generate' ? <Generator /> : <ContentHistory />}
+          <div className={tab === 'generate' ? '' : 'hidden'}>
+            <Generator />
+          </div>
+          <div className={tab === 'history' ? '' : 'hidden'}>
+            <ContentHistory />
+          </div>
         </motion.div>
       </div>
     </div>

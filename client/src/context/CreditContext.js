@@ -1,9 +1,11 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import api from '../services/api.js';
+import { useAuth } from './AuthContext.js';
 
 const CreditContext = createContext(null);
 
 export function CreditProvider({ children }) {
+  const { user } = useAuth();
   const [credits, setCredits] = useState(null);
   const [creditLogs, setCreditLogs] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -20,6 +22,14 @@ export function CreditProvider({ children }) {
       setLoading(false);
     }
   }, []);
+
+  // Fetch once on mount when signed in, so the navbar pill and dashboard
+  // never show a stale balance until the Dashboard page is visited.
+  // Clears on logout so the next account never sees the old balance.
+  useEffect(() => {
+    if (user) fetchCredits();
+    else { setCredits(null); setCreditLogs([]); }
+  }, [user, fetchCredits]);
 
   const deductCredit = (amount = 1) => setCredits((prev) => (prev !== null ? prev - amount : prev));
 

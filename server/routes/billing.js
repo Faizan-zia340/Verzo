@@ -93,6 +93,27 @@ router.post('/webhook', asyncHandler(async (req, res) => {
   res.status(200).json({ received: true });
 }));
 
+// Verify a checkout session after Stripe redirects back. Read-only:
+// crediting stays with the webhook (idempotent) — this only reports
+// whether the session was paid and whether the webhook has credited it,
+// so the success page can never claim a payment that didn't happen.
+router.get('/session/:sessionId', protect, asyncHandler(async (req, res) => {
+  const session = await stripe.checkout.sessions.retrieve(req.params.sessionId);
+  if (session.metadata?.userId !== req.user._id.toString()) {
+    return res.status(403).json({ message: 'This payment belongs to a different account' });
+  }
+  const payment = await Payment.findOne({
+    stripePaymentIntentId: session.payment_intent || session.id,
+  }).lean();
+  const credits = parseInt(session.metadata?.credits, 10);
+  res.status(200).json({
+    paid: session.payment_status === 'paid',
+    credited: Boolean(payment),
+    creditsAdded: Number.isFinite(credits) ? credits : payment?.creditsAdded ?? 0,
+    planId: session.metadata?.planId || null,
+  });
+}));
+
 // Public: the Pricing page reads its plans from here so the page can never
 // disagree with the checkout code again. No auth — prices are public.
 router.get('/packages', asyncHandler(async (req, res) => {

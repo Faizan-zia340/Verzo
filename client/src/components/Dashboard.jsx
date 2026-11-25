@@ -14,7 +14,7 @@ const PLAN_COLORS = {
 
 export default function DashboardStats() {
   const { user } = useAuth();
-  const { creditLogs } = useCredits();
+  const { credits, creditLogs } = useCredits();
 
   const safeLogs = Array.isArray(creditLogs) ? creditLogs : [];
   const usageLogs = safeLogs.filter((l) => l.type === 'usage');
@@ -41,7 +41,7 @@ export default function DashboardStats() {
     {
       icon: FiZap,
       label: 'Credits',
-      value: user?.credits ?? '—',
+      value: credits ?? user?.credits ?? '—',
       sub: 'Available to use',
       iconBg: 'bg-indigo-100 dark:bg-indigo-500/10',
       iconColor: 'text-indigo-600 dark:text-indigo-400',
