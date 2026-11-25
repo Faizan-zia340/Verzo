@@ -5,6 +5,7 @@ import { FiArrowLeft, FiClock, FiArrowRight } from 'react-icons/fi';
 import { getPostBySlug, readingTime } from '../content/blog/index.js';
 import { setPageMeta } from '../utils/pageMeta.js';
 import FontPicker from '../components/FontPicker.jsx';
+import SuggestTranslation from '../components/SuggestTranslation.jsx';
 import { scriptOf, useContentFont } from '../utils/fonts.js';
 
 // Posts are repo-authored, but raw HTML in Markdown is never rendered —
@@ -85,6 +86,8 @@ export default function BlogPost() {
             dangerouslySetInnerHTML={{ __html: html }}
           />
         </div>
+
+        <SuggestTranslation postLanguage={post.language} />
 
         <div className="mt-14 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-2xl p-8 text-center">
           <h2 className="text-2xl font-black text-white mb-2">Try it yourself — free</h2>
