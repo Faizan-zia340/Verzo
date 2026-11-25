@@ -65,7 +65,7 @@ export default function DashboardStats() {
           <motion.div
             key={label}
             whileHover={{ y: -2, boxShadow: '0 8px 24px rgba(0,0,0,0.07)' }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-5 transition-shadow"
+            className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-5 transition-shadow"
           >
             <div className="flex items-start justify-between mb-4">
               <div className={`w-10 h-10 ${iconBg} rounded-xl flex items-center justify-center`}>
@@ -80,7 +80,7 @@ export default function DashboardStats() {
       </div>
 
       {usageData.length > 0 && (
-        <Suspense fallback={<div className="h-[200px] rounded-2xl bg-gray-100 dark:bg-gray-800 animate-pulse" />}>
+        <Suspense fallback={<div className="h-[200px] rounded-2xl bg-gray-100 dark:bg-slate-800 animate-pulse" />}>
           <DashboardChart data={usageData} />
         </Suspense>
       )}

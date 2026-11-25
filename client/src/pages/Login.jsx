@@ -41,7 +41,7 @@ export default function Login() {
 
   const isDbError = DB_ERROR_KEYWORDS.some((k) => error.toLowerCase().includes(k));
 
-  const inputClass = 'w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white dark:focus:bg-gray-800 transition placeholder-gray-400';
+  const inputClass = 'w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-800 transition placeholder-gray-400';
 
   return (
     <div className="min-h-screen flex">
@@ -87,7 +87,7 @@ export default function Login() {
       </div>
 
       {/* ── Right: Form ─────────────────────────────────────── */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-white dark:bg-gray-950">
+      <div className="flex-1 flex items-center justify-center p-8 bg-white dark:bg-slate-950">
         <div className="w-full max-w-[360px]">
 
           {/* Mobile logo */}
@@ -151,7 +151,7 @@ export default function Login() {
             </button>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between text-sm">
+          <div className="mt-6 pt-6 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between text-sm">
             <Link to="/" className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 flex items-center gap-1 transition">
               <FiArrowLeft size={12} /> Home
             </Link>

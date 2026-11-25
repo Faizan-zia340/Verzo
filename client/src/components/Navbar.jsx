@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext.js';
 import { useCredits } from '../context/CreditContext.js';
 import { FiLogOut, FiGrid, FiShield, FiFileText, FiZap, FiMoon, FiSun, FiMenu, FiX } from 'react-icons/fi';
 
-const linkClass = 'text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white text-sm font-medium px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition flex items-center gap-1.5';
+const linkClass = 'text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white text-sm font-medium px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition flex items-center gap-1.5';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -25,7 +25,7 @@ export default function Navbar() {
   useEffect(() => { setMenuOpen(false); }, [pathname]);
 
   return (
-    <nav className="bg-white/95 dark:bg-gray-950/95 backdrop-blur-xl border-b border-gray-100 dark:border-gray-800 sticky top-0 z-50 shadow-sm">
+    <nav className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-b border-gray-100 dark:border-slate-800 sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-[60px]">
 
         <Link to="/" className="flex items-center gap-2.5 group flex-shrink-0">
@@ -63,7 +63,7 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <Link to="/login" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition">
+              <Link to="/login" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition">
                 Sign in
               </Link>
               <Link to="/register" className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition shadow-sm ml-1">
@@ -77,7 +77,7 @@ export default function Navbar() {
         <div className="flex items-center gap-1 flex-shrink-0">
           <button
             onClick={() => setDarkMode((value) => !value)}
-            className="text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-lg transition"
+            className="text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 p-2 rounded-lg transition"
             title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
             aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
           >
@@ -85,7 +85,7 @@ export default function Navbar() {
           </button>
           <button
             onClick={() => setMenuOpen((value) => !value)}
-            className="lg:hidden text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-lg transition"
+            className="lg:hidden text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 p-2 rounded-lg transition"
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={menuOpen}
           >
@@ -96,7 +96,7 @@ export default function Navbar() {
 
       {/* ── Mobile menu (below lg) ── */}
       {menuOpen && (
-        <div className="lg:hidden border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-950 px-4 py-3 space-y-1">
+        <div className="lg:hidden border-t border-gray-100 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-3 space-y-1">
           <Link to="/pricing" className={`${linkClass} w-full`}>Pricing</Link>
           <Link to="/blog" className={`${linkClass} w-full`}>Blog</Link>
           {user ? (

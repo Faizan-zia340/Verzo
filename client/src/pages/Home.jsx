@@ -43,15 +43,15 @@ export default function Home() {
   const loggedIn = !loading && !!user;
 
   return (
-    <main className="bg-white dark:bg-gray-950 min-h-screen overflow-hidden">
+    <main className="bg-gray-50 dark:bg-slate-950 min-h-screen overflow-hidden">
 
       {/* ── Hero ───────────────────────────────────────────────── */}
-      <section className="relative bg-gradient-to-b from-slate-50 via-indigo-50/30 to-white dark:from-gray-950 dark:via-indigo-950/30 dark:to-gray-950 pt-20 pb-16 px-4">
+      <section className="relative bg-gradient-to-b from-slate-50 via-indigo-50/30 to-white dark:from-slate-950 dark:via-indigo-950/30 dark:to-slate-950 pt-20 pb-16 px-4">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-100/40 dark:from-indigo-500/10 via-transparent to-transparent" />
 
         <div className="max-w-4xl mx-auto text-center relative">
           <motion.div {...fade(0)}>
-            <span className="inline-flex items-center gap-2 bg-white dark:bg-gray-900 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-semibold px-4 py-1.5 rounded-full mb-8 shadow-sm">
+            <span className="inline-flex items-center gap-2 bg-white dark:bg-slate-900 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 text-xs font-semibold px-4 py-1.5 rounded-full mb-8 shadow-sm">
               <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
               Dual-agent scoring
             </span>
@@ -84,7 +84,7 @@ export default function Home() {
                   Start free — 20 credits <FiArrowRight size={16} />
                 </Link>
                 <Link to="/login"
-                  className="inline-flex items-center justify-center border-2 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 text-gray-700 dark:text-gray-200 px-8 py-4 rounded-xl font-bold text-base bg-white dark:bg-gray-900 transition">
+                  className="inline-flex items-center justify-center border-2 border-gray-200 dark:border-slate-700 hover:border-gray-300 dark:hover:border-gray-600 text-gray-700 dark:text-gray-200 px-8 py-4 rounded-xl font-bold text-base bg-white dark:bg-slate-900 transition">
                   Sign in
                 </Link>
               </>
@@ -110,7 +110,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.1 + i * 0.07 }}
-              className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition"
+              className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition"
             >
               <p className="text-4xl font-black text-indigo-600 dark:text-indigo-400 mb-1.5">{value}</p>
               <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wide">{label}</p>
@@ -141,7 +141,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.25 + i * 0.04 }}
               whileHover={{ y: -4, boxShadow: '0 16px 40px rgba(0,0,0,0.08)' }}
-              className={`bg-white dark:bg-gray-900 rounded-2xl border ${border} dark:border-gray-800 shadow-sm p-6 flex flex-col gap-4 cursor-default transition-shadow`}
+              className={`bg-white dark:bg-slate-900 rounded-2xl border ${border} dark:border-slate-800 shadow-sm p-6 flex flex-col gap-4 cursor-default transition-shadow`}
             >
               <div className={`w-11 h-11 ${bg} ${darkBg} rounded-xl flex items-center justify-center flex-shrink-0`}>
                 <Icon size={20} className={`${color} ${darkColor}`} />

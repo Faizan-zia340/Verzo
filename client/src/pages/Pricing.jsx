@@ -88,7 +88,7 @@ export default function Pricing() {
     : [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       <div className="max-w-5xl mx-auto px-4 py-16">
         <div className="text-center mb-14">
           <span className="inline-block bg-indigo-100 dark:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 text-sm font-semibold px-4 py-1.5 rounded-full mb-4">
@@ -126,8 +126,8 @@ export default function Pricing() {
             {displayPlans.map((plan) => (
               <div
                 key={plan.id}
-                className={`relative rounded-2xl border p-6 flex flex-col bg-white dark:bg-gray-900 shadow-sm transition hover:shadow-md
-                  ${plan.popular ? 'border-indigo-500 ring-2 ring-indigo-500' : 'border-gray-200 dark:border-gray-800'}`}
+                className={`relative rounded-2xl border p-6 flex flex-col bg-white dark:bg-slate-900 shadow-sm transition hover:shadow-md
+                  ${plan.popular ? 'border-indigo-500 ring-2 ring-indigo-500' : 'border-gray-200 dark:border-slate-800'}`}
               >
                 {plan.popular && (
                   <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-xs font-bold px-4 py-1 rounded-full shadow">
@@ -163,7 +163,7 @@ export default function Pricing() {
                     ${plan.popular
                       ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md'
                       : plan.free
-                        ? 'border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'
+                        ? 'border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-800'
                         : 'bg-violet-600 text-white hover:bg-violet-700'
                     }`}
                 >

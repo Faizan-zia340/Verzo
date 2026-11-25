@@ -162,7 +162,7 @@ const TUNE_ACTIONS = [
   { key: 'reduce_hype', label: '🎯 Reduce Hype' },
 ];
 
-const selectClass = 'w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-gray-100 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500';
+const selectClass = 'w-full border border-gray-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-gray-100 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500';
 
 const stripMarkers = (text) => text.replace(/\[IMAGE:\d+\]/g, '').replace(/\n{3,}/g, '\n\n').trim();
 
@@ -420,14 +420,14 @@ export default function Generator() {
             const img = images[parseInt(match[1])];
             if (!img) return null;
             return (
-              <div key={i} className="my-5 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm">
+              <div key={i} className="my-5 rounded-xl overflow-hidden border border-gray-100 dark:border-slate-800 shadow-sm">
                 <img
                   src={img.dataUrl || img.url}
                   alt={img.alt}
                   className="w-full object-cover max-h-72"
                   loading="lazy"
                 />
-                <div className="bg-gray-50 dark:bg-gray-800 px-3 py-2 space-y-0.5">
+                <div className="bg-gray-50 dark:bg-slate-800 px-3 py-2 space-y-0.5">
                   {img.extractedText && (
                     <p className="text-xs text-gray-600 dark:text-gray-300 italic">
                       📝 <span className="font-medium">Text in image (EN):</span> "{img.extractedText}"
@@ -463,7 +463,7 @@ export default function Generator() {
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => applyTemplate({ form: tplForm })}
-              className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl p-4 text-left hover:border-indigo-300 hover:shadow-md transition flex items-start gap-3"
+              className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl p-4 text-left hover:border-indigo-300 hover:shadow-md transition flex items-start gap-3"
             >
               <div className={`w-9 h-9 ${bg} ${darkBg} rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5`}>
                 <Icon size={16} className={`${color} ${darkColor}`} />
@@ -478,7 +478,7 @@ export default function Generator() {
       </div>
 
       {/* Generator Form */}
-      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6">
+      <div className="bg-indigo-50/40 dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-6">
         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-5">Generate Content</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Row 1: Type, Tone, Length, Format */}
@@ -516,7 +516,7 @@ export default function Generator() {
             <textarea
               name="prompt" value={form.prompt} onChange={handleChange} rows={4} required
               placeholder="Describe what you want to generate, or pick a quick template above..."
-              className="w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2.5 text-sm text-gray-800 dark:text-gray-100 dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none placeholder-gray-400"
+              className="w-full border border-gray-200 dark:border-slate-700 rounded-lg px-3 py-2.5 text-sm text-gray-800 dark:text-gray-100 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none placeholder-gray-400"
             />
            <div className="flex items-center justify-between mt-1.5 text-xs text-gray-400">
              <span>{form.prompt.length.toLocaleString()} characters</span>
@@ -538,7 +538,7 @@ export default function Generator() {
                   <input
                     name={field.name} value={form[field.name] || ''} onChange={handleChange}
                     placeholder={field.placeholder}
-                    className={`w-full border rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-gray-100 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400 ${fieldErrors[field.name] ? 'border-red-400' : 'border-gray-200 dark:border-gray-700'}`}
+                    className={`w-full border rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-gray-100 bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400 ${fieldErrors[field.name] ? 'border-red-400' : 'border-gray-200 dark:border-slate-700'}`}
                   />
                   {fieldErrors[field.name] && (
                     <p className="text-xs text-red-600 mt-1">{fieldErrors[field.name]}</p>
@@ -588,12 +588,12 @@ export default function Generator() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.22 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 space-y-3"
+            className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6 space-y-3"
           >
             {[1, 0.7, 0.85, 0.55].map((w, i) => (
               <motion.div
                 key={i}
-                className="h-3 rounded-full bg-gray-100 dark:bg-gray-800"
+                className="h-3 rounded-full bg-gray-100 dark:bg-slate-800"
                 style={{ width: `${w * 100}%` }}
                 animate={{ opacity: [0.4, 0.85, 0.4] }}
                 transition={{ duration: 1.4, repeat: Infinity, delay: i * 0.18, ease: 'easeInOut' }}
@@ -624,7 +624,7 @@ export default function Generator() {
             className="grid grid-cols-1 lg:grid-cols-3 gap-4"
           >
             {/* Main output */}
-            <div className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6">
+            <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6">
               <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
                 <div className="flex items-center gap-2">
                   <h3 className="font-semibold text-gray-900 dark:text-white">Generated Output</h3>
@@ -636,10 +636,10 @@ export default function Generator() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <FontPicker script={script} value={font} onChange={setFont} />
-                  <button onClick={handleCopy} className="flex items-center gap-1.5 text-xs bg-gray-100 dark:bg-gray-800 hover:bg-indigo-50 hover:text-indigo-700 text-gray-600 dark:text-gray-300 px-3 py-1.5 rounded-lg transition font-medium">
+                  <button onClick={handleCopy} className="flex items-center gap-1.5 text-xs bg-gray-100 dark:bg-slate-800 hover:bg-indigo-50 hover:text-indigo-700 text-gray-600 dark:text-gray-300 px-3 py-1.5 rounded-lg transition font-medium">
                     {copied ? <><FiCheck size={12} /> Copied!</> : <><FiCopy size={12} /> Copy</>}
                   </button>
-                  <button onClick={handleDownloadTxt} className="flex items-center gap-1.5 text-xs bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 text-gray-600 dark:text-gray-300 px-3 py-1.5 rounded-lg transition font-medium">
+                  <button onClick={handleDownloadTxt} className="flex items-center gap-1.5 text-xs bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 text-gray-600 dark:text-gray-300 px-3 py-1.5 rounded-lg transition font-medium">
                     <FiDownload size={12} /> TXT
                   </button>
                   <button onClick={handleDownloadPDF} className="flex items-center gap-1.5 text-xs bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg transition font-medium">
@@ -652,7 +652,7 @@ export default function Generator() {
               </div>
 
               <div
-                className="bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-800 rounded-xl p-4 text-sm text-gray-800 dark:text-gray-100 leading-relaxed min-h-[140px]"
+                className="bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-800 rounded-xl p-4 text-sm text-gray-800 dark:text-gray-100 leading-relaxed min-h-[140px]"
                 dir={dir}
                 style={{ fontFamily: stack, lineHeight }}
               >
@@ -694,7 +694,7 @@ export default function Generator() {
 
               {/* Tune buttons */}
               {!loading && output && (
-                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-800">
                   <p className="text-xs text-gray-400 font-medium mb-2 flex items-center gap-1.5">
                     <FiSliders size={11} /> Refine output — no credits used
                   </p>
@@ -704,7 +704,7 @@ export default function Generator() {
                         key={key}
                         onClick={() => handleTune(key)}
                         disabled={!!tuning}
-                        className="text-xs border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-1.5 rounded-lg transition disabled:opacity-40 font-medium"
+                        className="text-xs border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-200 hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-1.5 rounded-lg transition disabled:opacity-40 font-medium"
                       >
                         {tuning === key
                           ? <span className="flex items-center gap-1"><span className="animate-spin h-3 w-3 border border-indigo-400 border-t-transparent rounded-full" /> Rewriting...</span>
@@ -720,7 +720,7 @@ export default function Generator() {
             {/* Right panel: SEO + sidebar images (non-blog) */}
             <div className="space-y-4">
               {/* SEO Panel */}
-              <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-5">
+              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-5">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-7 h-7 bg-indigo-100 dark:bg-indigo-500/10 rounded-lg flex items-center justify-center">
                     <FiZap size={13} className="text-indigo-600 dark:text-indigo-400" />
@@ -731,7 +731,7 @@ export default function Generator() {
                 {loading && !seoData && (
                   <div className="space-y-2.5">
                     {[1, 0.8, 0.6].map((w, i) => (
-                      <div key={i} className="h-2.5 bg-gray-100 dark:bg-gray-800 rounded-full animate-pulse" style={{ width: `${w * 100}%` }} />
+                      <div key={i} className="h-2.5 bg-gray-100 dark:bg-slate-800 rounded-full animate-pulse" style={{ width: `${w * 100}%` }} />
                     ))}
                     <p className="text-xs text-gray-400 mt-2">Generating SEO metadata...</p>
                   </div>
@@ -751,7 +751,7 @@ export default function Generator() {
                     </div>
                     <div>
                       <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Meta Description</p>
-                      <div className="bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-800 rounded-lg px-3 py-2">
+                      <div className="bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-800 rounded-lg px-3 py-2">
                         <p className="text-xs text-gray-700 dark:text-gray-200 leading-relaxed">{seoData.description || '—'}</p>
                       </div>
                     </div>
@@ -772,7 +772,7 @@ export default function Generator() {
                 <motion.div
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-5"
+                  className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-5"
                 >
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
@@ -802,7 +802,7 @@ export default function Generator() {
                             <span className="text-xs font-medium text-gray-700 dark:text-gray-200">{pillar.name}</span>
                             <span className={`text-xs font-bold ${textColor}`}>{pillar.score}/10</span>
                           </div>
-                          <div className="h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden mb-1">
+                          <div className="h-1.5 bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden mb-1">
                             <div className={`h-full ${color} rounded-full transition-all`} style={{ width: `${pct}%` }} />
                           </div>
                           <p className="text-xs text-gray-400 leading-snug">{pillar.verdict}</p>
@@ -811,7 +811,7 @@ export default function Generator() {
                     })}
                   </div>
                   {realityCheck.rating != null && (
-                    <p className="text-xs text-gray-400 mt-3 pt-3 border-t border-gray-100 dark:border-gray-800 text-center">
+                    <p className="text-xs text-gray-400 mt-3 pt-3 border-t border-gray-100 dark:border-slate-800 text-center">
                       Avg score vs GPT-4, Claude 3.5, Llama 3, Gemini
                     </p>
                   )}
@@ -823,7 +823,7 @@ export default function Generator() {
                 <motion.div
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-5"
+                  className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-5"
                 >
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">

@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext.js';
 export default function Footer() {
   const { user, loading } = useAuth();
   return (
-    <footer className="bg-white dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800">
+    <footer className="bg-white dark:bg-slate-900 border-t border-gray-100 dark:border-slate-800">
       <div className="max-w-6xl mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
         <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
           <img src="/brand/penlix-mark.svg" alt="Penlix" className="h-5 w-auto" />

@@ -107,7 +107,7 @@ export default function PDFAnalyzer() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-slate-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       <div className="max-w-3xl mx-auto px-4 py-12">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
           <div className="mb-8">
@@ -118,7 +118,7 @@ export default function PDFAnalyzer() {
           {/* Upload area */}
           <div
             className={`relative border-2 border-dashed rounded-2xl p-10 text-center transition cursor-pointer ${
-              file ? 'border-indigo-400 dark:border-indigo-500 bg-indigo-50 dark:bg-indigo-500/10' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-indigo-300 hover:bg-indigo-50/30 dark:hover:bg-indigo-500/10'
+              file ? 'border-indigo-400 dark:border-indigo-500 bg-indigo-50 dark:bg-indigo-500/10' : 'border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:border-indigo-300 hover:bg-indigo-50/30 dark:hover:bg-indigo-500/10'
             }`}
             onDragOver={(e) => e.preventDefault()}
             onDrop={handleDrop}
@@ -160,7 +160,7 @@ export default function PDFAnalyzer() {
               { n: '2', title: 'AI reads & structures it', desc: 'Chapters, key concepts and definitions extracted.' },
               { n: '3', title: 'Study, revise, test', desc: 'Study notes, chapter summaries and a 10-question test bank.' },
             ].map(({ n, title, desc }) => (
-              <div key={n} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl p-4 shadow-sm">
+              <div key={n} className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-xl p-4 shadow-sm">
                 <p className="w-7 h-7 rounded-lg bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-xs font-black flex items-center justify-center mb-2">{n}</p>
                 <p className="text-sm font-semibold text-gray-900 dark:text-white">{title}</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 leading-relaxed">{desc}</p>
@@ -199,7 +199,7 @@ export default function PDFAnalyzer() {
                     { label: 'Words', value: result.wordCount?.toLocaleString() },
                     { label: 'Chunks', value: result.chunks },
                   ].map(({ label, value }) => (
-                    <div key={label} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl p-3 text-center shadow-sm">
+                    <div key={label} className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-xl p-3 text-center shadow-sm">
                       <p className="text-xl font-bold text-indigo-600 dark:text-indigo-400">{value}</p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{label}</p>
                     </div>
@@ -207,14 +207,14 @@ export default function PDFAnalyzer() {
                 </div>
 
                 {/* Tabs */}
-                <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
-                  <div className="flex border-b border-gray-100 dark:border-gray-800">
+                <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm overflow-hidden">
+                  <div className="flex border-b border-gray-100 dark:border-slate-800">
                     {TABS.map(({ key, label, icon: Icon }) => (
                       <button
                         key={key}
                         onClick={() => setTab(key)}
                         className={`flex-1 flex items-center justify-center gap-1.5 py-3 text-sm font-medium transition ${
-                          tab === key ? 'bg-indigo-600 text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800'
+                          tab === key ? 'bg-indigo-600 text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-800'
                         }`}
                       >
                         <Icon size={14} /> {label}
@@ -235,7 +235,7 @@ export default function PDFAnalyzer() {
 
                 {/* Export */}
                 <div className="mt-4 flex gap-2 flex-wrap">
-                  <button onClick={handleCopy} className="flex items-center gap-1.5 text-xs bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg font-medium transition">
+                  <button onClick={handleCopy} className="flex items-center gap-1.5 text-xs bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg font-medium transition">
                     {copied ? <><FiCheck size={12} /> Copied!</> : <><FiCopy size={12} /> Copy All</>}
                   </button>
                   <button onClick={handleExportPDF} className="flex items-center gap-1.5 text-xs bg-red-50 dark:bg-red-500/10 hover:bg-red-100 dark:hover:bg-red-500/20 text-red-600 dark:text-red-400 px-4 py-2 rounded-lg font-medium transition">

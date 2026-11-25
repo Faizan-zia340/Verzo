@@ -60,15 +60,15 @@ export default function PaymentSuccess() {
   }[state.status];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center px-4">
-      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-10 max-w-md w-full text-center">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 flex items-center justify-center px-4">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-10 max-w-md w-full text-center">
         {body.icon}
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{body.title}</h2>
         <p className="text-gray-500 dark:text-gray-400 mb-6">{body.text}</p>
         <div className="flex flex-col gap-2">
           <Link to="/dashboard" className="bg-indigo-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition inline-block">Go to Dashboard</Link>
           {(state.status === 'unpaid' || state.status === 'missing' || state.status === 'error') && (
-            <Link to="/pricing" className="border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 px-8 py-3 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-800 transition inline-block">Back to Pricing</Link>
+            <Link to="/pricing" className="border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-300 px-8 py-3 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-slate-800 transition inline-block">Back to Pricing</Link>
           )}
         </div>
       </div>

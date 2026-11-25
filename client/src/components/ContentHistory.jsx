@@ -32,7 +32,7 @@ function HistoryItem({ item, index, onDelete, onFavorite, onRegenerate, regenera
 
   return (
     <motion.div
-      className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl p-4 shadow-sm"
+      className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-xl p-4 shadow-sm"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.28, delay: index * 0.05, ease: 'easeOut' }}
@@ -128,7 +128,7 @@ function HistoryItem({ item, index, onDelete, onFavorite, onRegenerate, regenera
             className="overflow-hidden"
           >
             <div className="mt-3 space-y-3">
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap break-words leading-relaxed">
+              <div className="bg-gray-50 dark:bg-slate-800 rounded-xl p-3 text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap break-words leading-relaxed">
                 {item.output}
               </div>
               {item.seoData?.title && (
@@ -264,13 +264,13 @@ export default function ContentHistory() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setFavoriteOnly(false)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${!favoriteOnly ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${!favoriteOnly ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-slate-700'}`}
           >
             All content
           </button>
           <button
             onClick={() => setFavoriteOnly(true)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${favoriteOnly ? 'bg-amber-400 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'}`}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${favoriteOnly ? 'bg-amber-400 text-white' : 'bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-slate-700'}`}
           >
             <FiStar size={12} fill={favoriteOnly ? 'currentColor' : 'none'} /> Favorites
           </button>
@@ -312,7 +312,7 @@ export default function ContentHistory() {
             <button
               onClick={handleLoadMore}
               disabled={loadingMore}
-              className="mx-auto flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 text-sm font-semibold transition disabled:opacity-60"
+              className="mx-auto flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700 text-sm font-semibold transition disabled:opacity-60"
             >
               {loadingMore && <span className="w-3.5 h-3.5 rounded-full border-2 border-gray-400 border-t-transparent animate-spin" />}
               {loadingMore ? 'Loading…' : 'Load more'}

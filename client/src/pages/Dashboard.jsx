@@ -23,7 +23,7 @@ export default function Dashboard() {
   const dashboardLoading = creditsLoading;
 
   return (
-    <div className="min-h-screen bg-gray-50/80 dark:bg-gray-950">
+    <div className="min-h-screen bg-gray-50/80 dark:bg-slate-950">
 
       {/* ── Welcome banner ─────────────────────────────────── */}
       <div className="bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600">
@@ -54,19 +54,19 @@ export default function Dashboard() {
           <div className="mb-6 animate-pulse">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               {[1, 2, 3].map((card) => (
-                <div key={card} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 h-[145px]">
+                <div key={card} className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 p-5 h-[145px]">
                   <div className="flex justify-between mb-5">
-                    <div className="w-10 h-10 rounded-xl bg-gray-200 dark:bg-gray-800" />
-                    <div className="w-20 h-3 rounded bg-gray-200 dark:bg-gray-800" />
+                    <div className="w-10 h-10 rounded-xl bg-gray-200 dark:bg-slate-800" />
+                    <div className="w-20 h-3 rounded bg-gray-200 dark:bg-slate-800" />
                   </div>
-                  <div className="w-16 h-3 rounded bg-gray-200 dark:bg-gray-800 mb-3" />
-                  <div className="w-24 h-7 rounded bg-gray-200 dark:bg-gray-800" />
+                  <div className="w-16 h-3 rounded bg-gray-200 dark:bg-slate-800 mb-3" />
+                  <div className="w-24 h-7 rounded bg-gray-200 dark:bg-slate-800" />
                 </div>
               ))}
             </div>
-            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 h-[200px]">
-              <div className="w-32 h-4 rounded bg-gray-200 dark:bg-gray-800 mb-6" />
-              <div className="h-28 rounded-lg bg-gray-100 dark:bg-gray-800" />
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 p-5 h-[200px]">
+              <div className="w-32 h-4 rounded bg-gray-200 dark:bg-slate-800 mb-6" />
+              <div className="h-28 rounded-lg bg-gray-100 dark:bg-slate-800" />
             </div>
           </div>
         ) : (
@@ -78,7 +78,7 @@ export default function Dashboard() {
         {/* Tab bar */}
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.1 }}
-          className="flex gap-1 p-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-sm mb-6 w-fit"
+          className="flex gap-1 p-1 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl shadow-sm mb-6 w-fit"
         >
           {[
             { key: 'generate', label: 'Generate', icon: FiEdit3 },
@@ -90,7 +90,7 @@ export default function Dashboard() {
               className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
                 tab === key
                   ? 'bg-indigo-600 text-white shadow-sm'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-slate-800'
               }`}
             >
               <Icon size={14} /> {label}

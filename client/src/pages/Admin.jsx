@@ -33,14 +33,14 @@ function EditModal({ user, onClose, onSave }) {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 px-4">
       <motion.div initial={{ opacity: 0, scale: 0.95, y: 8 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 w-full max-w-sm p-6">
+        className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-slate-800 w-full max-w-sm p-6">
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-base font-bold text-gray-900 dark:text-white">Adjust Credits</h3>
           <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-gray-100 text-gray-400 hover:text-gray-600 dark:text-gray-300 transition">
             <FiX size={16} />
           </button>
         </div>
-        <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-5 border border-gray-100 dark:border-gray-700">
+        <div className="bg-gray-50 dark:bg-slate-800 rounded-xl p-4 mb-5 border border-gray-100 dark:border-slate-700">
           <p className="font-semibold text-gray-900 dark:text-white text-sm">{user.name}</p>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{user.email}</p>
           <div className="flex items-center gap-1.5 mt-2">
@@ -54,11 +54,11 @@ function EditModal({ user, onClose, onSave }) {
         <input
           type="number" value={adjustment} onChange={(e) => setAdjustment(e.target.value)}
           placeholder="e.g. 50 or -10" autoFocus
-          className="w-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-gray-800 transition mb-3"
+          className="w-full border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 transition mb-3"
         />
         {error && <p className="text-red-500 dark:text-red-400 text-xs mb-3 bg-red-50 dark:bg-red-500/10 px-3 py-2 rounded-lg border border-red-100 dark:border-red-500/20">{error}</p>}
         <div className="flex gap-2.5">
-          <button onClick={onClose} className="flex-1 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 dark:text-gray-300 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition">Cancel</button>
+          <button onClick={onClose} className="flex-1 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-300 dark:text-gray-300 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 dark:hover:bg-slate-800 transition">Cancel</button>
           <button onClick={handleSave} disabled={loading}
             className="flex-1 bg-indigo-600 text-white py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700 transition disabled:opacity-60 flex items-center justify-center gap-1.5 shadow-sm">
             {loading ? <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" /> : <><FiCheck size={13} /> Save</>}
@@ -77,14 +77,14 @@ function DeleteUserModal({ user, deleting, error, onClose, onConfirm }) {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 px-4">
       <motion.div initial={{ opacity: 0, scale: 0.95, y: 8 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 w-full max-w-sm p-6">
+        className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-slate-800 w-full max-w-sm p-6">
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-base font-bold text-gray-900 dark:text-white">Delete User</h3>
           <button onClick={onClose} disabled={deleting} className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-gray-100 text-gray-400 hover:text-gray-600 dark:text-gray-300 transition disabled:opacity-60">
             <FiX size={16} />
           </button>
         </div>
-        <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-5 border border-gray-100 dark:border-gray-700">
+        <div className="bg-gray-50 dark:bg-slate-800 rounded-xl p-4 mb-5 border border-gray-100 dark:border-slate-700">
           <p className="font-semibold text-gray-900 dark:text-white text-sm">{user.name}</p>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{user.email}</p>
         </div>
@@ -93,7 +93,7 @@ function DeleteUserModal({ user, deleting, error, onClose, onConfirm }) {
         </p>
         {error && <p className="text-red-500 dark:text-red-400 text-xs mb-3 bg-red-50 dark:bg-red-500/10 px-3 py-2 rounded-lg border border-red-100 dark:border-red-500/20">{error}</p>}
         <div className="flex gap-2.5">
-          <button onClick={onClose} disabled={deleting} className="flex-1 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 dark:text-gray-300 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition disabled:opacity-60">Cancel</button>
+          <button onClick={onClose} disabled={deleting} className="flex-1 border border-gray-200 dark:border-slate-700 text-gray-600 dark:text-gray-300 dark:text-gray-300 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 dark:hover:bg-slate-800 transition disabled:opacity-60">Cancel</button>
           <button onClick={onConfirm} disabled={deleting}
             className="flex-1 bg-red-600 text-white py-2.5 rounded-xl text-sm font-bold hover:bg-red-700 transition disabled:opacity-60 flex items-center justify-center gap-1.5 shadow-sm">
             {deleting ? <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" /> : <><FiTrash2 size={13} /> Delete</>}
@@ -161,22 +161,22 @@ function Overview({ stats, loadingStats }) {
       </div>
 
       {/* Activity Feed */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+      <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
             <h3 className="font-bold text-gray-900 dark:text-white text-sm">Live Activity Feed</h3>
           </div>
-          <span className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 px-2.5 py-1 rounded-full font-medium">Last 20</span>
+          <span className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-500 bg-gray-100 dark:bg-slate-800 px-2.5 py-1 rounded-full font-medium">Last 20</span>
         </div>
         {loadingActivity ? (
           <div className="p-6 space-y-3">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="flex gap-3 animate-pulse">
-                <div className="w-16 h-6 bg-gray-100 dark:bg-gray-800 rounded-full flex-shrink-0 mt-0.5" />
+                <div className="w-16 h-6 bg-gray-100 dark:bg-slate-800 rounded-full flex-shrink-0 mt-0.5" />
                 <div className="flex-1 space-y-1.5 pt-0.5">
-                  <div className="h-2.5 bg-gray-100 dark:bg-gray-800 rounded w-3/4" />
-                  <div className="h-2 bg-gray-100 dark:bg-gray-800 rounded w-1/2" />
+                  <div className="h-2.5 bg-gray-100 dark:bg-slate-800 rounded w-3/4" />
+                  <div className="h-2 bg-gray-100 dark:bg-slate-800 rounded w-1/2" />
                 </div>
               </div>
             ))}
@@ -187,10 +187,10 @@ function Overview({ stats, loadingStats }) {
             <p className="text-sm text-gray-400 dark:text-gray-500">No activity yet.</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-50 dark:divide-gray-800 dark:divide-gray-800 max-h-96 overflow-y-auto">
+          <div className="divide-y divide-gray-50 dark:divide-slate-800 dark:divide-slate-800 max-h-96 overflow-y-auto">
             {activity.map((item) => (
-              <div key={item._id} className="flex items-start gap-3 px-6 py-3.5 hover:bg-gray-50/80 dark:hover:bg-gray-800/50 transition">
-                <span className={`text-xs font-bold px-2.5 py-1 rounded-full flex-shrink-0 mt-0.5 ${TYPE_COLORS[item.type] || 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 dark:text-gray-300'}`}>
+              <div key={item._id} className="flex items-start gap-3 px-6 py-3.5 hover:bg-gray-50/80 dark:hover:bg-slate-800/50 transition">
+                <span className={`text-xs font-bold px-2.5 py-1 rounded-full flex-shrink-0 mt-0.5 ${TYPE_COLORS[item.type] || 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300 dark:text-gray-300'}`}>
                   {item.type}
                 </span>
                 <div className="flex-1 min-w-0">
@@ -251,12 +251,12 @@ function GrantCreditsForm() {
         <input
           type="email" value={email} onChange={(e) => setEmail(e.target.value)}
           placeholder="user@example.com" required
-          className="flex-1 min-w-0 border border-indigo-200 dark:border-indigo-500/30 bg-white dark:bg-gray-800 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400 shadow-sm"
+          className="flex-1 min-w-0 border border-indigo-200 dark:border-indigo-500/30 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400 shadow-sm"
         />
         <input
           type="number" value={credits} onChange={(e) => setCredits(e.target.value)}
           placeholder="Amount (e.g. 100)" required
-          className="w-44 border border-indigo-200 dark:border-indigo-500/30 bg-white dark:bg-gray-800 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400 shadow-sm"
+          className="w-44 border border-indigo-200 dark:border-indigo-500/30 bg-white dark:bg-slate-800 rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400 shadow-sm"
         />
         <button type="submit" disabled={loading}
           className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700 transition disabled:opacity-60 flex items-center gap-2 shadow-sm">
@@ -324,7 +324,7 @@ function UserManagement() {
         <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={15} />
         <input
           type="text" placeholder="Search by name or email..." value={search} onChange={(e) => setSearch(e.target.value)}
-          className="w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 text-sm rounded-xl pl-11 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm placeholder-gray-400"
+          className="w-full border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 text-sm rounded-xl pl-11 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm placeholder-gray-400"
         />
         {search && (
           <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-400 dark:text-gray-500 font-medium">
@@ -333,7 +333,7 @@ function UserManagement() {
         )}
       </div>
 
-      <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
         {loading ? (
           <div className="py-20 flex flex-col items-center gap-3">
             <span className="animate-spin h-7 w-7 border-2 border-indigo-500 border-t-transparent rounded-full" />
@@ -343,15 +343,15 @@ function UserManagement() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gray-50 dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+                <tr className="bg-gray-50 dark:bg-slate-800 border-b border-gray-100 dark:border-slate-700">
                   {['User', 'Credits', 'Role', 'Joined', 'Action'].map((h) => (
                     <th key={h} className="px-5 py-4 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
+              <tbody className="divide-y divide-gray-50 dark:divide-slate-800">
                 {filtered.map((u) => (
-                  <tr key={u._id} className="hover:bg-gray-50/80 dark:hover:bg-gray-800/50 transition">
+                  <tr key={u._id} className="hover:bg-gray-50/80 dark:hover:bg-slate-800/50 transition">
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-100 to-violet-100 flex items-center justify-center text-indigo-700 text-xs font-black flex-shrink-0">
@@ -371,7 +371,7 @@ function UserManagement() {
                     <td className="px-5 py-4">
                       {u.isAdmin
                         ? <span className="bg-violet-100 dark:bg-violet-500/10 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-500/20 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 w-fit"><FiShield size={9} /> Admin</span>
-                        : <span className="bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-xs font-semibold px-2.5 py-1 rounded-full">User</span>
+                        : <span className="bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-gray-400 text-xs font-semibold px-2.5 py-1 rounded-full">User</span>
                       }
                     </td>
                     <td className="px-5 py-4 text-xs text-gray-500 dark:text-gray-400">
@@ -386,7 +386,7 @@ function UserManagement() {
                         {u.isAdmin || String(u._id) === String(currentUser?._id) ? (
                           <button disabled
                             title={u.isAdmin ? 'Admin accounts cannot be deleted' : 'You cannot delete your own account'}
-                            className="flex items-center gap-1.5 text-xs bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 px-3 py-1.5 rounded-lg font-semibold cursor-not-allowed">
+                            className="flex items-center gap-1.5 text-xs bg-gray-100 dark:bg-slate-800 text-gray-400 dark:text-gray-500 px-3 py-1.5 rounded-lg font-semibold cursor-not-allowed">
                             <FiTrash2 size={11} /> Delete
                           </button>
                         ) : (
@@ -460,7 +460,7 @@ function SystemSettings() {
     } catch { toast.error('Delete failed.'); }
   };
 
-  const inputClass = 'w-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white dark:text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-gray-800 transition placeholder-gray-400';
+  const inputClass = 'w-full border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-900 dark:text-white dark:text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 transition placeholder-gray-400';
 
   return (
     <div className="space-y-6">
@@ -468,7 +468,7 @@ function SystemSettings() {
         <p className="text-sm text-gray-500 dark:text-gray-400">Manage RAG context documents the AI references when generating</p>
       </div>
 
-      <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm p-6">
+      <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl shadow-sm p-6">
         <div className="flex items-center gap-3 mb-5">
           <div className="w-9 h-9 bg-indigo-100 rounded-xl flex items-center justify-center">
             <FiPlus size={16} className="text-indigo-600" />
@@ -507,13 +507,13 @@ function SystemSettings() {
         </form>
       </div>
 
-      <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+      <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <FiDatabase size={14} className="text-indigo-500" />
             <h3 className="font-bold text-gray-900 dark:text-white text-sm">Saved Context Documents</h3>
           </div>
-          <span className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 px-2.5 py-1 rounded-full font-medium">{contexts.length} total</span>
+          <span className="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-500 bg-gray-100 dark:bg-slate-800 px-2.5 py-1 rounded-full font-medium">{contexts.length} total</span>
         </div>
         {loading ? (
           <div className="py-16 flex flex-col items-center gap-3">
@@ -526,9 +526,9 @@ function SystemSettings() {
             <p className="text-sm text-gray-400 dark:text-gray-500">No context documents yet.</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-50 dark:divide-gray-800">
+          <div className="divide-y divide-gray-50 dark:divide-slate-800">
             {contexts.map((ctx) => (
-              <div key={ctx._id} className="px-6 py-4 hover:bg-gray-50/80 dark:hover:bg-gray-800/50 transition">
+              <div key={ctx._id} className="px-6 py-4 hover:bg-gray-50/80 dark:hover:bg-slate-800/50 transition">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-gray-900 dark:text-white text-sm">{ctx.title}</p>
@@ -727,7 +727,7 @@ export default function Admin() {
   if (!user?.isAdmin) return <Navigate to="/dashboard" replace />;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 flex">
 
       {/* ── Dark Sidebar (off-canvas below lg) ──────────────────── */}
       {sidebarOpen && (
@@ -773,9 +773,9 @@ export default function Admin() {
       {/* ── Main Content ─────────────────────────────────────── */}
       <main className="flex-1 overflow-y-auto">
         {/* Top bar */}
-        <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-4 sm:px-8 py-4 flex items-center justify-between shadow-sm">
+        <div className="bg-white dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 px-4 sm:px-8 py-4 flex items-center justify-between shadow-sm">
           <div className="flex items-center gap-3">
-            <button onClick={() => setSidebarOpen(true)} className="lg:hidden text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-lg transition" aria-label="Open menu">
+            <button onClick={() => setSidebarOpen(true)} className="lg:hidden text-gray-500 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 p-2 rounded-lg transition" aria-label="Open menu">
               <FiMenu size={18} />
             </button>
             <div>

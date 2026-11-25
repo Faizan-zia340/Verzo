@@ -6,14 +6,14 @@ export default function DashboardChart({ data }) {
   return (
     <motion.div
       whileHover={{ y: -1 }}
-      className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-5 transition-shadow"
+      className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-5 transition-shadow"
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <FiActivity size={14} className="text-indigo-500" />
           <p className="text-sm font-bold text-gray-900 dark:text-white">Recent Usage</p>
         </div>
-        <span className="text-xs text-gray-400 bg-gray-100 dark:bg-gray-800 px-2.5 py-1 rounded-full font-medium">Last {data.length}</span>
+        <span className="text-xs text-gray-400 bg-gray-100 dark:bg-slate-800 px-2.5 py-1 rounded-full font-medium">Last {data.length}</span>
       </div>
       <ResponsiveContainer width="100%" height={130}>
         <BarChart data={data} barSize={28}>

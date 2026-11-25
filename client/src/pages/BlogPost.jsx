@@ -40,7 +40,7 @@ export default function BlogPost() {
 
   if (!post) {
     return (
-      <main className="bg-white dark:bg-gray-950 min-h-screen flex items-center justify-center px-4">
+      <main className="bg-gray-50 dark:bg-slate-950 min-h-screen flex items-center justify-center px-4">
         <div className="text-center max-w-md py-20">
           <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-3">Post not found</h1>
           <p className="text-gray-600 dark:text-gray-300 mb-6">
@@ -58,7 +58,7 @@ export default function BlogPost() {
   }
 
   return (
-    <main className="bg-white dark:bg-gray-950 min-h-screen">
+    <main className="bg-gray-50 dark:bg-slate-950 min-h-screen">
       <article className="max-w-3xl mx-auto px-4 sm:px-6 pt-14 pb-20">
         <div className="flex items-center justify-between mb-8">
           <Link

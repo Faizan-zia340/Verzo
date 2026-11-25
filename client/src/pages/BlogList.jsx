@@ -17,7 +17,7 @@ export default function BlogList() {
   }, []);
 
   return (
-    <main className="bg-white dark:bg-gray-950 min-h-screen">
+    <main className="bg-gray-50 dark:bg-slate-950 min-h-screen">
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20">
         <div className="max-w-2xl mb-12">
           <span className="inline-flex items-center gap-2 bg-indigo-50 dark:bg-indigo-950 border border-indigo-100 dark:border-indigo-900 text-indigo-700 dark:text-indigo-300 text-xs font-semibold px-3 py-1.5 rounded-full mb-5">
@@ -37,7 +37,7 @@ export default function BlogList() {
             <Link
               key={post.slug}
               to={`/blog/${post.slug}`}
-              className="group bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-lg hover:shadow-indigo-100/50 dark:hover:shadow-none transition flex flex-col"
+              className="group bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-6 hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-lg hover:shadow-indigo-100/50 dark:hover:shadow-none transition flex flex-col"
             >
               <span className="self-start bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 text-xs font-semibold px-2.5 py-1 rounded-full mb-4">
                 {post.keyword}
