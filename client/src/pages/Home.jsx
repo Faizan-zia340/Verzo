@@ -13,15 +13,15 @@ const fade = (delay = 0) => ({
 });
 
 const FEATURES = [
-  { icon: FiZap, title: 'Streaming AI Generation', desc: 'Watch your content appear word-by-word in real time — with dual-agent quality scoring.', color: 'text-indigo-600', bg: 'bg-indigo-50', border: 'border-indigo-100' },
-  { icon: FiGlobe, title: '23 Languages & Dialects', desc: 'English, Karachi/Lahore Urdu, Gulf Arabic, French, German, Hindi, Chinese, Japanese and many more.', color: 'text-violet-600', bg: 'bg-violet-50', border: 'border-violet-100' },
+  { icon: FiZap, title: 'Streaming AI Generation', desc: 'Watch your content appear word-by-word in real time — with dual-agent quality scoring.', color: 'text-brand-600', bg: 'bg-brand-50', border: 'border-brand-100' },
+  { icon: FiGlobe, title: '23 Languages & Dialects', desc: 'English, Karachi/Lahore Urdu, Gulf Arabic, French, German, Hindi, Chinese, Japanese and many more.', color: 'text-accent-600', bg: 'bg-accent-50', border: 'border-accent-100' },
   { icon: FiEdit3, title: 'One-Click Tuning', desc: 'Shorten, boost engagement, add professionalism or reduce hype — refine any output without spending credits.', color: 'text-sky-600', bg: 'bg-sky-50', border: 'border-sky-100' },
   { icon: FiTrendingUp, title: 'SEO Package Built-in', desc: 'Every generation includes a meta title, meta description, and 5 targeted keywords — automatically.', color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-100' },
-  { icon: FiFileText, title: 'PDF Deep Analyzer', desc: 'Upload any PDF — get structured study notes, chapter summaries, and a 10-question test bank instantly.', color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-100' },
+  { icon: FiFileText, title: 'PDF Deep Analyzer', desc: 'Upload any PDF — get structured study notes, chapter summaries, and a 10-question test bank instantly.', color: 'text-gold-600', bg: 'bg-gold-50', border: 'border-gold-100' },
   { icon: FiImage, title: 'Inline Blog Images', desc: 'Real Unsplash photos downloaded, analyzed by AI vision, and embedded at the perfect spots in your blog.', color: 'text-rose-600', bg: 'bg-rose-50', border: 'border-rose-100' },
   { icon: FiDownload, title: 'One-Click Export', desc: 'Download your content as PDF, DOCX or TXT — or copy it to the clipboard — with one click.', color: 'text-teal-600', bg: 'bg-teal-50', border: 'border-teal-100' },
   { icon: FiShare2, title: 'Social Share', desc: 'Share directly to LinkedIn or Twitter/X without copying and pasting anything. One button.', color: 'text-pink-600', bg: 'bg-pink-50', border: 'border-pink-100' },
-  { icon: FiStar, title: 'Reality Check Scoring', desc: 'A second AI reviewer scores every output out of 10 on human-ness, punchiness and clichés — so you see what to trust before you publish.', color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-100' },
+  { icon: FiStar, title: 'Reality Check Scoring', desc: 'A second AI reviewer scores every output out of 10 on human-ness, punchiness and clichés — so you see what to trust before you publish.', color: 'text-gold-600', bg: 'bg-gold-50', border: 'border-gold-100' },
 ];
 
 const STATS = [
@@ -46,12 +46,12 @@ export default function Home() {
     <main className="bg-white min-h-screen overflow-hidden">
 
       {/* ── Hero ───────────────────────────────────────────────── */}
-      <section className="relative bg-gradient-to-b from-slate-50 via-indigo-50/30 to-white pt-20 pb-28 px-4">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-100/40 via-transparent to-transparent" />
+      <section className="relative bg-gradient-to-b from-slate-50 via-brand-50/30 to-white pt-20 pb-28 px-4">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-brand-100/40 via-transparent to-transparent" />
 
         <div className="max-w-4xl mx-auto text-center relative">
           <motion.div {...fade(0)}>
-            <span className="inline-flex items-center gap-2 bg-white border border-indigo-200 text-indigo-700 text-xs font-semibold px-4 py-1.5 rounded-full mb-8 shadow-sm">
+            <span className="inline-flex items-center gap-2 bg-white border border-brand-200 text-brand-700 text-xs font-semibold px-4 py-1.5 rounded-full mb-8 shadow-sm">
               <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
               Dual-agent scoring
             </span>
@@ -59,7 +59,7 @@ export default function Home() {
 
           <motion.h1 {...fade(0.07)} className="text-6xl sm:text-7xl font-black text-gray-950 leading-[1.04] mb-6 tracking-tight">
             Write content that<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 via-accent-600 to-purple-600">
               actually converts
             </span>
           </motion.h1>
@@ -72,13 +72,13 @@ export default function Home() {
           <motion.div {...fade(0.2)} className="flex flex-col sm:flex-row gap-3 justify-center mb-10">
             {!loading && (loggedIn ? (
               <Link to="/dashboard"
-                className="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-xl font-bold text-base transition shadow-xl shadow-indigo-200/60">
+                className="inline-flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white px-8 py-4 rounded-xl font-bold text-base transition shadow-xl shadow-brand-200/60">
                 Go to Dashboard <FiArrowRight size={16} />
               </Link>
             ) : (
               <>
                 <Link to="/register"
-                  className="inline-flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-xl font-bold text-base transition shadow-xl shadow-indigo-200/60">
+                  className="inline-flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white px-8 py-4 rounded-xl font-bold text-base transition shadow-xl shadow-brand-200/60">
                   Start free — 20 credits <FiArrowRight size={16} />
                 </Link>
                 <Link to="/login"
@@ -110,7 +110,7 @@ export default function Home() {
               transition={{ duration: 0.4, delay: 0.1 + i * 0.07 }}
               className="bg-white border border-gray-100 rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition"
             >
-              <p className="text-4xl font-black text-indigo-600 mb-1.5">{value}</p>
+              <p className="text-4xl font-black text-brand-600 mb-1.5">{value}</p>
               <p className="text-xs text-gray-500 font-semibold uppercase tracking-wide">{label}</p>
             </motion.div>
           ))}
@@ -157,24 +157,24 @@ export default function Home() {
       <section className="max-w-2xl mx-auto px-4 pb-32">
         <motion.div
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}
-          className="relative bg-gradient-to-br from-indigo-600 via-indigo-600 to-violet-600 rounded-3xl p-12 shadow-2xl shadow-indigo-300/40 text-center overflow-hidden"
+          className="relative bg-gradient-to-br from-brand-600 via-brand-600 to-accent-600 rounded-3xl p-12 shadow-2xl shadow-brand-300/40 text-center overflow-hidden"
         >
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-violet-500/30 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-accent-500/30 via-transparent to-transparent" />
           <div className="relative">
             <h2 className="text-4xl font-black text-white mb-3 tracking-tight">Ready to write smarter?</h2>
             {!loading && (loggedIn ? (
               <>
-                <p className="text-indigo-200 mb-8 max-w-xs mx-auto">Your dashboard is waiting — pick up where you left off.</p>
+                <p className="text-brand-100 mb-8 max-w-xs mx-auto">Your dashboard is waiting — pick up where you left off.</p>
                 <Link to="/dashboard"
-                  className="inline-flex items-center gap-2 bg-white text-indigo-700 font-bold px-8 py-4 rounded-xl hover:bg-indigo-50 transition shadow-lg text-sm">
+                  className="inline-flex items-center gap-2 bg-white text-brand-700 font-bold px-8 py-4 rounded-xl hover:bg-brand-50 transition shadow-lg text-sm">
                   Go to Dashboard <FiArrowRight size={15} />
                 </Link>
               </>
             ) : (
               <>
-                <p className="text-indigo-200 mb-8 max-w-xs mx-auto">Get 20 free credits instantly. No credit card required.</p>
+                <p className="text-brand-100 mb-8 max-w-xs mx-auto">Get 20 free credits instantly. No credit card required.</p>
                 <Link to="/register"
-                  className="inline-flex items-center gap-2 bg-white text-indigo-700 font-bold px-8 py-4 rounded-xl hover:bg-indigo-50 transition shadow-lg text-sm">
+                  className="inline-flex items-center gap-2 bg-white text-brand-700 font-bold px-8 py-4 rounded-xl hover:bg-brand-50 transition shadow-lg text-sm">
                   Create free account <FiArrowRight size={15} />
                 </Link>
               </>

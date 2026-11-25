@@ -4,7 +4,7 @@ import api from '../services/api.js';
 import toast from 'react-hot-toast';
 import { FiAlertCircle, FiArrowLeft } from 'react-icons/fi';
 
-const inputClass = 'w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white transition placeholder-gray-400';
+const inputClass = 'w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:bg-white transition placeholder-gray-500';
 
 export default function ResetPassword() {
   const { token } = useParams();
@@ -81,14 +81,14 @@ export default function ResetPassword() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-xl font-bold transition disabled:opacity-60 text-sm shadow-lg shadow-indigo-200 mt-2"
+            className="w-full bg-brand-600 hover:bg-brand-700 text-white py-3.5 rounded-xl font-bold transition disabled:opacity-60 text-sm shadow-lg shadow-brand-200 mt-2"
           >
             {loading ? 'Resetting...' : 'Reset password'}
           </button>
         </form>
 
         <div className="mt-6 pt-6 border-t border-gray-100 flex items-center justify-between text-sm">
-          <Link to="/login" className="text-gray-400 hover:text-gray-600 flex items-center gap-1 transition">
+          <Link to="/login" className="text-gray-500 hover:text-gray-600 flex items-center gap-1 transition">
             <FiArrowLeft size={12} /> Back to sign in
           </Link>
         </div>

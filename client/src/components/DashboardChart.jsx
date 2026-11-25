@@ -10,10 +10,10 @@ export default function DashboardChart({ data }) {
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <FiActivity size={14} className="text-indigo-500" />
+          <FiActivity size={14} className="text-brand-500" />
           <p className="text-sm font-bold text-gray-900 dark:text-white">Recent Usage</p>
         </div>
-        <span className="text-xs text-gray-400 bg-gray-100 dark:bg-gray-800 px-2.5 py-1 rounded-full font-medium">Last {data.length}</span>
+        <span className="text-xs text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2.5 py-1 rounded-full font-medium">Last {data.length}</span>
       </div>
       <ResponsiveContainer width="100%" height={130}>
         <BarChart data={data} barSize={28}>

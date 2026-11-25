@@ -107,7 +107,7 @@ export default function PDFAnalyzer() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-brand-50 via-white to-slate-50">
       <div className="max-w-3xl mx-auto px-4 py-12">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
           <div className="mb-8">
@@ -118,7 +118,7 @@ export default function PDFAnalyzer() {
           {/* Upload area */}
           <div
             className={`relative border-2 border-dashed rounded-2xl p-10 text-center transition cursor-pointer ${
-              file ? 'border-indigo-400 bg-indigo-50' : 'border-gray-200 bg-white hover:border-indigo-300 hover:bg-indigo-50/30'
+              file ? 'border-brand-400 bg-brand-50' : 'border-gray-200 bg-white hover:border-brand-300 hover:bg-brand-50/30'
             }`}
             onDragOver={(e) => e.preventDefault()}
             onDrop={handleDrop}
@@ -128,8 +128,8 @@ export default function PDFAnalyzer() {
 
             {file ? (
               <div className="flex items-center justify-center gap-3">
-                <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
-                  <FiFileText size={22} className="text-indigo-600" />
+                <div className="w-12 h-12 bg-brand-100 rounded-xl flex items-center justify-center">
+                  <FiFileText size={22} className="text-brand-600" />
                 </div>
                 <div className="text-left">
                   <p className="font-semibold text-gray-900 text-sm">{file.name}</p>
@@ -144,11 +144,11 @@ export default function PDFAnalyzer() {
               </div>
             ) : (
               <>
-                <div className="w-14 h-14 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <FiUpload size={24} className="text-indigo-600" />
+                <div className="w-14 h-14 bg-brand-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <FiUpload size={24} className="text-brand-600" />
                 </div>
                 <p className="font-semibold text-gray-700 mb-1">Drop your PDF here</p>
-                <p className="text-sm text-gray-400">or click to browse · Max 10MB</p>
+                <p className="text-sm text-gray-500">or click to browse · Max 10MB</p>
               </>
             )}
           </div>
@@ -158,7 +158,7 @@ export default function PDFAnalyzer() {
               initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
               onClick={handleAnalyze} disabled={loading}
               whileTap={{ scale: 0.98 }}
-              className="mt-4 w-full bg-indigo-600 text-white py-3.5 rounded-xl font-semibold hover:bg-indigo-700 transition disabled:opacity-60 flex items-center justify-center gap-2 shadow-sm"
+              className="mt-4 w-full bg-brand-600 text-white py-3.5 rounded-xl font-semibold hover:bg-brand-700 transition disabled:opacity-60 flex items-center justify-center gap-2 shadow-sm"
             >
               {loading
                 ? <><span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" /> Analyzing PDF...</>
@@ -185,7 +185,7 @@ export default function PDFAnalyzer() {
                     { label: 'Chunks', value: result.chunks },
                   ].map(({ label, value }) => (
                     <div key={label} className="bg-white border border-gray-100 rounded-xl p-3 text-center shadow-sm">
-                      <p className="text-xl font-bold text-indigo-600">{value}</p>
+                      <p className="text-xl font-bold text-brand-600">{value}</p>
                       <p className="text-xs text-gray-500 mt-0.5">{label}</p>
                     </div>
                   ))}
@@ -199,7 +199,7 @@ export default function PDFAnalyzer() {
                         key={key}
                         onClick={() => setTab(key)}
                         className={`flex-1 flex items-center justify-center gap-1.5 py-3 text-sm font-medium transition ${
-                          tab === key ? 'bg-indigo-600 text-white' : 'text-gray-500 hover:bg-gray-50'
+                          tab === key ? 'bg-brand-600 text-white' : 'text-gray-500 hover:bg-gray-50'
                         }`}
                       >
                         <Icon size={14} /> {label}
@@ -212,7 +212,7 @@ export default function PDFAnalyzer() {
                         ? TABS.find((t) => t.key === tab).content
                         : tab === 'notes' && result?.analysis
                           ? result.analysis
-                          : <p className="text-gray-400 italic">No content found for this section.</p>
+                          : <p className="text-gray-500 italic">No content found for this section.</p>
                       }
                     </div>
                   </div>
@@ -226,7 +226,7 @@ export default function PDFAnalyzer() {
                   <button onClick={handleExportPDF} className="flex items-center gap-1.5 text-xs bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-lg font-medium transition">
                     <FiDownload size={12} /> Export PDF
                   </button>
-                  <button onClick={() => { setFile(null); setResult(null); }} className="flex items-center gap-1.5 text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-4 py-2 rounded-lg font-medium transition">
+                  <button onClick={() => { setFile(null); setResult(null); }} className="flex items-center gap-1.5 text-xs bg-brand-50 hover:bg-brand-100 text-brand-700 px-4 py-2 rounded-lg font-medium transition">
                     <FiUpload size={12} /> Analyze Another
                   </button>
                 </div>

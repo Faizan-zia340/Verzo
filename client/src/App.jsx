@@ -38,7 +38,7 @@ const AuthSpinner = () => (
       {[0, 1, 2].map((i) => (
         <motion.div
           key={i}
-          className="w-2 h-2 rounded-full bg-indigo-500"
+          className="w-2 h-2 rounded-full bg-brand-500"
           animate={{ y: [0, -7, 0], opacity: [0.4, 1, 0.4] }}
           transition={{ duration: 0.65, repeat: Infinity, delay: i * 0.13, ease: 'easeInOut' }}
         />
