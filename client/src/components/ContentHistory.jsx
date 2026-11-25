@@ -128,7 +128,7 @@ function HistoryItem({ item, index, onDelete, onFavorite, onRegenerate, regenera
             className="overflow-hidden"
           >
             <div className="mt-3 space-y-3">
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap leading-relaxed">
+              <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap break-words leading-relaxed">
                 {item.output}
               </div>
               {item.seoData?.title && (

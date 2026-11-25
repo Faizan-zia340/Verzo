@@ -57,7 +57,7 @@ export default function Home() {
             </span>
           </motion.div>
 
-          <motion.h1 {...fade(0.07)} className="text-6xl sm:text-7xl font-black text-gray-950 dark:text-white leading-[1.04] mb-6 tracking-tight">
+          <motion.h1 {...fade(0.07)} className="text-4xl sm:text-6xl lg:text-7xl font-black text-gray-950 dark:text-white leading-[1.04] mb-6 tracking-tight">
             Write content that<br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600">
               actually converts

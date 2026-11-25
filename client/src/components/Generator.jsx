@@ -407,7 +407,7 @@ export default function Generator() {
     if (!output) return null;
     if (!images.length || !hasInlineImages(output)) {
       return (
-        <span className="whitespace-pre-wrap">{output}</span>
+        <span className="whitespace-pre-wrap break-words">{output}</span>
       );
     }
 
@@ -443,7 +443,7 @@ export default function Generator() {
               </div>
             );
           }
-          return part ? <span key={i} className="whitespace-pre-wrap">{part}</span> : null;
+          return part ? <span key={i} className="whitespace-pre-wrap break-words">{part}</span> : null;
         })}
       </>
     );
@@ -456,7 +456,7 @@ export default function Generator() {
       {/* Quick Templates */}
       <div>
         <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Quick Templates</p>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {TEMPLATES.map(({ Icon, label, color, darkColor, bg, darkBg, form: tplForm }) => (
             <motion.button
               key={label}
