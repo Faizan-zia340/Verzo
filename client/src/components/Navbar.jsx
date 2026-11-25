@@ -56,9 +56,9 @@ export default function Navbar() {
                 </Link>
               )}
               <div className="flex items-center gap-1.5 bg-brand-50 border border-brand-100 text-brand-700 px-3 py-1.5 rounded-lg mx-1">
-                <FiZap size={11} className="text-brand-500" />
+                <FiZap size={11} className="text-gold-700" />
                 <span className="text-sm font-bold">{credits ?? user.credits}</span>
-                <span className="text-xs text-brand-600 font-medium">credits</span>
+                <span className="text-xs text-gold-800 font-medium">credits</span>
               </div>
               <button
                 onClick={handleLogout}
