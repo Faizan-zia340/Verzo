@@ -7,6 +7,7 @@ export default function Footer() {
         <p className="text-sm text-gray-500">© 2026 Verzo</p>
         <nav className="flex items-center gap-6 text-sm font-medium text-gray-600">
           <Link to="/" className="hover:text-indigo-600 transition">Home</Link>
+          <Link to="/blog" className="hover:text-indigo-600 transition">Blog</Link>
           <Link to="/pricing" className="hover:text-indigo-600 transition">Pricing</Link>
           <Link to="/login" className="hover:text-indigo-600 transition">Sign in</Link>
           <Link to="/register" className="hover:text-indigo-600 transition">Get started free</Link>
