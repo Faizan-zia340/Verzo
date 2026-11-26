@@ -5,6 +5,9 @@ import {
   FiImage, FiDownload, FiShare2, FiArrowRight, FiCheck, FiStar,
 } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext.js';
+import { FlipText } from '../components/ui/flip-text.jsx';
+import StatsCounter from '../components/ui/stats-counter.jsx';
+import { StaggerText } from '../components/ui/stagger-text.jsx';
 
 const fade = (delay = 0) => ({
   initial: { opacity: 0, y: 24 },
@@ -25,10 +28,10 @@ const FEATURES = [
 ];
 
 const STATS = [
-  { value: '23', label: 'Languages' },
-  { value: '5', label: 'Content types' },
-  { value: '4', label: 'Export formats' },
-  { value: '10s', label: 'Avg. gen time' },
+  { value: 23, suffix: '', label: 'Languages' },
+  { value: 5, suffix: '', label: 'Content types' },
+  { value: 4, suffix: '', label: 'Export formats' },
+  { value: 10, suffix: 's', label: 'Avg. gen time' },
 ];
 
 const TRUST = [
@@ -59,9 +62,10 @@ export default function Home() {
 
           <motion.h1 {...fade(0.07)} className="text-6xl sm:text-7xl font-black text-gray-950 leading-[1.04] mb-6 tracking-tight">
             Write content that<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600">
+            {/* FlipText faces render in currentColor — solid color only, never gradient. */}
+            <FlipText className="text-indigo-600 dark:text-indigo-400">
               actually converts
-            </span>
+            </FlipText>
           </motion.h1>
 
           <motion.p {...fade(0.14)} className="text-lg sm:text-xl text-gray-500 mb-10 max-w-xl mx-auto leading-relaxed">
@@ -102,7 +106,7 @@ export default function Home() {
       {/* ── Stats ──────────────────────────────────────────────── */}
       <section className="max-w-3xl mx-auto px-4 py-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {STATS.map(({ value, label }, i) => (
+          {STATS.map(({ value, suffix, label }, i) => (
             <motion.div
               key={label}
               initial={{ opacity: 0, y: 16 }}
@@ -110,7 +114,9 @@ export default function Home() {
               transition={{ duration: 0.4, delay: 0.1 + i * 0.07 }}
               className="bg-white border border-gray-100 rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition"
             >
-              <p className="text-4xl font-black text-indigo-600 mb-1.5">{value}</p>
+              <p className="text-4xl font-black text-indigo-600 mb-1.5">
+                <StatsCounter value={value} suffix={suffix} />
+              </p>
               <p className="text-xs text-gray-500 font-semibold uppercase tracking-wide">{label}</p>
             </motion.div>
           ))}
@@ -124,7 +130,7 @@ export default function Home() {
           className="text-center mb-14"
         >
           <h2 className="text-4xl font-black text-gray-950 mb-4 tracking-tight">
-            Everything in one platform
+            <StaggerText>Everything in one platform</StaggerText>
           </h2>
           <p className="text-gray-500 max-w-lg mx-auto text-base leading-relaxed">
             From idea to published in seconds. Every feature is designed to save you time and produce content that performs.
