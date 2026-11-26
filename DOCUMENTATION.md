@@ -1,4 +1,4 @@
-# Verzo — Full Project Documentation
+# Penlix — Full Project Documentation
 
 > **Verification note (24 Nov 2026, main @ d9fc369):** the AI provider was corrected from OpenAI to Gemini throughout this file — the app uses Google Gemini (`gemini-2.5-flash-lite`, `@google/generative-ai`, `server/config/gemini.js`); OpenAI is not used anywhere. Local ports were corrected to Vite 5000 / Express 3001. Some older sections (folder tree, API tables) may still lag the code — verify against the code before relying on them.
 

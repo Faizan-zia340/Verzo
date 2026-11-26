@@ -10,11 +10,11 @@ keyword: free AI email generator
 
 Aik professional email likhne mein aksar aadha ghanta lag jata hai. Subject line sochni hai, pehla jumla aisa ho ke reader ruk jaye, baat mukhtasar ho lekin poori ho, aur end par aik saaf "next step" ho. Phir bhi aksar email ya to bohat lambi ho jati hai ya itni khushk ke jawab hi nahi aata.
 
-Isi liye log free AI email generator istemal karte hain — aap topic aur maqsad batayein, aur tool aik tayyar, professional email likh de. Is post mein hum dekhenge ke Verzo se emails kaise likhein, aur teen real examples bhi hain.
+Isi liye log free AI email generator istemal karte hain — aap topic aur maqsad batayein, aur tool aik tayyar, professional email likh de. Is post mein hum dekhenge ke Penlix se emails kaise likhein, aur teen real examples bhi hain.
 
-## Verzo se email kaise likhein — 4 steps
+## Penlix se email kaise likhein — 4 steps
 
-**Step 1: Email ka type chunein.** Verzo mein email ke alag subtypes hain — cold outreach, follow-up, newsletter, welcome, apology, job application, thank you, meeting request aur general. Type chunnay se email ka structure khud theek ho jata hai.
+**Step 1: Email ka type chunein.** Penlix mein email ke alag subtypes hain — cold outreach, follow-up, newsletter, welcome, apology, job application, thank you, meeting request aur general. Type chunnay se email ka structure khud theek ho jata hai.
 
 **Step 2: Zaroori fields bharein.** Email ke liye jo cheezein chahiyein wo likhein: kis ko likh rahe hain, kis bare mein, aur kya chahiye. Jitni saaf maloomat, utni behtar email.
 
@@ -28,7 +28,7 @@ Isi liye log free AI email generator istemal karte hain — aap topic aur maqsad
 
 **Prompt:** "Cold outreach email — freelance graphic designer, naye restaurant client ko, apni services offer karni hain, tone friendly-professional."
 
-**Output (Verzo se):**
+**Output (Penlix se):**
 
 > Subject: Your restaurant's menu deserves better design
 >
@@ -47,7 +47,7 @@ Ye email kaam karegi kyun ke is mein teen cheezein hain: aik khaas observation (
 
 **Situation:** Proposal bheje hue 5 din ho gaye, koi jawab nahi aaya.
 
-**Output (Verzo se):**
+**Output (Penlix se):**
 
 > Subject: Quick follow-up — proposal from last Tuesday
 >
@@ -68,7 +68,7 @@ Follow-up ka usool: naram lehja, poori baat mukhtasar mein dobara, aur aik naya 
 
 **Situation:** Delivery aik din late ho gayi, client ko maafi aur naya waada chahiye.
 
-**Output (Verzo se):**
+**Output (Penlix se):**
 
 > Subject: Your order is one day late — here's what I'm doing about it
 >
@@ -103,17 +103,17 @@ Achi apology mein teen cheezein hoti hain: ghalti mani jaye, wajah saaf batayi j
 ## FAQ
 
 **Kya free AI email generator waqai free hai?**
-Verzo par free signup ke saath [20 free credits](/register) milte hain aur aik email aam tor par 1 credit mein banti hai — matlab aap 20 emails free likh sakte hain. Us ke baad [paid plans](/pricing) hain, jo $4.99 se shuru hote hain.
+Penlix par free signup ke saath [20 free credits](/register) milte hain aur aik email aam tor par 1 credit mein banti hai — matlab aap 20 emails free likh sakte hain. Us ke baad [paid plans](/pricing) hain, jo $4.99 se shuru hote hain.
 
 **Kya AI email spam jaisi lagti hai?**
-Sirf tab jab aap usay bina parhe bhej dein. Verzo ki emails mein khaas details hoti hain — naam, business, maqsad — lekin bhejne se pehle aik dafa khud parhna aur apne lafz mein dhalna zaroori hai. Jo email sab ko aik jaisi lage, wo spam hi hai.
+Sirf tab jab aap usay bina parhe bhej dein. Penlix ki emails mein khaas details hoti hain — naam, business, maqsad — lekin bhejne se pehle aik dafa khud parhna aur apne lafz mein dhalna zaroori hai. Jo email sab ko aik jaisi lage, wo spam hi hai.
 
 **Cold email aur follow-up email mein kya farq hai?**
 Cold email pehli dafa likhi jati hai — is mein aap ko apna taaruf aur aik wajah deni hoti hai ke reader jawab kyun de. Follow-up usi baat ko yaad dilata hai — naram lehja, mukhtasar dobara, aur aik naya reason.
 
 **Kya AI email mein Urdu bhi likh sakta hai?**
-Ji — Verzo 23 languages mein likhta hai, jin mein Roman Urdu (Karachi aur Lahore dialects) bhi shamil hain. Roman Urdu mein email likhna aise hi hai: language select karein aur baaqi steps wohi hain.
+Ji — Penlix 23 languages mein likhta hai, jin mein Roman Urdu (Karachi aur Lahore dialects) bhi shamil hain. Roman Urdu mein email likhna aise hi hai: language select karein aur baaqi steps wohi hain.
 
 ## Shuru karein
 
-Agli dafa jab email likhne mein ghanta lagne lage, to [Verzo par free signup karein](/register) aur apni pehli email minutes mein likhein. Achi email wohi hai jo parhi jaye — aur parhi wohi jati hai jo seedhi, khaas aur mukhtasar ho.
+Agli dafa jab email likhne mein ghanta lagne lage, to [Penlix par free signup karein](/register) aur apni pehli email minutes mein likhein. Achi email wohi hai jo parhi jaye — aur parhi wohi jati hai jo seedhi, khaas aur mukhtasar ho.

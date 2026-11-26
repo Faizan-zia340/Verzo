@@ -80,7 +80,7 @@ export const LANGUAGE_SCRIPT = {
 export const scriptOf = (language) => LANGUAGE_SCRIPT[language] || 'latin';
 export const groupOf = (script) => SCRIPT_GROUPS[script] || SCRIPT_GROUPS.latin;
 
-const storageKey = (script) => `verzo-font-${script}`;
+const storageKey = (script) => `penlix-font-${script}`;
 
 export function getFontChoice(script) {
   try {

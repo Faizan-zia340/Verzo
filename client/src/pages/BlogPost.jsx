@@ -29,7 +29,7 @@ export default function BlogPost() {
 
   useEffect(() => {
     if (post) {
-      setPageMeta(`${post.title} | Verzo Blog`, post.description);
+      setPageMeta(`${post.title} | Penlix Blog`, post.description);
       window.scrollTo(0, 0);
     }
   }, [post]);
@@ -78,7 +78,7 @@ export default function BlogPost() {
             {post.title}
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1.5 mb-10">
-            <FiClock size={13} /> {readingTime(post.body)} min read · {formatDate(post.date)} · By M. Faizan, Founder, Verzo
+            <FiClock size={13} /> {readingTime(post.body)} min read · {formatDate(post.date)} · By M. Faizan, Founder, Penlix
           </p>
 
           <div
@@ -92,7 +92,7 @@ export default function BlogPost() {
         <div className="mt-14 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-2xl p-8 text-center">
           <h2 className="text-2xl font-black text-white mb-2">Try it yourself — free</h2>
           <p className="text-indigo-100 mb-6">
-            Write your first blog, email or ad with Verzo. Free signup includes 20 credits — no card required.
+            Write your first blog, email or ad with Penlix. Free signup includes 20 credits — no card required.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link

@@ -1,5 +1,5 @@
 {
-  "name": "verzo-server",
+  "name": "penlix-server",
   "version": "1.0.0",
   "type": "module",
   "main": "server.js",

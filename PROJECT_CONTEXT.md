@@ -7,7 +7,7 @@ Last verified against actual code: 24 Nov 2026 (docs update — Replit reference
 
 ## 1. What This Project Is
 
-Verzo is a full-stack SaaS web app that generates AI-written content (blog posts, social media posts, cold emails) for users. Users register, get free credits, and spend credits to generate content via a streaming AI response. It supports 23 languages/dialects, tunes existing text (shorten/more engaging/professional/reduce hype) for free, auto-generates an SEO package (meta title/description/keywords) per generation, attaches relevant stock photos, and lets users export/share/download their content. It also includes a standalone PDF analyzer that turns an uploaded PDF into study notes, chapter summaries, and a test bank. An admin dashboard lets an admin manage users, grant/revoke credits, monitor a live generation activity feed, and manage a RAG "knowledge base" of context documents the AI can draw on.
+Penlix is a full-stack SaaS web app that generates AI-written content (blog posts, social media posts, cold emails) for users. Users register, get free credits, and spend credits to generate content via a streaming AI response. It supports 23 languages/dialects, tunes existing text (shorten/more engaging/professional/reduce hype) for free, auto-generates an SEO package (meta title/description/keywords) per generation, attaches relevant stock photos, and lets users export/share/download their content. It also includes a standalone PDF analyzer that turns an uploaded PDF into study notes, chapter summaries, and a test bank. An admin dashboard lets an admin manage users, grant/revoke credits, monitor a live generation activity feed, and manage a RAG "knowledge base" of context documents the AI can draw on.
 
 ---
 
@@ -290,12 +290,12 @@ Merge only on Faizy's decision. Agreed order: #8 → #7 → #9 → #5 → #10.
 - **PR #5** (`feature/purpose-templates`) — 26 purpose-based templates, human-style prompts, two-pass generation. Needs main synced in before merge.
 - **PR #7** (`feature/seo-batch`) — sitemap reduced to `/` + `/pricing`, per-page SEO with react-helmet-async.
 - **PR #8** (`feature/security-critical-fixes`) — fixes C1 (reset-URL poisoning), C2 (CORS wildcard), H1 (open `/rag`), H2 (public `/api/context`).
-- **PR #9** (`feature/user-quota-messages`) — per-user quota limits, quota errors branded "Verzo" (never "Gemini"). Must be rebased onto main after #8 (both touch `generate.js` and `package.json`).
+- **PR #9** (`feature/user-quota-messages`) — per-user quota limits, quota errors branded "Penlix" (never "Gemini"). Must be rebased onto main after #8 (both touch `generate.js` and `package.json`).
 - **PR #10** (`feature/voice-image-crosslang`) — voice input, image input, cross-language drift fix, email subtypes, new content types, blog image picker. Must be rebased onto main after #5, with its email subtypes merged into #5's purposes system (no duplicate email-type system).
 
 ## 11. Known Issues (24 Nov 2026)
 
-- **Gemini free-tier quota (429):** the shared quota exhausts fast under load; the live 429 error still says "Gemini" (PR #9 rebrands it to Verzo). No key rotation to evade quota — against Google's terms.
+- **Gemini free-tier quota (429):** the shared quota exhausts fast under load; the live 429 error still says "Gemini" (PR #9 rebrands it to Penlix). No key rotation to evade quota — against Google's terms.
 - **Pricing mismatch:** the Pricing page says Pro $10 = 100 credits and Enterprise $40 = 500, but the payment code grants starter 499 → 50, growth 999 → 120, pro 1999 → 300 credits. Needs one source of truth for packages.
 - **H3 — Stripe webhook double-credit:** the webhook credits the user on every `payment_intent.succeeded` event with no idempotency check, so a redelivered event double-credits.
 - **Credit-check race:** `creditCheck` only reads the balance; the deduction is a separate `$inc` after generation, so two concurrent requests can both pass with 1 credit.

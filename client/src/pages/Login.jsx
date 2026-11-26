@@ -49,8 +49,8 @@ export default function Login() {
       {/* ── Left: Feature panel ──────────────────────────────── */}
       <div className="hidden lg:flex w-[44%] bg-gradient-to-br from-gray-950 via-indigo-950 to-gray-900 flex-col justify-between p-12 flex-shrink-0">
         <Link to="/" className="flex items-center gap-2.5">
-          <img src="/brand/logo-square.svg" alt="Verzo" className="w-9 h-9 rounded-xl" />
-          <span className="text-white font-black text-2xl tracking-tight">Verzo</span>
+          <img src="/brand/penlix-icon.svg" alt="Penlix" className="w-9 h-9 rounded-xl" />
+          <span className="text-white font-black text-2xl tracking-tight">Penlix</span>
         </Link>
 
         <div>
@@ -74,7 +74,7 @@ export default function Login() {
 
         <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
           <p className="text-gray-300 text-sm italic leading-relaxed">
-            "Verzo generates content my readers actually want to read. The Reality Check scoring changed how I write."
+            "Penlix generates content my readers actually want to read. The Reality Check scoring changed how I write."
           </p>
           <div className="flex items-center gap-2.5 mt-4">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white text-xs font-bold">A</div>
@@ -92,8 +92,8 @@ export default function Login() {
 
           {/* Mobile logo */}
           <Link to="/" className="flex items-center gap-2 mb-10 lg:hidden">
-            <img src="/brand/logo-mark.svg" alt="Verzo" className="h-8 w-auto" />
-            <span className="font-black text-gray-900 text-xl">Verzo</span>
+            <img src="/brand/penlix-mark.svg" alt="Penlix" className="h-8 w-auto" />
+            <span className="font-black text-gray-900 text-xl">Penlix</span>
           </Link>
 
           <h1 className="text-3xl font-black text-gray-950 mb-1 tracking-tight">Welcome back</h1>

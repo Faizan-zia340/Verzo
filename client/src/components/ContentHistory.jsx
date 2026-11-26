@@ -247,7 +247,7 @@ export default function ContentHistory() {
       const url = URL.createObjectURL(new Blob([data]));
       const a = document.createElement('a');
       a.href = url;
-      a.download = `verzo-history${favoriteOnly ? '-favorites' : ''}.${format}`;
+      a.download = `penlix-history${favoriteOnly ? '-favorites' : ''}.${format}`;
       a.click();
       URL.revokeObjectURL(url);
       toast.success(`History exported as ${format.toUpperCase()}`);

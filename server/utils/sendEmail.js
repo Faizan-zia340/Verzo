@@ -25,8 +25,8 @@ export const sendPasswordResetEmail = async ({ to, resetUrl }) => {
       body: JSON.stringify({
         from,
         to,
-        subject: 'Reset your Verzo password',
-        html: `<p>You asked to reset your Verzo password. Click the link below to set a new password. The link expires in 1 hour.</p><p><a href="${resetUrl}">Reset your password</a></p><p>If you did not ask for this, you can safely ignore this email.</p>`,
+        subject: 'Reset your Penlix password',
+        html: `<p>You asked to reset your Penlix password. Click the link below to set a new password. The link expires in 1 hour.</p><p><a href="${resetUrl}">Reset your password</a></p><p>If you did not ask for this, you can safely ignore this email.</p>`,
       }),
     });
     if (!res.ok) {

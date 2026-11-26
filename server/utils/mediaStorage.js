@@ -28,7 +28,7 @@ const isConfigured = () =>
 const sanitizeFolderSegment = (value) =>
   String(value ?? '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 64) || 'unknown';
 
-export const buildUploadFolder = (userId) => `verzo/${sanitizeFolderSegment(userId)}`;
+export const buildUploadFolder = (userId) => `penlix/${sanitizeFolderSegment(userId)}`;
 
 // Images: deliver small + modern. q_auto/f_auto let Cloudinary serve
 // WebP/AVIF at the right quality; width caps the stored derivative at

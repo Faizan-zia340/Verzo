@@ -10,7 +10,7 @@ const formatDate = (date) =>
 export default function BlogList() {
   useEffect(() => {
     setPageMeta(
-      'Blog — Verzo | AI Content Guides',
+      'Blog — Penlix | AI Content Guides',
       'Practical guides to writing blogs, emails and more with AI — in Roman Urdu, Urdu and English. Real examples, no filler.'
     );
     window.scrollTo(0, 0);
@@ -21,7 +21,7 @@ export default function BlogList() {
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20">
         <div className="max-w-2xl mb-12">
           <span className="inline-flex items-center gap-2 bg-indigo-50 dark:bg-indigo-950 border border-indigo-100 dark:border-indigo-900 text-indigo-700 dark:text-indigo-300 text-xs font-semibold px-3 py-1.5 rounded-full mb-5">
-            <FiEdit3 size={12} /> Verzo Blog
+            <FiEdit3 size={12} /> Penlix Blog
           </span>
           <h1 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white tracking-tight mb-4">
             Learn to write with AI
