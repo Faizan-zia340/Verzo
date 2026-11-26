@@ -33,7 +33,7 @@ The post went on to describe the blue sky, the yellow sun in the top right and t
 
 The Reality Check is Penlix scoring its own draft out of 10 — it is self-scoring, not a second reviewer — so treat a low score as a hint to regenerate or tune, not as a guarantee.
 
-The generation cost 1 credit. Free signup comes with 10 free credits.
+The generation cost 1 credit. Free signup comes with 20 free credits.
 
 ## What makes a good photo for image-to-blog
 
@@ -79,7 +79,7 @@ No. Upload the photo, pick Blog and press Generate. A prompt is only for steerin
 JPG, PNG or WebP, up to 5 MB, one image per generation.
 
 **How much does it cost?**
-1 credit per generation. Free signup includes 10 credits; [pricing](/pricing) starts at $4.99 for 50 credits.
+1 credit per generation. Free signup includes 20 credits; [pricing](/pricing) starts at $4.99 for 50 credits.
 
 **Is my photo stored anywhere?**
 No. The image is held in memory for the one generation and then discarded — nothing is saved to the database.
