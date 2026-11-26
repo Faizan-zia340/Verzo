@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { marked } from 'marked';
 import { FiArrowLeft, FiClock, FiArrowRight } from 'react-icons/fi';
-import { getPostBySlug, readingTime } from '../content/blog/index.js';
+import { getPostBySlug, POSTS, readingTime } from '../content/blog/index.js';
 import { setPageMeta } from '../utils/pageMeta.js';
 import FontPicker from '../components/FontPicker.jsx';
 import SuggestTranslation from '../components/SuggestTranslation.jsx';
@@ -25,6 +25,13 @@ export default function BlogPost() {
   const html = useMemo(
     () => (post ? marked.parse(post.body) : ''),
     [post]
+  );
+
+  // Internal linking: the 3 most recent other posts. POSTS is already
+  // sorted newest-first, so this also picks up new posts automatically.
+  const related = useMemo(
+    () => POSTS.filter((p) => p.slug !== slug).slice(0, 3),
+    [slug]
   );
 
   useEffect(() => {
@@ -109,6 +116,25 @@ export default function BlogPost() {
             </Link>
           </div>
         </div>
+
+        {related.length > 0 && (
+          <section className="mt-14">
+            <h2 className="text-xl font-black text-gray-900 dark:text-white mb-5">More from the Penlix blog</h2>
+            <div className="grid gap-4 sm:grid-cols-3">
+              {related.map((r) => (
+                <Link
+                  key={r.slug}
+                  to={`/blog/${r.slug}`}
+                  className="block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 hover:border-indigo-300 dark:hover:border-indigo-500 transition"
+                >
+                  <span className="block text-xs font-semibold text-indigo-600 dark:text-indigo-400 mb-1.5">{r.keyword}</span>
+                  <span className="block text-sm font-bold text-gray-900 dark:text-white leading-snug">{r.title}</span>
+                  <span className="block text-xs text-gray-500 dark:text-gray-400 mt-2">{formatDate(r.date)} · {readingTime(r.body)} min read</span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
       </article>
     </main>
   );
