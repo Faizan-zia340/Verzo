@@ -463,11 +463,15 @@ export default function Generator() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Client-side required-field check: block before any AI call or credit use.
-    const { missing, errors } = validateDetails(form);
-    if (missing.length) {
-      setFieldErrors(errors);
-      toast.error(`Missing required fields: ${missing.join(', ')}`);
-      return;
+    // With an image attached the photo is the topic, so no prompt and no
+    // details are needed — the server supplies neutral defaults.
+    if (!imageFile) {
+      const { missing, errors } = validateDetails(form);
+      if (missing.length) {
+        setFieldErrors(errors);
+        toast.error(`Missing required fields: ${missing.join(', ')}`);
+        return;
+      }
     }
     setFieldErrors({});
     if (credits !== null && credits < 1) {
@@ -881,8 +885,8 @@ export default function Generator() {
               </button>
             </div>
             <textarea
-              name="prompt" value={form.prompt} onChange={handleChange} rows={4} required
-              placeholder="Describe what you want to generate, or pick a quick template above... (or tap Speak and say it)"
+              name="prompt" value={form.prompt} onChange={handleChange} rows={4} required={!imageFile}
+              placeholder="Describe what you want to generate, or pick a quick template above... (or tap Speak and say it — with a photo attached, you can leave this blank)"
               className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none placeholder-gray-400"
             />
            <div className="flex items-center justify-between mt-1.5 text-xs text-gray-400">
