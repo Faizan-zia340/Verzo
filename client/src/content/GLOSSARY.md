@@ -44,7 +44,7 @@ use the approved translation. If the term is not in the glossary yet, add it
 `portuguese_brazil`, `italian`, `dutch`, `russian`, `hindi`,
 `chinese_simplified`, `japanese`, `korean`, `bengali`, `turkish`,
 `indonesian`, `persian`, `swahili`) plus `urdu` (Urdu script — the blog
-language; it has no generation equivalent because Verzo generates Roman
+language; it has no generation equivalent because Penlix generates Roman
 Urdu, not Urdu script).
 
 Blog `language` frontmatter maps onto these keys: `english` → `english_us`,

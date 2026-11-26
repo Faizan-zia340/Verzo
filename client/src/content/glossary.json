@@ -10,7 +10,7 @@
     },
     "urdu": {
       "label": "Urdu",
-      "note": "Blog language (Urdu script). No generation equivalent — Verzo generates Roman Urdu, not Urdu script."
+      "note": "Blog language (Urdu script). No generation equivalent — Penlix generates Roman Urdu, not Urdu script."
     },
     "roman_urdu_karachi": {
       "label": "Roman Urdu (Karachi)"
