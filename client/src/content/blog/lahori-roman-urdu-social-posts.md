@@ -21,7 +21,7 @@ Penlix da Social type isse layi ay. Language vich Roman Urdu (Lahore) chuno, top
 
 **Step 3: Topic te andaaz likho.** Prompt vich likho ke kis bare post chahidi ay te kis lehje vich. Misal: "Lahore de food street bare Instagram post likho, mazedaar tone vich, pehli line sawal naal shuru karo, te aakhir vich logan nu comment karan da kaho."
 
-**Step 4: Generate dabao.** Aik generation aam tor te 1 credit vich hondi ay, te free signup naal 10 free credits milde ne. Je result pasand na aaye, prompt thora badal ke dobara try karo.
+**Step 4: Generate dabao.** Aik generation aam tor te 1 credit vich hondi ay, te free signup naal 20 free credits milde ne. Je result pasand na aaye, prompt thora badal ke dobara try karo.
 
 ## Changi Lahori social post kiven hondi ay
 
@@ -60,7 +60,7 @@ Eh sample ay — asal result tuhade prompt te setting mutabik badal sakda ay.
 Ji. Je language Roman Urdu (Lahore) select karo, taan post ohi lehje vich likhi jandi ay. Khaas naam ya jagah prompt vich theek likh deyo.
 
 **Aik generation da ki kharcha ay?**
-Aam tor te 1 credit. Free signup naal 10 credits milde ne; [pricing](/pricing) $4.99 to 50 credits to shuru hondi ay.
+Aam tor te 1 credit. Free signup naal 20 credits milde ne; [pricing](/pricing) $4.99 to 50 credits to shuru hondi ay.
 
 **Ki main bol ke prompt de sakda aan?**
 Ji. Speak button naal bol ke prompt de sakde o. Chrome te Edge vich chalda ay.

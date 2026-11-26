@@ -37,7 +37,7 @@ Doğru türü seçmek, e-postanın tonunu ve yapısını baştan doğru kurar. �
 
 **Adım 3: Kime ve ne hakkında yazdığınızı anlatın.** Prompt'a şunları yazın: alıcı kim, konu ne, ne istiyorsunuz, ton nasıl olsun. Örnek: "Bir yazılım şirketinin pazarlama müdürüne soğuk tanışma e-postası yazın. Hizmetimiz web sitesi hız optimizasyonu. 150 kelimeyi geçmesin, ton profesyonel ama samimi olsun, sonunda 15 dakikalık tanışma görüşmesi teklif edin."
 
-**Adım 4: Generate'e basın.** Bir üretim genellikle 1 kredi tutar. Ücretsiz kayıtta 10 ücretsiz kredi verilir. Sonuç hoşunuza gitmezse prompt'u biraz değiştirip tekrar deneyin.
+**Adım 4: Generate'e basın.** Bir üretim genellikle 1 kredi tutar. Ücretsiz kayıtta 20 ücretsiz kredi verilir. Sonuç hoşunuza gitmezse prompt'u biraz değiştirip tekrar deneyin.
 
 ## İyi bir Türkçe iş e-postasının 5 kuralı
 
@@ -69,7 +69,7 @@ Yukarıdaki örnek, anlatım amaçlı bir örnektir; gerçek sonuç prompt'a ve 
 Evet. Dil Turkish seçildiğinde e-posta Türkçe yazılır. İsim ve özel terimleri prompt'ta doğru yazmanız iyi olur.
 
 **Bir üretim kaç kredi?**
-Genellikle 1 kredi. Ücretsiz kayıtta 10 kredi verilir; [fiyatlandırma](/pricing) $4.99 karşılığında 50 krediden başlar.
+Genellikle 1 kredi. Ücretsiz kayıtta 20 kredi verilir; [fiyatlandırma](/pricing) $4.99 karşılığında 50 krediden başlar.
 
 **E-postayı sesle yazdırabilir miyim?**
 Evet. Speak düğmesiyle konuşarak prompt girebilirsiniz. Chrome ve Edge'de çalışır; sesiniz kaydedilmez ve sunucuya gönderilmez.

@@ -21,7 +21,7 @@ Tipe Blog di Penlix memperpendek proses itu. Pilih bahasa Indonesian, tulis topi
 
 **Langkah 3: Tulis topik dan arahannya.** Di prompt, tulis tentang apa dan untuk siapa. Contoh: "Tulis blog tentang kopi untuk pemula, dengan nada ramah, setiap jenis kopi disertai satu contoh." Topik, audiens, dan nada — ketiganya ditulis akan memberi hasil yang lebih baik.
 
-**Langkah 4: Klik Generate.** Satu kali generate biasanya memakai 1 kredit. Pendaftaran gratis memberi 10 kredit gratis. Kalau hasilnya kurang cocok, ubah sedikit prompt-nya lalu coba lagi.
+**Langkah 4: Klik Generate.** Satu kali generate biasanya memakai 1 kredit. Pendaftaran gratis memberi 20 kredit gratis. Kalau hasilnya kurang cocok, ubah sedikit prompt-nya lalu coba lagi.
 
 ## Yang Anda dapatkan di setiap artikel
 
@@ -55,7 +55,7 @@ Penlix juga bisa menulis blog dari foto. Unggah satu foto, pilih Blog — prompt
 Ya. Jika bahasa diatur ke Indonesian, artikel ditulis dalam bahasa Indonesia. Nama atau istilah khusus sebaiknya ditulis dengan benar di prompt.
 
 **Berapa biaya satu kali generate?**
-Biasanya 1 kredit. Pendaftaran gratis memberi 10 kredit; [harga](/pricing) mulai dari $4.99 untuk 50 kredit.
+Biasanya 1 kredit. Pendaftaran gratis memberi 20 kredit; [harga](/pricing) mulai dari $4.99 untuk 50 kredit.
 
 **Bisakah memasukkan prompt lewat suara?**
 Ya. Tombol Speak memungkinkan Anda berbicara dan kata-kata Anda masuk ke prompt. Berfungsi di Chrome dan Edge; suara Anda tidak direkam dan tidak dikirim ke server.

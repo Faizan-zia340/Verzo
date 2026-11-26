@@ -21,7 +21,7 @@ Aina ya Ad kwenye Penlix imeundwa kwa ajili hiyo. Chagua lugha ya Kiswahili, and
 
 **Hatua ya 3: Andika bidhaa na lengo lako.** Kwenye prompt, andika unatangaza nini, kwa nani, na unataka msomaji afanye nini. Mfano: "Andika tangazo fupi la duka la nguo mtandaoni. Lengo ni wanawake vijana, sauti ya kirafiki, kichwa cha kuvutia, na wito wa 'Nunua sasa' mwishoni."
 
-**Hatua ya 4: Bonyeza Generate.** Kila generate kwa kawaida hutumia kredit 1. Kujisajili bure kunatoa kredit 10 za bure. Matokeo yakikosekana, badilisha kidogo prompt yako kisha jaribu tena.
+**Hatua ya 4: Bonyeza Generate.** Kila generate kwa kawaida hutumia kredit 1. Kujisajili bure kunatoa kredit 20 za bure. Matokeo yakikosekana, badilisha kidogo prompt yako kisha jaribu tena.
 
 ## Nakala nzuri ya tangazo ina nini
 
@@ -61,7 +61,7 @@ Mfano huu ni kwa ajili ya maelezo tu; matokeo halisi hutegemea prompt na mipangi
 Ndiyo. Ukichagua lugha ya Swahili, nakala huandikwa kwa Kiswahili. Majina na istilahi maalum andika kwa usahihi kwenye prompt.
 
 **Generate moja inagharimu kiasi gani?**
-Kwa kawaida kredit 1. Kujisajili bure kunatoa kredit 10; [bei](/pricing) huanzia $4.99 kwa kredit 50.
+Kwa kawaida kredit 1. Kujisajili bure kunatoa kredit 20; [bei](/pricing) huanzia $4.99 kwa kredit 50.
 
 **Naweza kuingiza prompt kwa sauti?**
 Ndiyo. Kitufe cha Speak hukuruhusu kuzungumza na maneno yako huandikwa kwenye prompt. Hufanya kazi kwenye Chrome na Edge; sauti yako hairekodiwi wala kutumwa kwa seva.
