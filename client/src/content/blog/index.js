@@ -8,6 +8,9 @@ import urduContentGenerator from './urdu-content-generator.md?raw';
 import aiContentSeo from './does-ai-generated-content-hurt-seo.md?raw';
 import aiContentUrdu from './ai-content-generator-in-urdu.md?raw';
 import aiBlogWriterRomanUrdu from './ai-blog-writer-in-roman-urdu.md?raw';
+import writeBlogFromPhoto from './write-blog-from-a-photo.md?raw';
+import bolKarContentLikhein from './bol-kar-content-likhein.md?raw';
+import urduProfessionalEmail from './urdu-mein-professional-email-kaise-likhein.md?raw';
 
 // Minimal frontmatter parser — only the flat `key: value` lines we author.
 // Posts are repo-authored, so no need for a full YAML dependency.
@@ -26,7 +29,7 @@ export function parsePost(raw) {
   return { ...meta, body: match[2].trim() };
 }
 
-const SOURCES = [romanUrduBlogWriter, freeAiEmailGenerator, urduContentGenerator, aiContentSeo, aiContentUrdu, aiBlogWriterRomanUrdu];
+const SOURCES = [romanUrduBlogWriter, freeAiEmailGenerator, urduContentGenerator, aiContentSeo, aiContentUrdu, aiBlogWriterRomanUrdu, writeBlogFromPhoto, bolKarContentLikhein, urduProfessionalEmail];
 
 export const POSTS = SOURCES.map(parsePost).sort(
   (a, b) => new Date(b.date) - new Date(a.date)
