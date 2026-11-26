@@ -11,7 +11,80 @@ import {
 } from 'react-icons/fi';
 
 const TYPES = ['blog', 'social', 'email', 'ad', 'product'];
-const TONES = ['professional', 'casual', 'formal', 'friendly', 'persuasive'];
+const TONES = ['professional', 'casual', 'formal', 'friendly', 'persuasive', 'urgent', 'empathetic'];
+const READING_LEVELS = ['simple', 'standard', 'professional'];
+// Purpose sub-types per content type — mirrors server/config/contentTypes.js.
+// The server is the authority (validators.js enforces the required fields);
+// this copy only drives the dropdown and the dynamic required-fields UI.
+const PURPOSES = {
+  blog: [
+    { value: 'how-to', label: 'How-to' },
+    { value: 'listicle', label: 'Listicle' },
+    { value: 'opinion', label: 'Opinion' },
+    { value: 'case-study', label: 'Case study' },
+    { value: 'seo-article', label: 'SEO article' },
+  ],
+  social: [
+    { value: 'linkedin', label: 'LinkedIn' },
+    { value: 'x-twitter', label: 'X / Twitter' },
+    { value: 'instagram-caption', label: 'Instagram caption' },
+    { value: 'facebook', label: 'Facebook' },
+    { value: 'whatsapp-broadcast', label: 'WhatsApp broadcast' },
+  ],
+  email: [
+    { value: 'cold-outreach', label: 'Cold outreach' },
+    { value: 'follow-up', label: 'Follow-up' },
+    { value: 'job-posting', label: 'Job posting' },
+    { value: 'complaint', label: 'Complaint' },
+    { value: 'apology', label: 'Apology' },
+    { value: 'payment-reminder', label: 'Payment reminder' },
+    { value: 'newsletter', label: 'Newsletter' },
+    { value: 'announcement', label: 'Announcement' },
+    { value: 'thank-you', label: 'Thank-you' },
+    { value: 'meeting-request', label: 'Meeting request' },
+  ],
+  ad: [
+    { value: 'google-search', label: 'Google search ad' },
+    { value: 'facebook-instagram', label: 'Facebook / Instagram ad' },
+    { value: 'product-launch', label: 'Product launch' },
+  ],
+  product: [
+    { value: 'ecommerce-description', label: 'E-commerce description' },
+    { value: 'app-store-description', label: 'App store description' },
+    { value: 'feature-announcement', label: 'Feature announcement' },
+  ],
+};
+// Required fields per purpose — same keys/labels as the server config.
+// Only the fields that differ from the per-type defaults are listed here;
+// a purpose not listed falls back to REQUIRED_FIELDS for its type.
+const PURPOSE_FIELDS = {
+  'cold-outreach': ['company', 'senderName', 'audience', 'applyLink', 'contact'],
+  'follow-up': ['company', 'senderName', 'contact'],
+  'job-posting': ['company', 'role', 'location', 'senderName', 'applyLink', 'contact'],
+  complaint: ['company', 'senderName', 'topic', 'contact'],
+  apology: ['company', 'senderName', 'topic'],
+  'payment-reminder': ['company', 'senderName', 'deadline', 'contact'],
+  newsletter: ['topic', 'audience', 'senderName'],
+  announcement: ['topic', 'audience', 'company'],
+  'thank-you': ['senderName', 'recipient', 'topic'],
+  'meeting-request': ['senderName', 'recipient', 'topic', 'contact'],
+  'how-to': ['topic', 'audience'],
+  listicle: ['topic', 'audience'],
+  opinion: ['topic', 'audience'],
+  'case-study': ['topic', 'audience', 'company'],
+  'seo-article': ['topic', 'audience'],
+  linkedin: ['topic', 'audience'],
+  'x-twitter': ['topic', 'audience'],
+  'instagram-caption': ['topic', 'audience', 'product'],
+  facebook: ['topic', 'audience'],
+  'whatsapp-broadcast': ['topic', 'audience', 'contact'],
+  'google-search': ['product', 'audience', 'cta'],
+  'facebook-instagram': ['product', 'audience', 'cta'],
+  'product-launch': ['product', 'audience', 'cta'],
+  'ecommerce-description': ['product', 'audience'],
+  'app-store-description': ['product', 'audience'],
+  'feature-announcement': ['product', 'audience'],
+};
 const LENGTHS = ['short', 'medium', 'long'];
 const FORMATS = [
   { value: 'paragraphs', label: 'Paragraphs' },
@@ -87,6 +160,7 @@ const TEMPLATES = [
     form: {
       type: 'email', tone: 'professional', length: 'short', language: 'english_us', format: 'paragraphs',
       prompt: 'Write a cold outreach email to a potential B2B SaaS client. Include a personalized opener, state the value proposition in 2 sentences, and close with a soft CTA to schedule a 15-minute discovery call. Keep it under 150 words.',
+      purpose: 'cold-outreach',
     },
   },
 ];
@@ -122,16 +196,35 @@ const REQUIRED_FIELDS = {
     { name: 'audience', label: 'Audience', placeholder: 'e.g. Remote workers' },
   ],
 };
+// Extra detail fields used by some purposes (recipient, deadline).
+const EXTRA_FIELDS = {
+  recipient: { name: 'recipient', label: 'Recipient', placeholder: 'e.g. Sara Ahmed' },
+  deadline: { name: 'deadline', label: 'Deadline', placeholder: 'e.g. 30 November 2026' },
+};
+// All detail fields by name, for the dynamic purpose field list.
+const ALL_DETAIL_FIELDS = {
+  ...Object.fromEntries(Object.values(REQUIRED_FIELDS).flat().map((f) => [f.name, f])),
+  ...EXTRA_FIELDS,
+};
+// Required fields for the selected type + purpose. A purpose overrides the
+// per-type list; with no purpose selected the per-type list is used.
+const fieldsForForm = (form) => {
+  if (form.purpose && PURPOSE_FIELDS[form.purpose]) {
+    return PURPOSE_FIELDS[form.purpose].map((name) => ALL_DETAIL_FIELDS[name]).filter(Boolean);
+  }
+  return REQUIRED_FIELDS[form.type] || [];
+};
 
 const DETAILS_DEFAULTS = {
   topic: '', audience: '', company: '', role: '', location: '',
   senderName: '', applyLink: '', contact: '', product: '', cta: '',
+  recipient: '', deadline: '', purpose: '', readingLevel: 'standard', writingSample: '',
 };
 
 // Returns { missing: [labels], errors: { fieldName: message } } for the
-// required fields of the selected type that are still blank.
+// required fields of the selected type + purpose that are still blank.
 const validateDetails = (form) => {
-  const fields = REQUIRED_FIELDS[form.type] || [];
+  const fields = fieldsForForm(form);
   const errors = {};
   const missing = [];
   const isBlank = (name) => !form[name] || !form[name].trim();
@@ -142,7 +235,8 @@ const validateDetails = (form) => {
       missing.push(field.label);
     }
   }
-  if (form.type === 'email' && isBlank('applyLink') && isBlank('contact')) {
+  const needsLinkOrContact = fields.some((f) => f.name === 'applyLink' || f.name === 'contact');
+  if (needsLinkOrContact && isBlank('applyLink') && isBlank('contact')) {
     errors.applyLink = 'An apply link or a contact is required.';
     missing.push('Apply link or contact');
   }
@@ -184,7 +278,8 @@ export default function Generator() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    // Switching type resets the purpose (purposes belong to one type).
+    setForm((prev) => (name === 'type' ? { ...prev, type: value, purpose: '' } : { ...prev, [name]: value }));
     if (fieldErrors[name]) setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 
@@ -492,6 +587,34 @@ export default function Generator() {
             ))}
           </div>
 
+          {/* Purpose + Reading level */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Purpose <span className="text-gray-400 font-normal">(optional — sets the structure and required details)</span></label>
+              <select name="purpose" value={form.purpose || ''} onChange={handleChange} className={selectClass}>
+                <option value="">General {form.type}</option>
+                {(PURPOSES[form.type] || []).map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Reading level</label>
+              <select name="readingLevel" value={form.readingLevel || 'standard'} onChange={handleChange} className={selectClass}>
+                {READING_LEVELS.map((l) => <option key={l} value={l}>{l.charAt(0).toUpperCase() + l.slice(1)}</option>)}
+              </select>
+            </div>
+          </div>
+
+          {/* Writing sample — voice matching (optional, max 1500 chars) */}
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Writing sample <span className="text-gray-400 font-normal">(optional — the AI matches its voice, never copies its content)</span></label>
+            <textarea
+              name="writingSample" value={form.writingSample || ''} onChange={handleChange} rows={2} maxLength={1500}
+              placeholder="Paste a paragraph you wrote, in your own voice..."
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none placeholder-gray-400"
+            />
+            <div className="text-xs text-gray-400 mt-1">{(form.writingSample || '').length} / 1500 characters</div>
+          </div>
+
           {/* Row 2: Language (grouped) */}
           <div>
             <label className="block text-xs font-medium text-gray-600 mb-1">Language & Dialect <span className="text-gray-400 font-normal">(23 options)</span></label>
@@ -518,13 +641,13 @@ export default function Generator() {
            </div>
           </div>
 
-          {/* Required details for the selected type */}
+          {/* Required details for the selected type + purpose */}
           <div>
             <p className="text-xs font-medium text-gray-600 mb-2">
-              Required details <span className="text-gray-400 font-normal">(for {form.type} — no placeholders are used, so these must be real)</span>
+              Required details <span className="text-gray-400 font-normal">(for {form.purpose || form.type} — no placeholders are used, so these must be real)</span>
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {(REQUIRED_FIELDS[form.type] || []).map((field) => (
+              {fieldsForForm(form).map((field) => (
                 <div key={field.name}>
                   <label className="block text-xs font-medium text-gray-600 mb-1">
                     {field.label} <span className="text-red-500">*</span>
@@ -540,7 +663,7 @@ export default function Generator() {
                 </div>
               ))}
             </div>
-            {form.type === 'email' && (
+            {fieldsForForm(form).some((f) => f.name === 'applyLink' || f.name === 'contact') && (
               <p className="text-xs text-gray-400 mt-2">Apply link or contact — at least one of the two is required.</p>
             )}
           </div>

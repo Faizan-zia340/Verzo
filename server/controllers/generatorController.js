@@ -1,6 +1,7 @@
 import { generateText, generateSEO, tuneText, getModel, withSystem } from '../utils/gemini.js';
 import { buildPrompt } from '../utils/prompts.js';
-import { checkQuality, generateWithQualityCheck, retryGeneration } from '../utils/qualityCheck.js';
+import { checkQuality, generateWithQualityCheck, retryGeneration, sanitizePlaceholders } from '../utils/qualityCheck.js';
+import { runEditorPass, runTwoPassDraft } from '../utils/twoPass.js';
 import { fetchImages } from '../utils/unsplash.js';
 import { fetchAndAnalyzeImages, embedImagesInContent } from '../utils/imageService.js';
 import Content from '../models/Content.js';
@@ -55,17 +56,24 @@ const parseRealityCheck = (rawOutput) => {
   };
 };
 
-const generateContentData = async ({ type, prompt, tone = 'professional', length = 'medium', language = 'english_us', format = 'paragraphs', details = {} }) => {
+const generateContentData = async ({ type, prompt, tone = 'professional', length = 'medium', language = 'english_us', format = 'paragraphs', details = {}, purpose = '', readingLevel = 'standard', writingSample = '' }) => {
   checkKey();
 
-  // Quality-checked generation: retries once if the first draft has
-  // placeholders, banned phrases or other issues. Only the final text is used.
-  const { text: rawOutput, qualityReport } = await generateWithQualityCheck(generateText, {
-    prompt: buildPrompt({ type, prompt, tone, length, language, format, details }),
-    type,
-    input: details,
-    length,
-  });
+  // Two-pass + quality-checked generation: pass 1 drafts, pass 2 edits,
+  // then checkQuality runs; a failed check retries once. Only the final
+  // text is used, and only 1 credit is deducted by the caller.
+  // The prompt is included in `input` so the invented-figure check can
+  // tell numbers the user supplied apart from numbers the model made up.
+  const { text: rawOutput, qualityReport } = await generateWithQualityCheck(
+    runTwoPassDraft(generateText, { type, purpose }),
+    {
+      prompt: buildPrompt({ type, prompt, tone, length, language, format, details, purpose, readingLevel, writingSample }),
+      type,
+      purpose,
+      input: { ...details, prompt },
+      length,
+    }
+  );
   const { cleanContent, realityCheck } = parseRealityCheck(rawOutput);
   const seoData = await generateSEO(cleanContent);
   const keywords = seoData?.imageKeywords || seoData?.keywords || [];
@@ -98,6 +106,14 @@ const generateContentData = async ({ type, prompt, tone = 'professional', length
 };
 
 // ── Streaming generation via SSE ─────────────────────────────────
+// Streaming approach: pass 1 streams live token-by-token (the UI keeps
+// working exactly as before), then pass 2 runs as one non-streaming editor
+// call after the stream ends, and the `done` event replaces the streamed
+// text with the edited final text (contentWithImages). This was chosen
+// over streaming pass 2 because the editor needs the whole draft before
+// it can fix repeated patterns, and because the frontend already replaces
+// its output on `done` — so no UI change was needed and the user never
+// sees a half-edited stream.
 export const streamGenerate = asyncHandler(async (req, res) => {
   const userId = req.user._id;
 
@@ -115,7 +131,7 @@ export const streamGenerate = asyncHandler(async (req, res) => {
 
   try {
     checkKey();
-    const { type, prompt, tone, length, language = 'english_us', format = 'paragraphs', ...details } = req.body;
+    const { type, prompt, tone, length, language = 'english_us', format = 'paragraphs', purpose = '', readingLevel = 'standard', writingSample = '', ...details } = req.body;
 
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
@@ -125,7 +141,7 @@ export const streamGenerate = asyncHandler(async (req, res) => {
 
     const sendEvent = (data) => res.write(`data: ${JSON.stringify(data)}\n\n`);
 
-    const fullPrompt = buildPrompt({ type, prompt, tone, length, language, format, details });
+    const fullPrompt = buildPrompt({ type, prompt, tone, length, language, format, details, purpose, readingLevel, writingSample });
 
     let fullOutput = '';
     try {
@@ -159,14 +175,22 @@ export const streamGenerate = asyncHandler(async (req, res) => {
       return;
     }
 
-    // Split clean content from Reality Check section
+    // Split clean content from Reality Check section (kept from pass 1 —
+    // the editor pass only edits the clean content, never the scores).
     let { cleanContent, realityCheck } = parseRealityCheck(fullOutput);
 
-    // Quality check the streamed draft. If it fails (placeholders, banned
-    // phrases, ...), regenerate ONCE with the issues as feedback and keep
-    // the best attempt. Only the final text is saved — and only 1 credit
-    // is deducted for the whole request, retries included.
-    let qualityReport = checkQuality(cleanContent, { type, input: req.body, length });
+    // Pass 2 (editor pass) on the streamed draft, then quality-check the
+    // edited text. Only the final text is saved — and only 1 credit is
+    // deducted for the whole request, passes and retries included.
+    try {
+      sendEvent({ status: 'Polishing the draft...' });
+      cleanContent = await runEditorPass(generateText, cleanContent, { type, purpose });
+    } catch (err) {
+      logger.error({ err: err.message }, 'Editor pass failed; keeping streamed draft');
+    }
+    fullOutput = cleanContent;
+
+    let qualityReport = checkQuality(cleanContent, { type, purpose, input: req.body, length });
     if (!qualityReport.passed) {
       sendEvent({ status: 'Quality check flagged issues — regenerating once...' });
       try {
@@ -175,6 +199,7 @@ export const streamGenerate = asyncHandler(async (req, res) => {
           firstText: fullOutput,
           firstReport: qualityReport,
           type,
+          purpose,
           input: req.body,
           length,
         });
@@ -189,6 +214,15 @@ export const streamGenerate = asyncHandler(async (req, res) => {
       }
     } else {
       qualityReport = { passed: true, issues: [], retried: false };
+    }
+
+    // Final safety net: the saved output must never contain a bracketed
+    // placeholder, even if the editor pass and the retry could not remove
+    // one. Re-check after sanitizing so the report matches the saved text.
+    const sanitizedContent = sanitizePlaceholders(cleanContent);
+    if (sanitizedContent !== cleanContent) {
+      cleanContent = sanitizedContent;
+      qualityReport = checkQuality(cleanContent, { type, purpose, input: req.body, length });
     }
 
     // Post-generation: SEO + images + save
@@ -252,18 +286,22 @@ export const generate = asyncHandler(async (req, res) => {
 
   try {
     checkKey();
-    const { type, prompt, tone, length, language = 'english_us', format = 'paragraphs', ...details } = req.body;
+    const { type, prompt, tone, length, language = 'english_us', format = 'paragraphs', purpose = '', readingLevel = 'standard', writingSample = '', ...details } = req.body;
 
     io.to(userId.toString()).emit('generation:start');
 
-    // Quality-checked generation: retries once if the first draft fails the
-    // check. Only the final text is saved and only 1 credit is deducted.
-    const { text: rawOutput, qualityReport } = await generateWithQualityCheck(generateText, {
-      prompt: buildPrompt({ type, prompt, tone, length, language, format, details }),
-      type,
-      input: req.body,
-      length,
-    });
+    // Two-pass + quality-checked generation: retries once if the first draft
+    // fails the check. Only the final text is saved and only 1 credit deducted.
+    const { text: rawOutput, qualityReport } = await generateWithQualityCheck(
+      runTwoPassDraft(generateText, { type, purpose }),
+      {
+        prompt: buildPrompt({ type, prompt, tone, length, language, format, details, purpose, readingLevel, writingSample }),
+        type,
+        purpose,
+        input: req.body,
+        length,
+      }
+    );
     const { cleanContent, realityCheck } = parseRealityCheck(rawOutput);
 
     const seoData = await generateSEO(cleanContent);
@@ -342,7 +380,8 @@ export const generateAIContent = asyncHandler(async (req, res) => {
 
   // Quality-checked generation: retries once if the first draft fails the
   // check. The RAG route saves nothing, so the retry only costs one extra
-  // AI call.
+  // AI call. (Two-pass is not applied here — RAG answers are grounded in
+  // retrieved context, not purpose templates.)
   const { text: raw, qualityReport } = await generateWithQualityCheck(generateText, {
     prompt: finalPrompt,
     type: 'general',
@@ -406,4 +445,3 @@ export const regenerateContent = asyncHandler(async (req, res) => {
     throw err;
   }
 });
-
