@@ -99,7 +99,7 @@ export const CONTENT_TYPES = {
         lengthRange: { min: 80, max: 250 },
         examples: [
           'Our Clifton store moves to a bigger space on 1 December. Same team, same menu, twice the seating. Come see us at the new address on Khayaban-e-Ittehad.',
-          'Verzo 2.0 launches on Monday. The editor is faster, and you can now save brand voices. Your existing projects carry over automatically.',
+          'Penlix 2.0 launches on Monday. The editor is faster, and you can now save brand voices. Your existing projects carry over automatically.',
         ],
       },
       'thank-you': {
