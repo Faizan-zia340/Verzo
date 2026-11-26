@@ -129,7 +129,7 @@ verzo/
     │   ├── credits.js               # /api/credits/*
     │   ├── payment.js               # /api/payment/*
     │   ├── history.js               # /api/history/*
-    │   └── context.js               # /api/context/*
+    │   └── admin.js                 # /api/admin/* (incl. /contexts)
     ├── controllers/
     │   ├── authController.js        # Register, login, getMe logic
     │   ├── generatorController.js   # Standard and RAG content generation
@@ -459,11 +459,17 @@ All routes require JWT + admin (`protect`, `isAdmin`).
 
 Delete safeguards: an admin cannot delete their own account (403) and no admin account can be deleted (403); a missing user returns 404. The admin panel (User Management) shows a Delete button next to Edit Credits for regular users only — it is disabled on admin rows and on the signed-in admin's own row, asks for confirmation with the user's email, and removes the user from the list on success.
 
-### Context — `/api/context`
+### Context — `/api/admin/contexts` (admin only)
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| POST | `/` | No | Insert new RAG reference document |
-| GET | `/` | No | List all stored context documents |
+| POST | `/` | Admin | Insert new RAG reference document |
+| GET | `/` | Admin | List all stored context documents |
+| DELETE | `/:id` | Admin | Delete a context document |
+
+> The old public `/api/context` routes were removed (security fix H2):
+> they let anyone read all RAG contexts and inject their own. No
+> frontend code called them — the admin panel already used
+> `/api/admin/contexts`.
 
 ---
 
@@ -591,9 +597,9 @@ RAG (Retrieval-Augmented Generation) prevents the AI from hallucinating facts by
 4. Return: { response, contextUsed: true/false, contextTitle }
 ```
 
-**Seeding reference data:**
+**Seeding reference data (admin only):**
 ```bash
-POST /api/context
+POST /api/admin/contexts
 {
   "title": "Refund Policy",
   "keywords": ["refund", "return", "money back"],

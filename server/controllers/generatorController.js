@@ -334,8 +334,8 @@ export const generateAIContent = asyncHandler(async (req, res) => {
     : userPrompt;
 
   // Quality-checked generation: retries once if the first draft fails the
-  // check. The RAG route has no credit deduction and saves nothing, so the
-  // retry only costs one extra AI call.
+  // check. The RAG route saves nothing, so the retry only costs one extra
+  // AI call.
   const { text: raw, qualityReport } = await generateWithQualityCheck(generateText, {
     prompt: finalPrompt,
     type: 'general',
@@ -343,6 +343,14 @@ export const generateAIContent = asyncHandler(async (req, res) => {
     length: 'medium',
   });
   const { cleanContent, realityCheck } = parseRealityCheck(raw);
+
+  // SECURITY (H1): the RAG route now charges 1 credit like the other
+  // generate endpoints (it was previously free and unauthenticated).
+  await Promise.all([
+    User.findByIdAndUpdate(req.user._id, { $inc: { credits: -1 } }),
+    Credit.create({ user: req.user._id, amount: -1, type: 'usage', description: 'Generated RAG content' }),
+  ]);
+
   res.status(200).json({
     response: cleanContent,
     realityCheck,

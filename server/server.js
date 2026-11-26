@@ -23,32 +23,18 @@ import creditsRoutes from './routes/credits.js';
 import paymentRoutes from './routes/payment.js';
 import historyRoutes from './routes/history.js';
 import mediaRoutes from './routes/media.js';
-import contextRoutes from './routes/context.js';
 import adminRoutes from './routes/admin.js';
 import billingRoutes from './routes/billing.js';
 import pdfRoutes from './routes/pdf.js';
 import glossaryRoutes from './routes/glossary.js';
 import errorHandler from './middleware/errorHandler.js';
+import { corsOriginCheck } from './utils/corsOrigins.js';
 import { scheduleDailyFreeCreditReset } from './jobs/dailyCreditReset.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isProd = process.env.NODE_ENV === 'production';
 
 validateEnv();
-
-const allowedOrigins = [
-  process.env.CLIENT_URL,
-  'http://localhost:5173',
-  'http://localhost:5000',
-].filter(Boolean);
-
-const corsOriginCheck = (origin, callback) => {
-  if (!origin) return callback(null, true);
-  if (allowedOrigins.includes(origin)) return callback(null, true);
-  if (/\.replit\.dev$/.test(origin)) return callback(null, true);
-  if (/\.vercel\.app$/.test(origin)) return callback(null, true);
-  return callback(new Error(`Origin ${origin} not allowed by CORS`));
-};
 
 const app = express();
 const server = http.createServer(app);
@@ -121,7 +107,6 @@ app.use('/api/credits', creditsRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/history', historyRoutes);
 app.use('/api/media', mediaRoutes);
-app.use('/api/context', contextRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/billing', billingRoutes);
 app.use('/api/pdf', pdfRoutes);

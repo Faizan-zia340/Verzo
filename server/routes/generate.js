@@ -15,7 +15,7 @@ const genLimit = userRateLimit(10);
 router.post('/', protect, genLimit, validate(generateSchema), reserveCredit(1), generate);
 router.post('/stream', protect, genLimit, validate(generateSchema), reserveCredit(1), streamGenerate);
 router.post('/tune', protect, genLimit, tuneContent);
-router.post('/rag', generateAIContent);
+router.post('/rag', protect, genLimit, creditCheck(1), generateAIContent);
 
 // Diagnostic: verify Gemini key works without consuming user credits
 router.get('/ping-ai', protect, asyncHandler(async (req, res) => {
