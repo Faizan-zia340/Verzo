@@ -48,6 +48,28 @@ export const REQUIRED_FIELDS = {
     { key: 'product', label: 'Product' },
     { key: 'audience', label: 'Audience' },
   ],
+  cover_letter: [
+    { key: 'company', label: 'Company' },
+    { key: 'role', label: 'Role (job title)' },
+    { key: 'location', label: 'Location' },
+    { key: 'senderName', label: 'Sender name' },
+    { key: 'skills', label: 'Key skills' },
+  ],
+  resume_summary: [
+    { key: 'role', label: 'Role (job title)' },
+    { key: 'skills', label: 'Key skills' },
+  ],
+  linkedin: [
+    { key: 'topic', label: 'Topic' },
+    { key: 'audience', label: 'Audience' },
+  ],
+};
+
+// Allowed subtypes per type. Unknown subtypes are ignored (treated as the
+// default for that type) rather than rejected, so old clients keep working.
+export const ALLOWED_SUBTYPES = {
+  email: ['general', 'cold_outreach', 'follow_up', 'newsletter', 'welcome', 'apology', 'job_application', 'thank_you', 'meeting_request'],
+  social: ['post', 'captions'],
 };
 
 // Returns the labels of the required fields missing from `values`.
@@ -73,7 +95,8 @@ export const missingRequiredFields = (type, values = {}, purpose = '') => {
 const detailField = Joi.string().trim().max(500).allow('').optional();
 
 export const generateSchema = Joi.object({
-  type: Joi.string().valid('blog', 'social', 'email', 'ad', 'product').required(),
+  type: Joi.string().valid('blog', 'social', 'email', 'ad', 'product', 'cover_letter', 'resume_summary', 'linkedin').required(),
+  subtype: Joi.string().trim().max(50).allow('').optional(),
   prompt: Joi.string().min(10).max(1000).required(),
   tone: Joi.string().optional(),
   length: Joi.string().valid('short', 'medium', 'long').optional(),
@@ -100,6 +123,7 @@ export const generateSchema = Joi.object({
   cta: detailField,
   recipient: detailField,
   deadline: detailField,
+  skills: detailField,
 })
   .options({ stripUnknown: true })
   .custom((value, helpers) => {

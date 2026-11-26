@@ -85,6 +85,28 @@ router.patch('/:id/favorite', protect, asyncHandler(async (req, res) => {
   res.status(200).json({ content });
 }));
 
+// Blog image picker: swap one embedded image slot with another Unsplash
+// candidate from the same generation's imageOptions. Body: { slot, optionIndex }.
+// No credits used — this only changes which already-fetched image is shown.
+router.patch('/:id/images', protect, asyncHandler(async (req, res) => {
+  const { slot, optionIndex } = req.body;
+  if (!Number.isInteger(slot) || !Number.isInteger(optionIndex)) {
+    return res.status(400).json({ message: 'slot and optionIndex must be integers' });
+  }
+  const content = await Content.findOne({ _id: req.params.id, user: req.user._id });
+  if (!content) return res.status(404).json({ message: 'Content not found' });
+  if (!content.images || slot < 0 || slot >= content.images.length) {
+    return res.status(400).json({ message: 'Invalid image slot' });
+  }
+  if (!content.imageOptions || optionIndex < 0 || optionIndex >= content.imageOptions.length) {
+    return res.status(400).json({ message: 'Invalid image option' });
+  }
+  content.images[slot] = content.imageOptions[optionIndex];
+  content.updatedAt = new Date();
+  await content.save();
+  res.status(200).json({ content });
+}));
+
 router.post('/:id/regenerate', protect, userRateLimit(10), reserveCredit(1), regenerateContent);
 
 router.delete('/:id', protect, asyncHandler(async (req, res) => {

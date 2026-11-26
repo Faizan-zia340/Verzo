@@ -1,7 +1,7 @@
 import { getPurpose } from '../config/contentTypes.js';
 
 const LANGUAGE_MAP = {
-  english_us: '',
+  english_us: '\n\nWrite the entire response in American English. Use US spelling (color, behavior, realize, organize) and natural American phrasing.',
   english_uk: '\n\nWrite in British English. Use UK spelling (colour, behaviour, realise, organise), UK idioms, and British cultural references where natural.',
   roman_urdu_karachi: '\n\nWrite in Roman Urdu using natural Karachi street-style Pakistani Urdu. Use words like "yaar", "bhai", "masla", "seedha baat", "dhamaal", "tou phir", "bata na", "kya scene hai". Avoid formal/literary Urdu. Make it sound like a real Karachiite talking.',
   roman_urdu_lahore: '\n\nWrite in Roman Urdu using natural Lahori Punjabi-influenced Urdu. Use words like "yaara", "ki gal", "dass", "sohna", "te phir", "wajib aa", "kurra". Make it sound like a real Lahori talking.',
@@ -10,7 +10,7 @@ const LANGUAGE_MAP = {
   spanish_latam: '\n\nEscribe en español latinoamericano neutro, fácil de entender en México, Colombia y toda Latinoamérica.',
   spanish_spain: '\n\nEscribe en español de España. Usa "vosotros" donde corresponda y expresiones del español peninsular.',
   french: '\n\nÉcris l\'intégralité de la réponse en français avec un style naturel et fluide.',
-  german: '\n\nSchreibe die gesamte Anleitung auf Deutsch mit einem natürlichen, professionellen Stil.',
+  german: '\n\nSchreibe die gesamte Antwort auf Deutsch mit einem natürlichen, professionellen Stil.',
   portuguese_brazil: '\n\nEscreva em português brasileiro com um tom natural e conversacional típico do Brasil.',
   hindi: '\n\nपूरा जवाब हिंदी में लिखें। सरल, स्पष्ट और प्रवाहमय भाषा का उपयोग करें।',
   turkish: '\n\nYanıtın tamamını Türkçe olarak yaz. Doğal ve akıcı bir dil kullan.',
@@ -24,6 +24,36 @@ const LANGUAGE_MAP = {
   indonesian: '\n\nTulis seluruh respons dalam Bahasa Indonesia yang natural dan profesional.',
   persian: '\n\nمتن کامل را به فارسی روان و طبیعی بنویسید.',
   swahili: '\n\nAndika jibu lote kwa Kiswahili sanifu na rahisi kueleweka.',
+};
+
+// Short display name per language value — used for the language anchor at
+// the TOP of every prompt so the model sees the required output language
+// before any other instruction (a trailing instruction alone is too weak
+// and the model drifts, e.g. English requests coming back in Roman Urdu).
+const LANGUAGE_NAMES = {
+  english_us: 'American English',
+  english_uk: 'British English',
+  roman_urdu_karachi: 'Roman Urdu (Karachi street style)',
+  roman_urdu_lahore: 'Roman Urdu (Lahori style)',
+  arabic_msa: 'Modern Standard Arabic',
+  arabic_gulf: 'Gulf Arabic dialect',
+  spanish_latam: 'Latin American Spanish',
+  spanish_spain: 'Spanish (Spain)',
+  french: 'French',
+  german: 'German',
+  portuguese_brazil: 'Brazilian Portuguese',
+  hindi: 'Hindi (Devanagari script)',
+  turkish: 'Turkish',
+  chinese_simplified: 'Simplified Chinese',
+  japanese: 'Japanese',
+  russian: 'Russian',
+  italian: 'Italian',
+  dutch: 'Dutch',
+  korean: 'Korean',
+  bengali: 'Bengali',
+  indonesian: 'Bahasa Indonesia',
+  persian: 'Persian (Farsi)',
+  swahili: 'Swahili',
 };
 
 const FORMAT_MAP = {
@@ -97,6 +127,28 @@ const DETAILS_LABELS = {
   cta: 'Call to action',
   recipient: 'Recipient',
   deadline: 'Deadline',
+  skills: 'Key skills',
+};
+
+// Email category instructions — each subtype gets its own structure so a
+// cold outreach email does not read like a newsletter.
+const EMAIL_SUBTYPES = {
+  general: 'Structure: subject line, greeting, body (2-3 short paragraphs), and a clear one-line CTA before the sign-off.',
+  cold_outreach: 'This is a COLD OUTREACH email to someone who does not know the sender. Structure: short personalised subject line, one-line opener that shows you know their business, value proposition in 2 sentences, and a soft low-pressure CTA to book a short call. Keep it under 150 words.',
+  follow_up: 'This is a FOLLOW-UP email to someone who has not replied yet. Structure: subject line referencing the earlier message, brief polite reminder of the original ask in 1-2 sentences, one new reason to reply (a result, a deadline, or a helpful resource), and a simple CTA. Keep it short.',
+  newsletter: 'This is a NEWSLETTER email to subscribers. Structure: friendly subject line, warm greeting, 2-3 short sections with a clear heading each, and a CTA to read more or reply. Conversational, not salesy.',
+  welcome: 'This is a WELCOME email to a new subscriber or customer. Structure: warm subject line, friendly greeting, what they can expect next (2-3 short points), and one clear first step. Warm and encouraging.',
+  apology: 'This is an APOLOGY email. Structure: sincere subject line, direct apology in the first sentence (no excuses), a brief honest explanation, what is being done to fix it, and a concrete make-good offer. Honest, human, no corporate filler.',
+  job_application: 'This is a JOB APPLICATION email. Structure: subject line with the role and the sender name, greeting, 2 short paragraphs (why this role, why the sender fits — grounded only in the details provided), and a CTA to review the attached resume. Include the apply link or contact exactly as provided.',
+  thank_you: 'This is a THANK-YOU email. Structure: warm subject line, sincere thanks in the first sentence, one specific thing being thanked for, and a brief forward-looking line. Short and genuine.',
+  meeting_request: 'This is a MEETING REQUEST email. Structure: clear subject line stating the purpose, 2-3 sentences on why the meeting matters and what will be covered, and a CTA proposing times or asking for availability. Concise and respectful of their time.',
+};
+
+// Social style instructions — a captions request returns short captions,
+// not a full post.
+const SOCIAL_SUBTYPES = {
+  post: '',
+  captions: 'Return 3 short caption options, each on its own line, numbered 1-3. Each caption is 1-2 lines max. Add 3-5 relevant hashtags at the end of each caption. Keep them distinct in angle (one funny, one bold, one minimal).',
 };
 
 // Formats the per-type details the user provided so the model uses exactly
@@ -129,7 +181,7 @@ const formatWritingSample = (sample) => {
   return `\n\nWriting sample — match this voice only (sentence length, vocabulary, punctuation habits, level of formality). Do NOT copy its words, topic or content:\n"${text}"`;
 };
 
-export const buildPrompt = ({ type, prompt, tone = 'professional', length = 'medium', language = 'english_us', format = 'paragraphs', details = {}, purpose = '', readingLevel = 'standard', writingSample = '' }) => {
+export const buildPrompt = ({ type, prompt, tone = 'professional', length = 'medium', language = 'english_us', format = 'paragraphs', details = {}, purpose = '', readingLevel = 'standard', writingSample = '', subtype = '' }) => {
   const lengths = { short: '100-150 words', medium: '200-300 words', long: '400-600 words' };
   const wordCount = lengths[length] || lengths.medium;
   const langInstruction = LANGUAGE_MAP[language] ?? LANGUAGE_MAP['english_us'];
@@ -144,6 +196,13 @@ export const buildPrompt = ({ type, prompt, tone = 'professional', length = 'med
   const lengthInstruction = purposeConfig
     ? `Length: about ${purposeConfig.lengthRange.min}–${purposeConfig.lengthRange.max} words.`
     : `Length: approximately ${wordCount}.`;
+  // Language anchor at the TOP of the prompt — the model must see the
+  // required output language before anything else. Repeated at the end.
+  const langName = LANGUAGE_NAMES[language] || LANGUAGE_NAMES['english_us'];
+  const langAnchor = `OUTPUT LANGUAGE — CRITICAL: Write the ENTIRE response in ${langName}. Do not write in any other language, do not mix languages, and do not translate the prompt itself. If the user's prompt is written in a different language than ${langName}, understand it, but still answer fully in ${langName}.\n\n`;
+
+  const emailStructure = EMAIL_SUBTYPES[subtype || details.subtype] || EMAIL_SUBTYPES.general;
+  const socialExtra = SOCIAL_SUBTYPES[subtype || details.subtype] || '';
 
   const templates = {
     blog: `Write a ${tone} blog post about: "${prompt}".
@@ -158,12 +217,14 @@ Length: short and punchy — no more than 5 lines.
 Start with a hook in the first line that makes someone stop scrolling.
 Use emojis only if they add meaning (max 3).
 End with a question or CTA to drive engagement.
+${socialExtra}
 ${STYLE_RULES}
 ${HUMAN_STYLE_RULES}`,
 
     email: `Write a ${tone} email about: "${prompt}".
 ${lengthInstruction}
 Include: subject line, greeting (by name only if the recipient name was provided, otherwise start with 'Hi there,'), body (2-3 short paragraphs), and a clear one-line CTA before the sign-off.
+${emailStructure}
 ${formatInstruction}
 ${STYLE_RULES}
 ${HUMAN_STYLE_RULES}`,
@@ -181,9 +242,31 @@ Lead with the primary benefit, not the product name. Ground claims in specifics.
 ${formatInstruction}
 ${STYLE_RULES}
 ${HUMAN_STYLE_RULES}`,
+
+    cover_letter: `Write a ${tone} cover letter for the job described below.
+Job / prompt: "${prompt}".
+${lengthInstruction}
+Structure: subject line or header with the role, greeting, opening paragraph (why this role), middle paragraph (why the sender fits — use ONLY the key skills and details provided, never invent experience), closing paragraph with a CTA to schedule an interview, and a professional sign-off with the sender name.
+${formatInstruction}
+${STYLE_RULES}
+${HUMAN_STYLE_RULES}`,
+
+    resume_summary: `Write a ${tone} professional summary for a resume, based on: "${prompt}".
+Length: 3-5 sentences (about 60-90 words).
+Structure: one strong opening line stating the role and years of focus (only if provided), then the key skills and what the person delivers, ending with the kind of role they are seeking. First person, confident, no filler.
+${STYLE_RULES}
+${HUMAN_STYLE_RULES}`,
+
+    linkedin: `Write a ${tone} LinkedIn post about: "${prompt}".
+Length: short and punchy — no more than 8 lines.
+Start with a hook in the first line that makes someone stop scrolling.
+Use short paragraphs with line breaks for readability. Professional but human — no corporate filler.
+End with a question or CTA to drive comments, and add 3-5 relevant hashtags on the last line.
+${STYLE_RULES}
+${HUMAN_STYLE_RULES}`,
   };
 
-  return (templates[type] || templates.blog)
+  return langAnchor + (templates[type] || templates.blog)
     + purposeBlock
     + toneInstruction
     + readingInstruction
@@ -256,4 +339,4 @@ Produce output in this EXACT format:
 Keep each section clearly labelled. Be thorough but concise.`;
 };
 
-export { LANGUAGE_MAP };
+export { LANGUAGE_MAP, LANGUAGE_NAMES, EMAIL_SUBTYPES, SOCIAL_SUBTYPES };

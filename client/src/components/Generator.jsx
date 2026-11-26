@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCredits } from '../context/CreditContext.js';
 import { apiUrl } from '../services/apiUrl.js';
@@ -8,9 +8,19 @@ import { scriptOf, googleFontsUrl, useContentFont } from '../utils/fonts.js';
 import {
   FiZap, FiCopy, FiDownload, FiCheck, FiHome, FiSmartphone, FiMail,
   FiAlertCircle, FiRefreshCw, FiSliders, FiFileText, FiShare2, FiImage,
+  FiMic, FiUpload, FiX, FiBriefcase,
 } from 'react-icons/fi';
 
-const TYPES = ['blog', 'social', 'email', 'ad', 'product'];
+const TYPES = [
+  { value: 'blog', label: 'Blog' },
+  { value: 'social', label: 'Social' },
+  { value: 'email', label: 'Email' },
+  { value: 'ad', label: 'Ad' },
+  { value: 'product', label: 'Product' },
+  { value: 'cover_letter', label: 'Cover Letter' },
+  { value: 'resume_summary', label: 'Resume Summary' },
+  { value: 'linkedin', label: 'LinkedIn' },
+];
 const TONES = ['professional', 'casual', 'formal', 'friendly', 'persuasive', 'urgent', 'empathetic'];
 const READING_LEVELS = ['simple', 'standard', 'professional'];
 // Purpose sub-types per content type — mirrors server/config/contentTypes.js.
@@ -85,6 +95,34 @@ const PURPOSE_FIELDS = {
   'app-store-description': ['product', 'audience'],
   'feature-announcement': ['product', 'audience'],
 };
+// Email categories — each gets its own structure on the server.
+const EMAIL_SUBTYPES = [
+  { value: 'general', label: 'General Email' },
+  { value: 'cold_outreach', label: 'Cold Outreach' },
+  { value: 'follow_up', label: 'Follow-up' },
+  { value: 'newsletter', label: 'Newsletter' },
+  { value: 'welcome', label: 'Welcome' },
+  { value: 'apology', label: 'Apology' },
+  { value: 'job_application', label: 'Job Application' },
+  { value: 'thank_you', label: 'Thank-you' },
+  { value: 'meeting_request', label: 'Meeting Request' },
+];
+const SOCIAL_SUBTYPES = [
+  { value: 'post', label: 'Post' },
+  { value: 'captions', label: 'Captions (3 options)' },
+];
+// Speech-recognition locale per output language (Web Speech API).
+const SPEECH_LANG = {
+  english_us: 'en-US', english_uk: 'en-GB',
+  roman_urdu_karachi: 'ur-PK', roman_urdu_lahore: 'ur-PK',
+  arabic_msa: 'ar-SA', arabic_gulf: 'ar-AE',
+  spanish_latam: 'es-MX', spanish_spain: 'es-ES',
+  french: 'fr-FR', german: 'de-DE', portuguese_brazil: 'pt-BR',
+  italian: 'it-IT', dutch: 'nl-NL', russian: 'ru-RU', hindi: 'hi-IN',
+  chinese_simplified: 'zh-CN', japanese: 'ja-JP', korean: 'ko-KR',
+  bengali: 'bn-BD', turkish: 'tr-TR', indonesian: 'id-ID',
+  persian: 'fa-IR', swahili: 'sw-KE',
+};
 const LENGTHS = ['short', 'medium', 'long'];
 const FORMATS = [
   { value: 'paragraphs', label: 'Paragraphs' },
@@ -158,9 +196,21 @@ const TEMPLATES = [
     color: 'text-indigo-600',
     bg: 'bg-indigo-50',
     form: {
-      type: 'email', tone: 'professional', length: 'short', language: 'english_us', format: 'paragraphs',
+      type: 'email', subtype: 'cold_outreach', tone: 'professional', length: 'short', language: 'english_us', format: 'paragraphs',
       prompt: 'Write a cold outreach email to a potential B2B SaaS client. Include a personalized opener, state the value proposition in 2 sentences, and close with a soft CTA to schedule a 15-minute discovery call. Keep it under 150 words.',
       purpose: 'cold-outreach',
+    },
+  },
+  {
+    Icon: FiBriefcase,
+    label: 'Cover Letter',
+    color: 'text-amber-600',
+    bg: 'bg-amber-50',
+    form: {
+      type: 'cover_letter', tone: 'professional', length: 'medium', language: 'english_us', format: 'paragraphs',
+      prompt: 'Write a cover letter for a frontend developer role. Highlight React and TypeScript experience and a passion for accessible, fast user interfaces.',
+      company: 'Acme Corp', role: 'Frontend Developer', location: 'Toronto, ON',
+      senderName: 'Faizan Zia', skills: 'React, TypeScript, accessibility, performance',
     },
   },
 ];
@@ -195,6 +245,21 @@ const REQUIRED_FIELDS = {
     { name: 'product', label: 'Product', placeholder: 'e.g. Noise-cancelling headphones' },
     { name: 'audience', label: 'Audience', placeholder: 'e.g. Remote workers' },
   ],
+  cover_letter: [
+    { name: 'company', label: 'Company', placeholder: 'e.g. Acme Corp' },
+    { name: 'role', label: 'Role (job title)', placeholder: 'e.g. Frontend Developer' },
+    { name: 'location', label: 'Location', placeholder: 'e.g. Toronto, ON' },
+    { name: 'senderName', label: 'Sender name', placeholder: 'e.g. Faizan Zia' },
+    { name: 'skills', label: 'Key skills', placeholder: 'e.g. React, TypeScript, accessibility' },
+  ],
+  resume_summary: [
+    { name: 'role', label: 'Role (job title)', placeholder: 'e.g. Frontend Developer' },
+    { name: 'skills', label: 'Key skills', placeholder: 'e.g. React, TypeScript, accessibility' },
+  ],
+  linkedin: [
+    { name: 'topic', label: 'Topic', placeholder: 'e.g. Lessons from launching my first product' },
+    { name: 'audience', label: 'Audience', placeholder: 'e.g. Founders and product managers' },
+  ],
 };
 // Extra detail fields used by some purposes (recipient, deadline).
 const EXTRA_FIELDS = {
@@ -218,7 +283,7 @@ const fieldsForForm = (form) => {
 const DETAILS_DEFAULTS = {
   topic: '', audience: '', company: '', role: '', location: '',
   senderName: '', applyLink: '', contact: '', product: '', cta: '',
-  recipient: '', deadline: '', purpose: '', readingLevel: 'standard', writingSample: '',
+  recipient: '', deadline: '', purpose: '', readingLevel: 'standard', writingSample: '', skills: '',
 };
 
 // Returns { missing: [labels], errors: { fieldName: message } } for the
@@ -258,10 +323,13 @@ const hasInlineImages = (text) => /\[IMAGE:\d+\]/.test(text);
 
 export default function Generator() {
   const { deductCredit, credits } = useCredits();
-  const [form, setForm] = useState({ type: 'blog', prompt: '', tone: 'professional', length: 'medium', language: 'english_us', format: 'paragraphs', ...DETAILS_DEFAULTS });
+  const [form, setForm] = useState({ type: 'blog', subtype: '', prompt: '', tone: 'professional', length: 'medium', language: 'english_us', format: 'paragraphs', ...DETAILS_DEFAULTS });
   const [output, setOutput] = useState('');
   const [seoData, setSeoData] = useState(null);
   const [images, setImages] = useState([]);
+  const [imageOptions, setImageOptions] = useState([]);
+  const [displayImages, setDisplayImages] = useState([]);
+  const [contentId, setContentId] = useState(null);
   const [realityCheck, setRealityCheck] = useState(null);
   const [qualityReport, setQualityReport] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
@@ -271,6 +339,20 @@ export default function Generator() {
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
   const [showImages, setShowImages] = useState(false);
+  // Voice input (Web Speech API) + image upload state
+  const [listening, setListening] = useState(false);
+  const [voiceSupported, setVoiceSupported] = useState(false);
+  const recognitionRef = useRef(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState('');
+
+  useEffect(() => {
+    setVoiceSupported(!!(window.SpeechRecognition || window.webkitSpeechRecognition));
+  }, []);
+
+  // Images actually shown (picker swaps update displayImages; images[] is the
+  // original embedded set). Downloads and rendering use shownImages.
+  const shownImages = displayImages.length ? displayImages : images;
 
   // Content font for the selected language's script (persisted per script).
   const script = scriptOf(form.language);
@@ -278,14 +360,102 @@ export default function Generator() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // Switching type resets the purpose (purposes belong to one type).
-    setForm((prev) => (name === 'type' ? { ...prev, type: value, purpose: '' } : { ...prev, [name]: value }));
+    // Switching type resets the purpose and subtype (both belong to one type).
+    setForm((prev) => (name === 'type' ? { ...prev, type: value, purpose: '', subtype: '' } : { ...prev, [name]: value }));
     if (fieldErrors[name]) setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 
+  // ── Voice input ─────────────────────────────────────────────
+  // Browser-native speech recognition (Chrome/Edge). Transcribed words are
+  // appended to the prompt — no audio is sent to any server.
+  const startVoice = () => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      toast.error('Voice input is not supported in this browser. Try Chrome.');
+      return;
+    }
+    if (listening) { stopVoice(); return; }
+    const rec = new SR();
+    rec.lang = SPEECH_LANG[form.language] || 'en-US';
+    rec.interimResults = true;
+    rec.continuous = false;
+    rec.onresult = (e) => {
+      let finalTxt = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) finalTxt += e.results[i][0].transcript;
+      }
+      if (finalTxt.trim()) {
+        setForm((prev) => ({ ...prev, prompt: (prev.prompt ? `${prev.prompt} ` : '') + finalTxt.trim() }));
+      }
+    };
+    rec.onend = () => setListening(false);
+    rec.onerror = (e) => {
+      setListening(false);
+      if (e.error !== 'aborted' && e.error !== 'no-speech') {
+        toast.error('Voice input failed. Please try again.');
+      }
+    };
+    recognitionRef.current = rec;
+    try {
+      rec.start();
+      setListening(true);
+    } catch {
+      toast.error('Voice input could not start. Please try again.');
+    }
+  };
+  const stopVoice = () => {
+    try { recognitionRef.current?.stop(); } catch {}
+    setListening(false);
+  };
+
+  // ── Image upload (context for the generation) ───────────────
+  const handleImageSelect = (e) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(f.type)) {
+      toast.error('Use a JPG, PNG or WebP image.');
+      return;
+    }
+    if (f.size > 5 * 1024 * 1024) {
+      toast.error('Image is too large. Maximum is 5 MB.');
+      return;
+    }
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
+    setImageFile(f);
+    setImagePreview(URL.createObjectURL(f));
+  };
+  const clearImage = () => {
+    setImageFile(null);
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
+    setImagePreview('');
+  };
+
+  // ── Blog image picker ───────────────────────────────────────
+  const handlePickImage = async (slot, optionIndex) => {
+    const prev = shownImages;
+    const next = prev.map((img, i) => (i === slot ? imageOptions[optionIndex] : img));
+    setDisplayImages(next);
+    if (!contentId) return;
+    try {
+      const res = await fetch(apiUrl(`/api/history/${contentId}/images`), {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slot, optionIndex }),
+      });
+      if (!res.ok) {
+        setDisplayImages(prev);
+        toast.error('Could not save the new image. Please try again.');
+      }
+    } catch {
+      setDisplayImages(prev);
+      toast.error('Could not save the new image. Please try again.');
+    }
+  };
+
   const applyTemplate = (tpl) => {
-    setForm({ ...DETAILS_DEFAULTS, ...tpl.form });
-    setOutput(''); setSeoData(null); setImages([]); setError('');
+    setForm({ ...DETAILS_DEFAULTS, subtype: '', ...tpl.form });
+    setOutput(''); setSeoData(null); setImages([]); setImageOptions([]); setDisplayImages([]); setContentId(null); setError('');
     setQualityReport(null); setFieldErrors({});
     toast('Template applied', { icon: '📋' });
   };
@@ -304,7 +474,48 @@ export default function Generator() {
       toast.error('Not enough credits. Please buy more.');
       return;
     }
-    setLoading(true); setFetchingImages(false); setError(''); setOutput(''); setSeoData(null); setImages([]); setRealityCheck(null); setQualityReport(null);
+    setLoading(true); setFetchingImages(false); setError(''); setOutput(''); setSeoData(null); setImages([]); setImageOptions([]); setDisplayImages([]); setContentId(null); setRealityCheck(null); setQualityReport(null);
+
+    // With an uploaded image the request goes to /with-image as multipart
+    // form data (non-streaming, still exactly 1 credit).
+    if (imageFile) {
+      const genToast = toast.loading('Generating content from your image...');
+      try {
+        const fd = new FormData();
+        Object.entries(form).forEach(([k, v]) => fd.append(k, v ?? ''));
+        fd.append('image', imageFile);
+        const response = await fetch(apiUrl('/api/generate/with-image'), {
+          method: 'POST',
+          credentials: 'include',
+          body: fd,
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          const msg = data.message || 'Generation failed. Please try again.';
+          setError(msg);
+          toast.error(msg, { id: genToast });
+          setLoading(false);
+          return;
+        }
+        setOutput(data.content?.output || '');
+        setSeoData(data.content?.seoData || null);
+        setImages(data.content?.images || []);
+        setImageOptions(data.content?.imageOptions || []);
+        setDisplayImages(data.content?.images || []);
+        setContentId(data.content?._id || null);
+        setRealityCheck(data.realityCheck || null);
+        setQualityReport(data.qualityReport || null);
+        deductCredit(1);
+        setLoading(false);
+        toast.success('1 credit used — content ready!', { id: genToast });
+      } catch {
+        const msg = 'Network error. Please check your connection.';
+        setError(msg);
+        toast.error(msg, { id: genToast });
+        setLoading(false);
+      }
+      return;
+    }
 
     const genToast = toast.loading('Generating content...');
     try {
@@ -347,6 +558,9 @@ export default function Generator() {
             } else if (parsed.done) {
               setSeoData(parsed.seoData || null);
               setImages(parsed.images || []);
+              setImageOptions(parsed.imageOptions || []);
+              setDisplayImages(parsed.images || []);
+              setContentId(parsed.contentId || null);
               setRealityCheck(parsed.realityCheck || null);
               setQualityReport(parsed.qualityReport || null);
               if (parsed.contentWithImages) setOutput(parsed.contentWithImages);
@@ -395,6 +609,9 @@ export default function Generator() {
       if (!res.ok) { toast.error(data.message || 'Tune failed', { id: tuneToast }); return; }
       setOutput(data.output);
       setImages([]);
+      setImageOptions([]);
+      setDisplayImages([]);
+      setContentId(null);
       setSeoData(null);
       setRealityCheck(data.realityCheck || null);
       setQualityReport(null); // tuned text has not been quality-checked
@@ -426,12 +643,12 @@ export default function Generator() {
 
   // Export body: generated text with inline images, as HTML.
   const exportBodyHtml = () => {
-    if (images.length && hasInlineImages(output)) {
+    if (shownImages.length && hasInlineImages(output)) {
       let body = '';
       for (const part of output.split(/(\[IMAGE:\d+\])/)) {
         const match = part.match(/\[IMAGE:(\d+)\]/);
         if (match) {
-          const img = images[parseInt(match[1])];
+          const img = shownImages[parseInt(match[1])];
           if (img?.dataUrl) {
             body += `<div style="margin:14px 0;page-break-inside:avoid;">`;
             body += `<img src="${img.dataUrl}" style="max-width:100%;border-radius:4px;" alt="${img.alt || ''}"/>`;
@@ -494,7 +711,7 @@ export default function Generator() {
   // Render content with inline [IMAGE:N] markers replaced by actual images
   const renderContent = () => {
     if (!output) return null;
-    if (!images.length || !hasInlineImages(output)) {
+    if (!shownImages.length || !hasInlineImages(output)) {
       return (
         <span className="whitespace-pre-wrap">{output}</span>
       );
@@ -506,7 +723,7 @@ export default function Generator() {
         {parts.map((part, i) => {
           const match = part.match(/\[IMAGE:(\d+)\]/);
           if (match) {
-            const img = images[parseInt(match[1])];
+            const img = shownImages[parseInt(match[1])];
             if (!img) return null;
             return (
               <div key={i} className="my-5 rounded-xl overflow-hidden border border-gray-100 shadow-sm">
@@ -573,7 +790,7 @@ export default function Generator() {
           {/* Row 1: Type, Tone, Length, Format */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
-              { name: 'type', label: 'Type', options: TYPES.map((t) => ({ value: t, label: t.charAt(0).toUpperCase() + t.slice(1) })) },
+              { name: 'type', label: 'Type', options: TYPES },
               { name: 'tone', label: 'Tone', options: TONES.map((t) => ({ value: t, label: t.charAt(0).toUpperCase() + t.slice(1) })) },
               { name: 'length', label: 'Length', options: LENGTHS.map((l) => ({ value: l, label: l.charAt(0).toUpperCase() + l.slice(1) })) },
               { name: 'format', label: 'Format', options: FORMATS },
@@ -627,18 +844,75 @@ export default function Generator() {
             </select>
           </div>
 
-          {/* Prompt */}
+          {/* Category / style — email categories and social captions */}
+          {form.type === 'email' && (
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Email Category</label>
+              <select name="subtype" value={form.subtype || 'general'} onChange={handleChange} className={selectClass}>
+                {EMAIL_SUBTYPES.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </div>
+          )}
+          {form.type === 'social' && (
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Social Style</label>
+              <select name="subtype" value={form.subtype || 'post'} onChange={handleChange} className={selectClass}>
+                {SOCIAL_SUBTYPES.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </div>
+          )}
+
+          {/* Prompt + voice input */}
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Prompt</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-xs font-medium text-gray-600">Prompt</label>
+              <button
+                type="button"
+                onClick={startVoice}
+                disabled={loading}
+                title={voiceSupported ? (listening ? 'Tap to stop listening' : 'Tap and speak your prompt') : 'Voice input is not supported in this browser — try Chrome'}
+                className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg font-medium transition ${
+                  listening
+                    ? 'bg-red-100 text-red-700 animate-pulse'
+                    : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100'
+                } disabled:opacity-40`}
+              >
+                <FiMic size={12} /> {listening ? 'Listening… tap to stop' : 'Speak'}
+              </button>
+            </div>
             <textarea
               name="prompt" value={form.prompt} onChange={handleChange} rows={4} required
-              placeholder="Describe what you want to generate, or pick a quick template above..."
+              placeholder="Describe what you want to generate, or pick a quick template above... (or tap Speak and say it)"
               className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none placeholder-gray-400"
             />
            <div className="flex items-center justify-between mt-1.5 text-xs text-gray-400">
              <span>{form.prompt.length.toLocaleString()} characters</span>
              <span>{form.prompt.trim() ? form.prompt.trim().split(/\s+/).length.toLocaleString() : 0} words</span>
            </div>
+          </div>
+
+          {/* Image input — optional context for the generation */}
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">
+              Image (optional) <span className="text-gray-400 font-normal">— JPG, PNG or WebP, max 5 MB. The AI writes about what is in your photo.</span>
+            </label>
+            {imagePreview ? (
+              <div className="flex items-start gap-3">
+                <img src={imagePreview} alt="Upload preview" className="w-28 h-20 object-cover rounded-lg border border-gray-200" />
+                <div className="flex flex-col gap-1.5">
+                  <p className="text-xs text-gray-600 truncate max-w-[220px]">{imageFile?.name}</p>
+                  <button type="button" onClick={clearImage} className="flex items-center gap-1 text-xs text-red-600 hover:text-red-800 font-medium w-fit">
+                    <FiX size={12} /> Remove image
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <label className="flex items-center justify-center gap-2 w-full border border-dashed border-gray-300 rounded-lg px-3 py-3 text-sm text-gray-500 hover:border-indigo-400 hover:text-indigo-600 transition cursor-pointer">
+                <FiUpload size={14} />
+                <span>Upload an image to write about</span>
+                <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImageSelect} className="hidden" />
+              </label>
+            )}
           </div>
 
           {/* Required details for the selected type + purpose */}
@@ -745,9 +1019,9 @@ export default function Generator() {
               <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
                 <div className="flex items-center gap-2">
                   <h3 className="font-semibold text-gray-900">Generated Output</h3>
-                  {hasInlineImages(output) && images.length > 0 && (
+                  {hasInlineImages(output) && shownImages.length > 0 && (
                     <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
-                      <FiImage size={10} /> {images.length} images embedded
+                      <FiImage size={10} /> {shownImages.length} images embedded
                     </span>
                   )}
                 </div>
@@ -970,6 +1244,52 @@ export default function Generator() {
                   )}
                 </motion.div>
               )}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Blog image picker — swap any embedded photo for another suggestion */}
+        {output && !loading && form.type === 'blog' && imageOptions.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-7 h-7 bg-emerald-100 rounded-lg flex items-center justify-center">
+                <FiImage size={13} className="text-emerald-600" />
+              </div>
+              <h3 className="font-semibold text-gray-900 text-sm">Choose blog images</h3>
+            </div>
+            <p className="text-xs text-gray-400 mb-4">Tap a photo to use it in that spot. Your choice is saved with this post.</p>
+            <div className="space-y-4">
+              {shownImages.map((current, slot) => (
+                <div key={slot}>
+                  <p className="text-xs font-medium text-gray-600 mb-2">Image {slot + 1} in your blog</p>
+                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                    {imageOptions.map((opt, oi) => {
+                      const selected = current.url === opt.url;
+                      return (
+                        <button
+                          key={oi}
+                          type="button"
+                          onClick={() => handlePickImage(slot, oi)}
+                          title={opt.credit || opt.alt || 'Unsplash photo'}
+                          className={`relative rounded-lg overflow-hidden border-2 transition ${selected ? 'border-indigo-500 ring-2 ring-indigo-200' : 'border-transparent hover:border-indigo-300'}`}
+                        >
+                          <img src={opt.thumb || opt.url} alt={opt.alt || 'Blog image option'} className="w-full h-14 object-cover" loading="lazy" />
+                          {selected && (
+                            <span className="absolute top-1 right-1 w-4 h-4 bg-indigo-600 rounded-full flex items-center justify-center">
+                              <FiCheck size={9} className="text-white" />
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1.5">📷 {current.credit || current.photographer || 'Unsplash'}</p>
+                </div>
+              ))}
             </div>
           </motion.div>
         )}

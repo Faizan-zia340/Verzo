@@ -75,14 +75,15 @@ export default function Login() {
         </div>
 
         <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
-          <p className="text-gray-300 text-sm italic leading-relaxed">
-            "Penlix generates content my readers actually want to read. The Reality Check scoring changed how I write."
+          <p className="text-gray-300 text-sm leading-relaxed">
+            I built Penlix because AI writing kept sounding like a robot. Every word it
+            generates is checked to sound human — that is the whole point.
           </p>
           <div className="flex items-center gap-2.5 mt-4">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white text-xs font-bold">A</div>
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white text-xs font-bold">F</div>
             <div>
-              <p className="text-white text-xs font-semibold">Ahmad Raza</p>
-              <p className="text-gray-400 text-xs">Content Marketer</p>
+              <p className="text-white text-xs font-semibold">M. Faizan</p>
+              <p className="text-gray-400 text-xs">Founder, Penlix</p>
             </div>
           </div>
         </div>

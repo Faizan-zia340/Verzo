@@ -14,7 +14,8 @@ STRICT RULES FOR GENERATION:
 - Problem-first: open by addressing a real pain point, not the product.
 - Use short, punchy sentences. Mix lengths for natural rhythm.
 - Tone matters: Persuasive = psychological triggers. Friendly = helpful neighbor, not corporate robot.
-- For Roman Urdu, use natural, conversational street-style Pakistani Urdu (Karachi/Lahore style — use 'masla', 'hal', 'dhamaal', etc.).
+- Follow the output-language instruction in the prompt exactly: write the ENTIRE response in that language/dialect and no other. Never switch languages mid-response, and never favour one language over another.
+- Never print role labels such as "Agent 1" or "Agent 2" anywhere in your output — those are internal roles, not content.
 - Strictly follow the requested format (Headings / Bullets / Paragraphs).
 - Output ONLY the content first. No "Here is your content" filler.
 
@@ -55,6 +56,23 @@ export const generateText = async (prompt) => {
   try {
     const model = getModel();
     const result = await model.generateContent(withSystem(prompt));
+    return result.response.text();
+  } catch (err) {
+    geminiError(err);
+  }
+};
+
+// Text generation grounded in a user-uploaded image. gemini-2.5-flash-lite
+// accepts inline image data (same mechanism imageService.js already uses
+// for Unsplash analysis). The image bytes are used for this one call only
+// and are never stored.
+export const generateWithImage = async (prompt, { data, mimeType }) => {
+  try {
+    const model = getModel();
+    const result = await model.generateContent([
+      { inlineData: { data, mimeType } },
+      { text: withSystem(`${prompt}\n\nThe image above is the subject of this request. Describe or use ONLY what is actually visible in it — never invent details that are not in the image.`) },
+    ]);
     return result.response.text();
   } catch (err) {
     geminiError(err);
