@@ -49,7 +49,7 @@ export default function Login() {
       {/* ── Left: Feature panel ──────────────────────────────── */}
       <div className="hidden lg:flex w-[44%] bg-gradient-to-br from-gray-950 via-indigo-950 to-gray-900 flex-col justify-between p-12 flex-shrink-0">
         <Link to="/" className="flex items-center gap-2.5">
-          <img src="/brand/logo-square.svg" alt="Penlix" className="w-9 h-9 rounded-xl" />
+          <img src="/brand/penlix-icon.svg" alt="Penlix" className="w-9 h-9 rounded-xl" />
           <span className="text-white font-black text-2xl tracking-tight">Penlix</span>
         </Link>
 
@@ -92,7 +92,7 @@ export default function Login() {
 
           {/* Mobile logo */}
           <Link to="/" className="flex items-center gap-2 mb-10 lg:hidden">
-            <img src="/brand/logo-mark.svg" alt="Penlix" className="h-8 w-auto" />
+            <img src="/brand/penlix-mark.svg" alt="Penlix" className="h-8 w-auto" />
             <span className="font-black text-gray-900 text-xl">Penlix</span>
           </Link>
 

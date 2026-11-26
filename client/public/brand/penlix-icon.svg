@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="tile" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="512" y2="512">
+      <stop offset="0" stop-color="#7C3AED"/>
+      <stop offset="1" stop-color="#4F46E5"/>
+    </linearGradient>
+    <mask id="slit">
+      <rect x="0" y="0" width="512" height="512" fill="white"/>
+      <circle cx="256" cy="377" r="6.5" fill="black"/>
+      <path d="M256 383 L256 420" stroke="black" stroke-width="6" stroke-linecap="round" fill="none"/>
+    </mask>
+  </defs>
+  <rect x="0" y="0" width="512" height="512" rx="112" fill="url(#tile)"/>
+  <g transform="translate(305 267.4) scale(1.28) translate(-305 -267.4)"><g mask="url(#slit)">
+    <g stroke="#FFFFFF" fill="#FFFFFF">
+      <path d="M256 128 L256 318" fill="none" stroke-width="46" stroke-linecap="round"/>
+      <path d="M256 128 H314 C370 128 370 240 314 240 H256" fill="none" stroke-width="42" stroke-linejoin="miter" stroke-linecap="round"/>
+      <path d="M231 318 C228 344 226 356 228 368 C230 388 242 402 256 408 C270 402 282 388 284 368 C286 356 284 344 281 318 Z" transform="translate(256 318) scale(1.22) translate(-256 -318)"/>
+    </g>
+  </g></g>
+</svg>

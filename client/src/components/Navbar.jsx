@@ -22,8 +22,8 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-[60px]">
 
         <Link to="/" className="flex items-center gap-2.5 group">
-          <img src="/brand/logo-mark.svg" alt="Penlix" className="h-8 w-auto dark:hidden" />
-          <img src="/brand/logo-square.svg" alt="Penlix" className="h-8 w-8 hidden dark:block rounded-lg" />
+          <img src="/brand/penlix-mark.svg" alt="Penlix" className="h-8 w-auto dark:hidden" />
+          <img src="/brand/penlix-icon.svg" alt="Penlix" className="h-8 w-8 hidden dark:block rounded-lg" />
           <span className="font-black text-gray-900 dark:text-white text-xl tracking-tight">Penlix</span>
         </Link>
 
