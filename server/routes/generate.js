@@ -3,6 +3,7 @@ import multer from 'multer';
 import { generate, streamGenerate, tuneContent, generateAIContent, generateFromImage } from '../controllers/generatorController.js';
 import protect from '../middleware/auth.js';
 import reserveCredit from '../middleware/reserveCredit.js';
+import creditCheck from '../middleware/creditCheck.js';
 import userRateLimit from '../middleware/userRateLimit.js';
 import { validate, generateSchema } from '../utils/validators.js';
 import { MAX_IMAGE_BYTES, ALLOWED_IMAGE_MIMES } from '../utils/imageInput.js';
