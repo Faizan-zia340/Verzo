@@ -734,7 +734,7 @@ export default function Admin() {
       {/* ── Dark Sidebar ────────────────────────────────────── */}
       <aside className="w-64 bg-gray-900 flex flex-col py-6 px-3 flex-shrink-0 shadow-xl">
         <div className="flex items-center gap-2.5 px-3 mb-8">
-          <img src="/logo.png" alt="Verzo logo" className="w-9 h-9 rounded-xl shadow-lg" />
+          <img src="/logo.png" alt="Penlix logo" className="w-9 h-9 rounded-xl shadow-lg" />
           <div>
             <p className="text-sm font-black text-white tracking-tight">Penlix</p>
             <p className="text-xs text-gray-400">Admin Panel</p>

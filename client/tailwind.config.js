@@ -8,7 +8,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Brand palette — single source of truth for Verzo's colours.
+        // Brand palette — single source of truth for Penlix's colours.
         // Hex values are Tailwind's default indigo / violet / amber scales,
         // so renaming indigo-* -> brand-*, violet-* -> accent-*, amber-* -> gold-*
         // changes no pixel on screen; it only centralises the palette.
