@@ -16,14 +16,7 @@ const genLimit = userRateLimit(10);
 router.post('/', protect, genLimit, validate(generateSchema), reserveCredit(1), generate);
 router.post('/stream', protect, genLimit, validate(generateSchema), reserveCredit(1), streamGenerate);
 router.post('/tune', protect, genLimit, tuneContent);
-<<<<<<< HEAD
 router.post('/rag', protect, genLimit, creditCheck(1), generateAIContent);
-=======
-// Per-user limit needs an authenticated user: protect comes first so the
-// limit is enforced per user, not skipped. (Credit handling for /rag is
-// added by the security-critical-fixes PR; this PR only adds the limit.)
-router.post('/rag', protect, genLimit, generateAIContent);
->>>>>>> 043f117 (Per-user quota limits with Verzo-branded messages)
 
 // Diagnostic: verify the AI key works without consuming user credits
 router.get('/ping-ai', protect, asyncHandler(async (req, res) => {
