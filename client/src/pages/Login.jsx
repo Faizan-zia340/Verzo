@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.js';
 import toast from 'react-hot-toast';
 import { FiAlertCircle, FiRefreshCw, FiCheck, FiArrowLeft } from 'react-icons/fi';
+import Seo from '../components/Seo.jsx';
 
 const DB_ERROR_KEYWORDS = ['database', 'unreachable', 'temporarily', 'buffering'];
 
@@ -45,6 +46,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex">
+      <Seo title="Log in to Penlix — AI Content Generator" description="Log in to Penlix to generate blogs, emails, social posts and ads in 23 languages." path="/login" noindex />
 
       {/* ── Left: Feature panel ──────────────────────────────── */}
       <div className="hidden lg:flex w-[44%] bg-gradient-to-br from-gray-950 via-indigo-950 to-gray-900 flex-col justify-between p-12 flex-shrink-0">

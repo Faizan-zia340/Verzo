@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.js';
 import toast from 'react-hot-toast';
 import { FiAlertCircle, FiCheck, FiArrowLeft, FiZap } from 'react-icons/fi';
+import Seo from '../components/Seo.jsx';
 
 const PERKS = [
   '20 free credits instantly — no card needed',
@@ -41,6 +42,7 @@ export default function Register() {
 
   return (
     <div className="min-h-screen flex">
+      <Seo title="Create Your Penlix Account — Free Credits" description="Create a free Penlix account and start generating AI content in 23 languages. No credit card required." path="/register" noindex />
 
       {/* ── Left: Feature panel ──────────────────────────────── */}
       <div className="hidden lg:flex w-[44%] bg-gradient-to-br from-gray-950 via-indigo-950 to-gray-900 flex-col justify-between p-12 flex-shrink-0">

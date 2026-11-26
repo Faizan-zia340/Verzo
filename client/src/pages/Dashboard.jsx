@@ -7,6 +7,7 @@ import Generator from '../components/Generator.jsx';
 import ContentHistory from '../components/ContentHistory.jsx';
 import { Link } from 'react-router-dom';
 import { FiZap, FiClock, FiFileText, FiEdit3 } from 'react-icons/fi';
+import Seo from '../components/Seo.jsx';
 
 const greet = () => {
   const h = new Date().getHours();
@@ -26,6 +27,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50/80 dark:bg-gray-950">
+      <Seo title="Penlix Dashboard — Your Content" description="Your Penlix dashboard — generate content, track credits and view your history." path="/dashboard" noindex />
 
       {/* ── Welcome banner ─────────────────────────────────── */}
       <div className="bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600">

@@ -10,6 +10,7 @@ import {
   FiSearch, FiTrash2, FiPlus, FiBarChart2, FiSettings, FiArrowLeft,
   FiActivity, FiMail, FiGlobe, FiEdit3,
 } from 'react-icons/fi';
+import Seo from '../components/Seo.jsx';
 
 // ── Credit Edit Modal ──────────────────────────────────────────────
 function EditModal({ user, onClose, onSave }) {
@@ -730,6 +731,7 @@ export default function Admin() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
+      <Seo title="Penlix Admin" description="Penlix admin panel — users, credits and activity." path="/admin" noindex />
 
       {/* ── Dark Sidebar ────────────────────────────────────── */}
       <aside className="w-64 bg-gray-900 flex flex-col py-6 px-3 flex-shrink-0 shadow-xl">

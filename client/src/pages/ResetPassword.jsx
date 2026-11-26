@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import api from '../services/api.js';
 import toast from 'react-hot-toast';
 import { FiAlertCircle, FiArrowLeft } from 'react-icons/fi';
+import Seo from '../components/Seo.jsx';
 
 const inputClass = 'w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white transition placeholder-gray-400';
 
@@ -38,6 +39,7 @@ export default function ResetPassword() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-8 bg-white">
+      <Seo title="Set a New Penlix Password" description="Choose a new password for your Penlix account to get back to generating content." path="/reset-password" noindex />
       <div className="w-full max-w-[360px]">
         <h1 className="text-3xl font-black text-gray-950 mb-1 tracking-tight">Set a new password</h1>
         <p className="text-gray-500 text-sm mb-8">Choose a new password for your account. It must be at least 6 characters.</p>
