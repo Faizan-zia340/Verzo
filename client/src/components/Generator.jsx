@@ -443,7 +443,7 @@ export default function Generator() {
     );
   };
 
-  const isRateLimit = error.toLowerCase().includes('rate limit');
+  const isRateLimit = error.toLowerCase().includes('rate limit') || error.toLowerCase().includes('penlix is busy');
 
   return (
     <div className="space-y-5">
@@ -806,7 +806,7 @@ export default function Generator() {
                   </div>
                   {realityCheck.rating != null && (
                     <p className="text-xs text-gray-400 mt-3 pt-3 border-t border-gray-100 text-center">
-                      Avg score vs GPT-4, Claude 3.5, Llama 3, Gemini
+                      Avg score vs leading AI models
                     </p>
                   )}
                 </motion.div>

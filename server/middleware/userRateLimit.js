@@ -1,7 +1,13 @@
+import { penlixBusyMessage } from '../utils/quotaMessages.js';
+
 const buckets = new Map();
 
 const WINDOW_MS = 60 * 60 * 1000;
 
+// Per-user hourly limit: every user gets their OWN bucket keyed by user id,
+// so one heavy user can never exhaust the quota for everyone else.
+// Unauthenticated requests (no req.user) pass through — routes that use
+// this middleware must also use `protect` for the limit to apply.
 const userRateLimit = (maxPerHour = 10, label = 'Generation') => (req, res, next) => {
   const userId = req.user?.id || req.user?._id?.toString();
   if (!userId) return next();
@@ -18,7 +24,8 @@ const userRateLimit = (maxPerHour = 10, label = 'Generation') => (req, res, next
     const retryAfterSec = Math.ceil((bucket.resetAt - now) / 1000);
     res.set('Retry-After', String(retryAfterSec));
     return res.status(429).json({
-      message: `${label} limit reached (${maxPerHour}/hour). Try again in ${Math.ceil(retryAfterSec / 60)} minute(s).`,
+      message: penlixBusyMessage(retryAfterSec),
+      retryAfter: retryAfterSec,
     });
   }
 

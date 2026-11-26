@@ -1,5 +1,7 @@
 import getClient, { MODEL, API_VERSION } from '../config/gemini.js';
 import { buildSEOPrompt, buildTunePrompt } from './prompts.js';
+import { mapProviderError } from './quotaMessages.js';
+import logger from './logger.js';
 
 const REQUEST_OPTIONS = { apiVersion: API_VERSION };
 
@@ -32,25 +34,13 @@ After the content, always append a "REALITY CHECK" section in this exact format:
 
 const geminiError = (err) => {
   const msg = err.message || '';
-  console.error(`[Gemini Error] ${msg.slice(0, 200)}`);
-
-  if (msg.includes('API_KEY_INVALID') || msg.includes('API key not valid')) {
-    const e = new Error('Invalid Gemini API key. Please check your GEMINI_API_KEY secret.');
-    e.statusCode = 503;
-    throw e;
-  }
-  if (msg.includes('RESOURCE_EXHAUSTED') || msg.includes('quota') || msg.includes('429')) {
-    const e = new Error('Gemini free tier quota reached. Please wait a minute and try again.');
-    e.statusCode = 429;
-    throw e;
-  }
-  if (msg.includes('overloaded') || msg.includes('503')) {
-    const e = new Error('Gemini is temporarily overloaded. Please try again shortly.');
-    e.statusCode = 503;
-    throw e;
-  }
-  const e = new Error(msg || 'AI generation failed. Please try again.');
-  e.statusCode = 500;
+  // Provider detail stays in the server log only — the thrown error is
+  // always a Penlix-branded message safe to show to users.
+  logger.error({ msg: msg.slice(0, 200) }, 'AI provider error');
+  const mapped = mapProviderError(err);
+  const e = new Error(mapped.message);
+  e.statusCode = mapped.status;
+  if (mapped.retryAfter) e.retryAfter = mapped.retryAfter;
   throw e;
 };
 

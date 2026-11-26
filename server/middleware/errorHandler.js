@@ -1,4 +1,5 @@
 import logger from '../utils/logger.js';
+import { sanitizeUserMessage } from '../utils/quotaMessages.js';
 
 const OPERATIONAL_STATUS_CODES = new Set([400, 401, 402, 403, 404, 409, 422, 429, 503]);
 
@@ -6,6 +7,11 @@ const errorHandler = (err, req, res, next) => {
   const status = err.statusCode || err.response?.status || 500;
   let message = err.message || 'Internal Server Error';
   const isOperational = err.isOperational === true || OPERATIONAL_STATUS_CODES.has(status);
+
+  // Safety net: a provider name (Gemini, Google, OpenAI, ...) must never
+  // reach the user in an error message. Swap it for a Penlix-branded one.
+  // The original message is still written to the server log below.
+  message = sanitizeUserMessage(status, message, err.retryAfter || null);
 
   // Sanitize raw MongoDB / Mongoose errors — never leak internals to the client
   const msg = message.toLowerCase();
@@ -33,7 +39,11 @@ const errorHandler = (err, req, res, next) => {
     if (status >= 500) message = 'Something went wrong on our end. Please try again shortly.';
   }
 
-  res.status(status).json({ message, ...(reqId ? { requestId: reqId } : {}) });
+  res.status(status).json({
+    message,
+    ...(err.retryAfter ? { retryAfter: err.retryAfter } : {}),
+    ...(reqId ? { requestId: reqId } : {}),
+  });
 };
 
 export default errorHandler;

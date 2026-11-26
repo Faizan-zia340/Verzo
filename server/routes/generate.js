@@ -7,6 +7,7 @@ import { validate, generateSchema } from '../utils/validators.js';
 import getClient, { MODEL, API_VERSION } from '../config/gemini.js';
 import logger from '../utils/logger.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import { mapProviderError, penlixUnavailableMessage } from '../utils/quotaMessages.js';
 
 const router = Router();
 
@@ -17,22 +18,23 @@ router.post('/stream', protect, genLimit, validate(generateSchema), reserveCredi
 router.post('/tune', protect, genLimit, tuneContent);
 router.post('/rag', protect, genLimit, creditCheck(1), generateAIContent);
 
-// Diagnostic: verify Gemini key works without consuming user credits
+// Diagnostic: verify the AI key works without consuming user credits
 router.get('/ping-ai', protect, asyncHandler(async (req, res) => {
   if (!process.env.GEMINI_API_KEY) {
-    return res.status(503).json({ ok: false, error: 'GEMINI_API_KEY not set on server' });
+    return res.status(503).json({ ok: false, error: penlixUnavailableMessage() });
   }
   try {
     const genAI = getClient();
     const model = genAI.getGenerativeModel({ model: MODEL }, { apiVersion: API_VERSION });
     const result = await model.generateContent('Say "ok" in one word only.');
     const text = result.response.text().trim();
-    logger.info({ text }, 'Gemini ping success');
+    logger.info({ text }, 'AI ping success');
     return res.status(200).json({ ok: true, model: MODEL, response: text });
   } catch (err) {
     const msg = err.message || 'Unknown error';
-    logger.error({ msg: msg.slice(0, 200) }, 'Gemini ping failed');
-    return res.status(500).json({ ok: false, error: msg });
+    logger.error({ msg: msg.slice(0, 200) }, 'AI ping failed');
+    const mapped = mapProviderError(err);
+    return res.status(mapped.status).json({ ok: false, error: mapped.message });
   }
 }));
 
