@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 // Vengeance UI Stagger Text, converted from .tsx to .jsx (types stripped).
-// Verzo's Vite build cannot compile .tsx files (vite.config forces the
+// Penlix's Vite build cannot compile .tsx files (vite.config forces the
 // esbuild 'jsx' loader), so shadcn-CLI components need this conversion.
 // Reveals words (or letters) one by one when scrolled into view.
 // Deps: framer-motion only. Only supports plain-text children.

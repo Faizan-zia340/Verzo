@@ -3,7 +3,7 @@ import { useInView, useMotionValue, useSpring } from 'framer-motion';
 import { cn } from '../../lib/utils.js';
 
 // Vengeance UI StatsCounter, converted from .tsx to .jsx (types stripped).
-// Verzo's Vite build cannot compile .tsx files (vite.config forces the
+// Penlix's Vite build cannot compile .tsx files (vite.config forces the
 // esbuild 'jsx' loader), so shadcn-CLI components need this conversion.
 // Counts up when scrolled into view. Deps: framer-motion only.
 export default function StatsCounter({

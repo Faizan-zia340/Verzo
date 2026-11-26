@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { cn } from '../../lib/utils.js';
 
 // Vengeance UI FlipText, converted from .tsx to .jsx (types stripped).
-// Verzo's Vite build cannot compile .tsx files (vite.config forces the
+// Penlix's Vite build cannot compile .tsx files (vite.config forces the
 // esbuild 'jsx' loader), so shadcn-CLI components need this conversion.
 // CSS lives in src/styles/index.css (".flip-char" + flip/fade keyframes).
 export function FlipText({
