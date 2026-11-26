@@ -2,7 +2,7 @@ import { generateText, generateSEO, tuneText, getModel, withSystem, generateWith
 import { buildPrompt } from '../utils/prompts.js';
 import { checkQuality, generateWithQualityCheck, retryGeneration, sanitizePlaceholders, stripAgentLabels } from '../utils/qualityCheck.js';
 import { runEditorPass, runTwoPassDraft } from '../utils/twoPass.js';
-import { validateImageFile } from '../utils/imageInput.js';
+import { validateImageFile, applyImageDefaults } from '../utils/imageInput.js';
 import { ALLOWED_SUBTYPES, generateSchema } from '../utils/validators.js';
 import { fetchImages } from '../utils/unsplash.js';
 import { fetchAndAnalyzeImages, embedImagesInContent } from '../utils/imageService.js';
@@ -367,6 +367,9 @@ export const generate = asyncHandler(async (req, res) => {
 // fields as /stream plus one "image" file (JPG/PNG/WebP, max 5 MB).
 // The image is sent to Gemini for this one generation only and is never
 // stored in MongoDB. Exactly 1 credit is deducted, like a normal generation.
+// No prompt or details are needed: with a photo attached the server
+// supplies neutral defaults, so upload → pick a type → submit just works
+// (ChatGPT-style). The strict generateSchema below is unchanged.
 export const generateFromImage = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   // The credit was reserved by the middleware before this handler ran.
@@ -386,7 +389,7 @@ export const generateFromImage = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: imageError });
   }
 
-  const { error, value } = generateSchema.validate(req.body);
+  const { error, value } = generateSchema.validate(applyImageDefaults(req.body));
   if (error) {
     await refundOnce();
     return res.status(400).json({ message: error.details[0].message });
