@@ -5,6 +5,7 @@ import {
   FiImage, FiDownload, FiShare2, FiArrowRight, FiCheck, FiStar,
 } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext.js';
+import { FlipText } from '../components/ui/flip-text.jsx';
 
 const fade = (delay = 0) => ({
   initial: { opacity: 0, y: 24 },
@@ -96,6 +97,20 @@ export default function Home() {
               </span>
             ))}
           </motion.div>
+        </div>
+      </section>
+
+      {/* ── UI LIBRARY CHECK (demo — Vengeance UI FlipText, branch check/ui-libraries-compat) ── */}
+      <section className="max-w-4xl mx-auto px-4 pb-16">
+        <div className="border-2 border-dashed border-indigo-300 dark:border-indigo-700 rounded-2xl px-6 py-8 text-center bg-indigo-50/50 dark:bg-indigo-950/30">
+          <p className="text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 mb-4">
+            UI library check — Vengeance UI FlipText demo
+          </p>
+          <p className="text-3xl sm:text-4xl font-black text-gray-950 dark:text-white leading-tight">
+            <FlipText className="text-indigo-600 dark:text-indigo-400">
+              actually converts
+            </FlipText>
+          </p>
         </div>
       </section>
 
