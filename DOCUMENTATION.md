@@ -64,7 +64,7 @@ rewrite, so the `/api` rule must stay above the catch-all.
 ## Folder Structure
 
 ```
-verzo/
+penlix/
 
 │
 ├── client/                          # React frontend (Vite)

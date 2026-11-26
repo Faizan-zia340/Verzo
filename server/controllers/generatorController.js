@@ -10,7 +10,7 @@ import Content from '../models/Content.js';
 import Credit from '../models/Credit.js';
 import Context from '../models/Context.js';
 import { findRelevantContexts } from '../utils/embeddings.js';
-import { io } from '../server.js';
+import { io } from '../utils/socket.js';
 import logger from '../utils/logger.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { refundCredit } from '../utils/credits.js';
