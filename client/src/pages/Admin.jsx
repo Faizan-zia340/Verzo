@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import {
   FiShield, FiUsers, FiZap, FiDatabase, FiEdit2, FiX, FiCheck,
   FiSearch, FiTrash2, FiPlus, FiBarChart2, FiSettings, FiArrowLeft,
-  FiActivity, FiMail, FiGlobe, FiEdit3,
+  FiActivity, FiMail, FiGlobe, FiEdit3, FiMessageSquare,
 } from 'react-icons/fi';
 import Seo from '../components/Seo.jsx';
 
@@ -702,11 +702,83 @@ function TranslationSuggestions() {
   );
 }
 
+// ── Testing Feedback (temporary) ───────────────────────────────────
+// Reports from the floating Feedback button — newest first, newest 100.
+function FeedbackList() {
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    api.get('/feedback')
+      .then(({ data }) => setItems(Array.isArray(data) ? data : []))
+      .catch(() => setItems([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const categoryBadge = (category) => ({
+    Bug: 'bg-red-100 text-red-700 border-red-200',
+    Suggestion: 'bg-indigo-100 text-indigo-700 border-indigo-200',
+    Other: 'bg-gray-100 text-gray-600 border-gray-200',
+  }[category] || 'bg-gray-100 text-gray-600 border-gray-200');
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-black text-gray-900 mb-0.5">Feedback</h2>
+        <p className="text-sm text-gray-500">Tester reports from the floating Feedback button — newest first</p>
+      </div>
+
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <FiMessageSquare size={14} className="text-indigo-500" />
+            <h3 className="font-bold text-gray-900 text-sm">All feedback</h3>
+          </div>
+          <span className="text-xs text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full font-medium">{items.length} total</span>
+        </div>
+        {loading ? (
+          <div className="py-16 flex flex-col items-center gap-3">
+            <span className="animate-spin h-6 w-6 border-2 border-indigo-500 border-t-transparent rounded-full" />
+            <p className="text-sm text-gray-400">Loading...</p>
+          </div>
+        ) : !items.length ? (
+          <div className="text-center py-16">
+            <FiMessageSquare size={28} className="text-gray-200 mx-auto mb-2" />
+            <p className="text-sm text-gray-400">No feedback yet.</p>
+          </div>
+        ) : (
+          <ul className="divide-y divide-gray-100">
+            {items.map((item) => (
+              <li key={item._id} className="px-6 py-4">
+                <div className="flex items-center gap-2 flex-wrap mb-1.5">
+                  <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${categoryBadge(item.category)}`}>
+                    {item.category}
+                  </span>
+                  <span className="font-mono text-xs text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">{item.page}</span>
+                  <span className="text-xs text-gray-400 ml-auto">
+                    {item.createdAt ? formatDistanceToNow(new Date(item.createdAt), { addSuffix: true }) : ''}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-800 whitespace-pre-wrap">{item.message}</p>
+                <p className="text-xs text-gray-400 mt-1.5">
+                  {item.name || 'Anonymous'}
+                  {item.user?.email ? ` · ${item.user.email}` : ''}
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── Sidebar Nav ────────────────────────────────────────────────────
 const NAV = [
   { key: 'overview', label: 'Overview', icon: FiBarChart2 },
   { key: 'users', label: 'User Management', icon: FiUsers },
   { key: 'suggestions', label: 'Translation Suggestions', icon: FiGlobe },
+  { key: 'feedback', label: 'Feedback', icon: FiMessageSquare },
   { key: 'settings', label: 'System Settings', icon: FiSettings },
 ];
 
@@ -790,6 +862,7 @@ export default function Admin() {
           {section === 'overview' && <Overview stats={stats} loadingStats={loadingStats} />}
           {section === 'users' && <UserManagement />}
           {section === 'suggestions' && <TranslationSuggestions />}
+          {section === 'feedback' && <FeedbackList />}
           {section === 'settings' && <SystemSettings />}
         </div>
       </main>

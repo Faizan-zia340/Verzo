@@ -27,6 +27,7 @@ import adminRoutes from './routes/admin.js';
 import billingRoutes from './routes/billing.js';
 import pdfRoutes from './routes/pdf.js';
 import glossaryRoutes from './routes/glossary.js';
+import feedbackRoutes from './routes/feedback.js';
 import errorHandler from './middleware/errorHandler.js';
 import { corsOriginCheck } from './utils/corsOrigins.js';
 import { scheduleDailyFreeCreditReset } from './jobs/dailyCreditReset.js';
@@ -116,6 +117,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/billing', billingRoutes);
 app.use('/api/pdf', pdfRoutes);
 app.use('/api/glossary', glossaryRoutes);
+app.use('/api/feedback', feedbackRoutes);
 
 const healthCheck = (req, res) => {
   const mongoConnected = mongoose.connection.readyState === 1;
