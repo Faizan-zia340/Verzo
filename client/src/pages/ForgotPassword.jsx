@@ -32,7 +32,7 @@ export default function ForgotPassword() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-8 bg-white">
-      <Seo title="Reset Your Verzo Password" description="Forgot your Verzo password? Request a reset link and set a new password in minutes." path="/forgot-password" noindex />
+      <Seo title="Reset Your Penlix Password" description="Forgot your Penlix password? Request a reset link and set a new password in minutes." path="/forgot-password" noindex />
       <div className="w-full max-w-[360px]">
         <h1 className="text-3xl font-black text-gray-950 mb-1 tracking-tight">Forgot password</h1>
         <p className="text-gray-500 text-sm mb-8">

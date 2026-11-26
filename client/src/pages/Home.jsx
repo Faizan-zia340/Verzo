@@ -45,7 +45,7 @@ export default function Home() {
 
   return (
     <main className="bg-white min-h-screen overflow-hidden">
-      <Seo title="Verzo — AI Content That Converts" description="Verzo is an AI content generator that writes, refines and organises marketing content — blogs, emails, social posts and ads — in minutes." path="/" />
+      <Seo title="Penlix — AI Content That Converts" description="Penlix is an AI content generator that writes, refines and organises marketing content — blogs, emails, social posts and ads — in minutes." path="/" />
 
       {/* ── Hero ───────────────────────────────────────────────── */}
       <section className="relative bg-gradient-to-b from-slate-50 via-indigo-50/30 to-white pt-20 pb-28 px-4">

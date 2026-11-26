@@ -42,7 +42,7 @@ export default function Register() {
 
   return (
     <div className="min-h-screen flex">
-      <Seo title="Create Your Verzo Account — Free Credits" description="Create a free Verzo account and start generating AI content in 23 languages. No credit card required." path="/register" noindex />
+      <Seo title="Create Your Penlix Account — Free Credits" description="Create a free Penlix account and start generating AI content in 23 languages. No credit card required." path="/register" noindex />
 
       {/* ── Left: Feature panel ──────────────────────────────── */}
       <div className="hidden lg:flex w-[44%] bg-gradient-to-br from-gray-950 via-indigo-950 to-gray-900 flex-col justify-between p-12 flex-shrink-0">

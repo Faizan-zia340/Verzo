@@ -11,7 +11,7 @@ export default function PaymentSuccess() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <Seo title="Payment Successful — Verzo" description="Your Verzo payment was successful and your credits are ready to use." path="/payment-success" noindex />
+      <Seo title="Payment Successful — Penlix" description="Your Penlix payment was successful and your credits are ready to use." path="/payment-success" noindex />
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-10 max-w-md w-full text-center">
         <FiCheckCircle size={56} className="text-green-500 mx-auto mb-4" />
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Payment Successful!</h2>

@@ -39,7 +39,7 @@ export default function ResetPassword() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-8 bg-white">
-      <Seo title="Set a New Verzo Password" description="Choose a new password for your Verzo account to get back to generating content." path="/reset-password" noindex />
+      <Seo title="Set a New Penlix Password" description="Choose a new password for your Penlix account to get back to generating content." path="/reset-password" noindex />
       <div className="w-full max-w-[360px]">
         <h1 className="text-3xl font-black text-gray-950 mb-1 tracking-tight">Set a new password</h1>
         <p className="text-gray-500 text-sm mb-8">Choose a new password for your account. It must be at least 6 characters.</p>

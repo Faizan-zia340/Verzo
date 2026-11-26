@@ -731,7 +731,7 @@ export default function Admin() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      <Seo title="Verzo Admin" description="Verzo admin panel — users, credits and activity." path="/admin" noindex />
+      <Seo title="Penlix Admin" description="Penlix admin panel — users, credits and activity." path="/admin" noindex />
 
       {/* ── Dark Sidebar ────────────────────────────────────── */}
       <aside className="w-64 bg-gray-900 flex flex-col py-6 px-3 flex-shrink-0 shadow-xl">

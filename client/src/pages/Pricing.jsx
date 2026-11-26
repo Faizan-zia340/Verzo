@@ -89,7 +89,7 @@ export default function Pricing() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white">
-      <Seo title="Verzo Pricing — Buy Credits, No Subscription" description="Buy Verzo credits once and use them whenever. Simple, transparent pricing with no subscriptions and no surprises." path="/pricing" />
+      <Seo title="Penlix Pricing — Buy Credits, No Subscription" description="Buy Penlix credits once and use them whenever. Simple, transparent pricing with no subscriptions and no surprises." path="/pricing" />
       <div className="max-w-5xl mx-auto px-4 py-16">
         <div className="text-center mb-14">
           <span className="inline-block bg-indigo-100 text-indigo-700 text-sm font-semibold px-4 py-1.5 rounded-full mb-4">

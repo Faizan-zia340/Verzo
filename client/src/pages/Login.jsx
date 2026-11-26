@@ -46,7 +46,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex">
-      <Seo title="Log in to Verzo — AI Content Generator" description="Log in to Verzo to generate blogs, emails, social posts and ads in 23 languages." path="/login" noindex />
+      <Seo title="Log in to Penlix — AI Content Generator" description="Log in to Penlix to generate blogs, emails, social posts and ads in 23 languages." path="/login" noindex />
 
       {/* ── Left: Feature panel ──────────────────────────────── */}
       <div className="hidden lg:flex w-[44%] bg-gradient-to-br from-gray-950 via-indigo-950 to-gray-900 flex-col justify-between p-12 flex-shrink-0">
