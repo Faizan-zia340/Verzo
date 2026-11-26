@@ -6,12 +6,12 @@ import { groupOf } from '../utils/fonts.js';
 export default function FontPicker({ script, value, onChange }) {
   const group = groupOf(script);
   return (
-    <label className="flex items-center gap-1.5 text-xs text-gray-500">
+    <label className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-slate-400">
       Font
       <select
         value={value || ''}
         onChange={(e) => onChange(e.target.value || null)}
-        className="border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        className="border border-gray-200 dark:border-slate-800 rounded-lg px-2 py-1.5 text-xs text-gray-700 dark:text-slate-200 bg-white dark:bg-ink-card focus:outline-none focus:ring-2 focus:ring-indigo-500"
         aria-label="Content font"
       >
         {group.defaultFont === null && <option value="">Default</option>}

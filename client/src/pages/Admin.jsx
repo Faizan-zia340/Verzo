@@ -34,32 +34,32 @@ function EditModal({ user, onClose, onSave }) {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 px-4">
       <motion.div initial={{ opacity: 0, scale: 0.95, y: 8 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="bg-white rounded-2xl shadow-2xl border border-gray-100 w-full max-w-sm p-6">
+        className="bg-white dark:bg-ink-card rounded-2xl shadow-2xl border border-gray-100 dark:border-slate-800 w-full max-w-sm p-6">
         <div className="flex items-center justify-between mb-5">
-          <h3 className="text-base font-bold text-gray-900">Adjust Credits</h3>
-          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition">
+          <h3 className="text-base font-bold text-gray-900 dark:text-white">Adjust Credits</h3>
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-ink-raised text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400 transition">
             <FiX size={16} />
           </button>
         </div>
-        <div className="bg-gray-50 rounded-xl p-4 mb-5 border border-gray-100">
-          <p className="font-semibold text-gray-900 text-sm">{user.name}</p>
-          <p className="text-xs text-gray-500 mt-0.5">{user.email}</p>
+        <div className="bg-gray-50 dark:bg-ink-page rounded-xl p-4 mb-5 border border-gray-100 dark:border-slate-800">
+          <p className="font-semibold text-gray-900 dark:text-white text-sm">{user.name}</p>
+          <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">{user.email}</p>
           <div className="flex items-center gap-1.5 mt-2">
-            <FiZap size={11} className="text-indigo-500" />
-            <span className="text-xs text-indigo-600 font-bold">{user.credits} credits currently</span>
+            <FiZap size={11} className="text-indigo-500 dark:text-ink-link" />
+            <span className="text-xs text-indigo-600 dark:text-ink-link font-bold">{user.credits} credits currently</span>
           </div>
         </div>
-        <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
-          Adjustment <span className="text-gray-400 font-normal normal-case">(positive to add, negative to remove)</span>
+        <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">
+          Adjustment <span className="text-gray-400 dark:text-slate-500 font-normal normal-case">(positive to add, negative to remove)</span>
         </label>
         <input
           type="number" value={adjustment} onChange={(e) => setAdjustment(e.target.value)}
           placeholder="e.g. 50 or -10" autoFocus
-          className="w-full border border-gray-200 bg-gray-50 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition mb-3"
+          className="w-full border border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-ink-page rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-ink-raised transition mb-3"
         />
-        {error && <p className="text-red-500 text-xs mb-3 bg-red-50 px-3 py-2 rounded-lg border border-red-100">{error}</p>}
+        {error && <p className="text-red-500 text-xs mb-3 bg-red-50 dark:bg-ink-raised px-3 py-2 rounded-lg border border-red-100">{error}</p>}
         <div className="flex gap-2.5">
-          <button onClick={onClose} className="flex-1 border border-gray-200 text-gray-600 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 transition">Cancel</button>
+          <button onClick={onClose} className="flex-1 border border-gray-200 dark:border-slate-800 text-gray-600 dark:text-slate-400 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 dark:hover:bg-ink-raised transition">Cancel</button>
           <button onClick={handleSave} disabled={loading}
             className="flex-1 bg-indigo-600 text-white py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700 transition disabled:opacity-60 flex items-center justify-center gap-1.5 shadow-sm">
             {loading ? <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" /> : <><FiCheck size={13} /> Save</>}
@@ -78,23 +78,23 @@ function DeleteUserModal({ user, deleting, error, onClose, onConfirm }) {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 px-4">
       <motion.div initial={{ opacity: 0, scale: 0.95, y: 8 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="bg-white rounded-2xl shadow-2xl border border-gray-100 w-full max-w-sm p-6">
+        className="bg-white dark:bg-ink-card rounded-2xl shadow-2xl border border-gray-100 dark:border-slate-800 w-full max-w-sm p-6">
         <div className="flex items-center justify-between mb-5">
-          <h3 className="text-base font-bold text-gray-900">Delete User</h3>
-          <button onClick={onClose} disabled={deleting} className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition disabled:opacity-60">
+          <h3 className="text-base font-bold text-gray-900 dark:text-white">Delete User</h3>
+          <button onClick={onClose} disabled={deleting} className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-ink-raised text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400 transition disabled:opacity-60">
             <FiX size={16} />
           </button>
         </div>
-        <div className="bg-gray-50 rounded-xl p-4 mb-5 border border-gray-100">
-          <p className="font-semibold text-gray-900 text-sm">{user.name}</p>
-          <p className="text-xs text-gray-500 mt-0.5">{user.email}</p>
+        <div className="bg-gray-50 dark:bg-ink-page rounded-xl p-4 mb-5 border border-gray-100 dark:border-slate-800">
+          <p className="font-semibold text-gray-900 dark:text-white text-sm">{user.name}</p>
+          <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">{user.email}</p>
         </div>
-        <p className="text-sm text-gray-600 mb-5">
+        <p className="text-sm text-gray-600 dark:text-slate-400 mb-5">
           This permanently removes the account and all of its content and credit history. This cannot be undone.
         </p>
-        {error && <p className="text-red-500 text-xs mb-3 bg-red-50 px-3 py-2 rounded-lg border border-red-100">{error}</p>}
+        {error && <p className="text-red-500 text-xs mb-3 bg-red-50 dark:bg-ink-raised px-3 py-2 rounded-lg border border-red-100">{error}</p>}
         <div className="flex gap-2.5">
-          <button onClick={onClose} disabled={deleting} className="flex-1 border border-gray-200 text-gray-600 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 transition disabled:opacity-60">Cancel</button>
+          <button onClick={onClose} disabled={deleting} className="flex-1 border border-gray-200 dark:border-slate-800 text-gray-600 dark:text-slate-400 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 dark:hover:bg-ink-raised transition disabled:opacity-60">Cancel</button>
           <button onClick={onConfirm} disabled={deleting}
             className="flex-1 bg-red-600 text-white py-2.5 rounded-xl text-sm font-bold hover:bg-red-700 transition disabled:opacity-60 flex items-center justify-center gap-1.5 shadow-sm">
             {deleting ? <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" /> : <><FiTrash2 size={13} /> Delete</>}
@@ -115,7 +115,7 @@ function StatCard({ label, value, icon, loading, gradient, iconBg }) {
       </div>
       <p className="text-xs font-semibold text-white/70 uppercase tracking-wide mb-1">{label}</p>
       {loading
-        ? <div className="h-8 w-24 bg-white/20 rounded-lg animate-pulse" />
+        ? <div className="h-8 w-24 bg-white/20 dark:bg-ink-card/20 rounded-lg animate-pulse" />
         : <p className="text-3xl font-black text-white">{typeof value === 'number' ? value.toLocaleString() : value}</p>
       }
     </motion.div>
@@ -152,8 +152,8 @@ function Overview({ stats, loadingStats }) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-black text-gray-900 mb-0.5">Overview</h2>
-        <p className="text-sm text-gray-500">Platform stats at a glance</p>
+        <h2 className="text-xl font-black text-gray-900 dark:text-white mb-0.5">Overview</h2>
+        <p className="text-sm text-gray-500 dark:text-slate-400">Platform stats at a glance</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -163,22 +163,22 @@ function Overview({ stats, loadingStats }) {
       </div>
 
       {/* Activity Feed */}
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+      <div className="bg-white dark:bg-ink-card border border-gray-100 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            <h3 className="font-bold text-gray-900 text-sm">Live Activity Feed</h3>
+            <h3 className="font-bold text-gray-900 dark:text-white text-sm">Live Activity Feed</h3>
           </div>
-          <span className="text-xs text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full font-medium">Last 20</span>
+          <span className="text-xs text-gray-400 dark:text-slate-500 bg-gray-100 dark:bg-ink-raised px-2.5 py-1 rounded-full font-medium">Last 20</span>
         </div>
         {loadingActivity ? (
           <div className="p-6 space-y-3">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="flex gap-3 animate-pulse">
-                <div className="w-16 h-6 bg-gray-100 rounded-full flex-shrink-0 mt-0.5" />
+                <div className="w-16 h-6 bg-gray-100 dark:bg-ink-raised rounded-full flex-shrink-0 mt-0.5" />
                 <div className="flex-1 space-y-1.5 pt-0.5">
-                  <div className="h-2.5 bg-gray-100 rounded w-3/4" />
-                  <div className="h-2 bg-gray-100 rounded w-1/2" />
+                  <div className="h-2.5 bg-gray-100 dark:bg-ink-raised rounded w-3/4" />
+                  <div className="h-2 bg-gray-100 dark:bg-ink-raised rounded w-1/2" />
                 </div>
               </div>
             ))}
@@ -186,18 +186,18 @@ function Overview({ stats, loadingStats }) {
         ) : !activity.length ? (
           <div className="py-16 text-center">
             <FiActivity size={24} className="text-gray-200 mx-auto mb-2" />
-            <p className="text-sm text-gray-400">No activity yet.</p>
+            <p className="text-sm text-gray-400 dark:text-slate-500">No activity yet.</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-50 max-h-96 overflow-y-auto">
+          <div className="divide-y divide-gray-50 dark:divide-slate-800 max-h-96 overflow-y-auto">
             {activity.map((item) => (
-              <div key={item._id} className="flex items-start gap-3 px-6 py-3.5 hover:bg-gray-50/80 transition">
-                <span className={`text-xs font-bold px-2.5 py-1 rounded-full flex-shrink-0 mt-0.5 ${TYPE_COLORS[item.type] || 'bg-gray-100 text-gray-600'}`}>
+              <div key={item._id} className="flex items-start gap-3 px-6 py-3.5 hover:bg-gray-50/80 dark:hover:bg-ink-raised/80 transition">
+                <span className={`text-xs font-bold px-2.5 py-1 rounded-full flex-shrink-0 mt-0.5 ${TYPE_COLORS[item.type] || 'bg-gray-100 dark:bg-ink-raised text-gray-600 dark:text-slate-400'}`}>
                   {item.type}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs text-gray-800 line-clamp-1 font-medium">{item.prompt}</p>
-                  <p className="text-xs text-gray-400 mt-0.5 flex items-center gap-1.5 flex-wrap">
+                  <p className="text-xs text-gray-800 dark:text-slate-100 line-clamp-1 font-medium">{item.prompt}</p>
+                  <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5 flex items-center gap-1.5 flex-wrap">
                     <FiUsers size={9} />
                     <span>{item.user?.name || 'Unknown'}</span>
                     <span>·</span>
@@ -245,20 +245,20 @@ function GrantCreditsForm() {
           <FiMail size={15} className="text-white" />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-gray-900">Grant Credits by Email</h3>
-          <p className="text-xs text-gray-500">Add or remove credits for any user</p>
+          <h3 className="text-sm font-bold text-gray-900 dark:text-white">Grant Credits by Email</h3>
+          <p className="text-xs text-gray-500 dark:text-slate-400">Add or remove credits for any user</p>
         </div>
       </div>
       <form onSubmit={handleGrant} className="flex gap-3 flex-wrap">
         <input
           type="email" value={email} onChange={(e) => setEmail(e.target.value)}
           placeholder="user@example.com" required
-          className="flex-1 min-w-0 border border-indigo-200 bg-white rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400 shadow-sm"
+          className="flex-1 min-w-0 border border-indigo-200 bg-white dark:bg-ink-card rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400 dark:placeholder-slate-500 shadow-sm"
         />
         <input
           type="number" value={credits} onChange={(e) => setCredits(e.target.value)}
           placeholder="Amount (e.g. 100)" required
-          className="w-44 border border-indigo-200 bg-white rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400 shadow-sm"
+          className="w-44 border border-indigo-200 bg-white dark:bg-ink-card rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400 dark:placeholder-slate-500 shadow-sm"
         />
         <button type="submit" disabled={loading}
           className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700 transition disabled:opacity-60 flex items-center gap-2 shadow-sm">
@@ -317,67 +317,67 @@ function UserManagement() {
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-xl font-black text-gray-900 mb-0.5">User Management</h2>
-        <p className="text-sm text-gray-500">{users.length} registered users</p>
+        <h2 className="text-xl font-black text-gray-900 dark:text-white mb-0.5">User Management</h2>
+        <p className="text-sm text-gray-500 dark:text-slate-400">{users.length} registered users</p>
       </div>
 
       <GrantCreditsForm />
 
       <div className="relative">
-        <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={15} />
+        <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500" size={15} />
         <input
           type="text" placeholder="Search by name or email..." value={search} onChange={(e) => setSearch(e.target.value)}
-          className="w-full border border-gray-200 bg-white text-gray-800 text-sm rounded-xl pl-11 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm placeholder-gray-400"
+          className="w-full border border-gray-200 dark:border-slate-800 bg-white dark:bg-ink-card text-gray-800 dark:text-slate-100 text-sm rounded-xl pl-11 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm placeholder-gray-400 dark:placeholder-slate-500"
         />
         {search && (
-          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-400 font-medium">
+          <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-400 dark:text-slate-500 font-medium">
             {filtered.length} of {users.length}
           </span>
         )}
       </div>
 
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-ink-card border border-gray-100 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
         {loading ? (
           <div className="py-20 flex flex-col items-center gap-3">
             <span className="animate-spin h-7 w-7 border-2 border-indigo-500 border-t-transparent rounded-full" />
-            <p className="text-sm text-gray-400">Loading users...</p>
+            <p className="text-sm text-gray-400 dark:text-slate-500">Loading users...</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-100">
+                <tr className="bg-gray-50 dark:bg-ink-page border-b border-gray-100 dark:border-slate-800">
                   {['User', 'Credits', 'Role', 'Joined', 'Action'].map((h) => (
-                    <th key={h} className="px-5 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">{h}</th>
+                    <th key={h} className="px-5 py-4 text-left text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-gray-50 dark:divide-slate-800">
                 {filtered.map((u) => (
-                  <tr key={u._id} className="hover:bg-gray-50/80 transition">
+                  <tr key={u._id} className="hover:bg-gray-50/80 dark:hover:bg-ink-raised/80 transition">
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-100 to-violet-100 flex items-center justify-center text-indigo-700 text-xs font-black flex-shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-100 to-violet-100 flex items-center justify-center text-indigo-700 dark:text-ink-link text-xs font-black flex-shrink-0">
                           {u.name?.charAt(0)?.toUpperCase()}
                         </div>
                         <div>
-                          <p className="font-semibold text-gray-900 text-sm">{u.name}</p>
-                          <p className="text-xs text-gray-500 mt-0.5">{u.email}</p>
+                          <p className="font-semibold text-gray-900 dark:text-white text-sm">{u.name}</p>
+                          <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">{u.email}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-5 py-4">
-                      <span className="inline-flex items-center gap-1.5 bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-bold px-3 py-1.5 rounded-lg">
+                      <span className="inline-flex items-center gap-1.5 bg-indigo-50 dark:bg-ink-raised border border-indigo-100 text-indigo-700 dark:text-ink-link text-xs font-bold px-3 py-1.5 rounded-lg">
                         <FiZap size={10} /> {u.credits}
                       </span>
                     </td>
                     <td className="px-5 py-4">
                       {u.isAdmin
-                        ? <span className="bg-violet-100 text-violet-700 border border-violet-200 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 w-fit"><FiShield size={9} /> Admin</span>
-                        : <span className="bg-gray-100 text-gray-500 text-xs font-semibold px-2.5 py-1 rounded-full">User</span>
+                        ? <span className="bg-violet-100 dark:bg-ink-raised text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-900 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 w-fit"><FiShield size={9} /> Admin</span>
+                        : <span className="bg-gray-100 dark:bg-ink-raised text-gray-500 dark:text-slate-400 text-xs font-semibold px-2.5 py-1 rounded-full">User</span>
                       }
                     </td>
-                    <td className="px-5 py-4 text-xs text-gray-500">
+                    <td className="px-5 py-4 text-xs text-gray-500 dark:text-slate-400">
                       {formatDistanceToNow(new Date(u.createdAt), { addSuffix: true })}
                     </td>
                     <td className="px-5 py-4">
@@ -389,7 +389,7 @@ function UserManagement() {
                         {u.isAdmin || String(u._id) === String(currentUser?._id) ? (
                           <button disabled
                             title={u.isAdmin ? 'Admin accounts cannot be deleted' : 'You cannot delete your own account'}
-                            className="flex items-center gap-1.5 text-xs bg-gray-100 text-gray-400 px-3 py-1.5 rounded-lg font-semibold cursor-not-allowed">
+                            className="flex items-center gap-1.5 text-xs bg-gray-100 dark:bg-ink-raised text-gray-400 dark:text-slate-500 px-3 py-1.5 rounded-lg font-semibold cursor-not-allowed">
                             <FiTrash2 size={11} /> Delete
                           </button>
                         ) : (
@@ -407,7 +407,7 @@ function UserManagement() {
             {!filtered.length && (
               <div className="text-center py-16">
                 <FiUsers size={28} className="text-gray-200 mx-auto mb-2" />
-                <p className="text-sm text-gray-400">{search ? 'No users match your search.' : 'No users found.'}</p>
+                <p className="text-sm text-gray-400 dark:text-slate-500">{search ? 'No users match your search.' : 'No users found.'}</p>
               </div>
             )}
           </div>
@@ -463,42 +463,42 @@ function SystemSettings() {
     } catch { toast.error('Delete failed.'); }
   };
 
-  const inputClass = 'w-full border border-gray-200 bg-gray-50 text-gray-900 text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition placeholder-gray-400';
+  const inputClass = 'w-full border border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-ink-page text-gray-900 dark:text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-ink-raised transition placeholder-gray-400 dark:placeholder-slate-500';
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-black text-gray-900 mb-0.5">System Settings</h2>
-        <p className="text-sm text-gray-500">Manage RAG context documents the AI references when generating</p>
+        <h2 className="text-xl font-black text-gray-900 dark:text-white mb-0.5">System Settings</h2>
+        <p className="text-sm text-gray-500 dark:text-slate-400">Manage RAG context documents the AI references when generating</p>
       </div>
 
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6">
+      <div className="bg-white dark:bg-ink-card border border-gray-100 dark:border-slate-800 rounded-2xl shadow-sm p-6">
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-9 h-9 bg-indigo-100 rounded-xl flex items-center justify-center">
-            <FiPlus size={16} className="text-indigo-600" />
+          <div className="w-9 h-9 bg-indigo-100 dark:bg-ink-raised rounded-xl flex items-center justify-center">
+            <FiPlus size={16} className="text-indigo-600 dark:text-ink-link" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-gray-900">Add Context Document</h3>
-            <p className="text-xs text-gray-500">AI references this when users mention matching keywords</p>
+            <h3 className="text-sm font-bold text-gray-900 dark:text-white">Add Context Document</h3>
+            <p className="text-xs text-gray-500 dark:text-slate-400">AI references this when users mention matching keywords</p>
           </div>
         </div>
         <form onSubmit={handleAdd} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wide">Title</label>
+              <label className="block text-xs font-bold text-gray-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Title</label>
               <input type="text" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })}
                 placeholder="e.g. Company Pricing FAQ" required className={inputClass} />
             </div>
             <div>
-              <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wide">
-                Keywords <span className="text-gray-400 font-normal normal-case">(comma-separated)</span>
+              <label className="block text-xs font-bold text-gray-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">
+                Keywords <span className="text-gray-400 dark:text-slate-500 font-normal normal-case">(comma-separated)</span>
               </label>
               <input type="text" value={form.keywords} onChange={(e) => setForm({ ...form, keywords: e.target.value })}
                 placeholder="pricing, refund, plan" className={inputClass} />
             </div>
           </div>
           <div>
-            <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wide">Reference Information</label>
+            <label className="block text-xs font-bold text-gray-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Reference Information</label>
             <textarea value={form.information} onChange={(e) => setForm({ ...form, information: e.target.value })}
               rows={4} placeholder="Paste trusted reference content that the AI should use..." required
               className={`${inputClass} resize-none`} />
@@ -511,40 +511,40 @@ function SystemSettings() {
         </form>
       </div>
 
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+      <div className="bg-white dark:bg-ink-card border border-gray-100 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <FiDatabase size={14} className="text-indigo-500" />
-            <h3 className="font-bold text-gray-900 text-sm">Saved Context Documents</h3>
+            <FiDatabase size={14} className="text-indigo-500 dark:text-ink-link" />
+            <h3 className="font-bold text-gray-900 dark:text-white text-sm">Saved Context Documents</h3>
           </div>
-          <span className="text-xs text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full font-medium">{contexts.length} total</span>
+          <span className="text-xs text-gray-400 dark:text-slate-500 bg-gray-100 dark:bg-ink-raised px-2.5 py-1 rounded-full font-medium">{contexts.length} total</span>
         </div>
         {loading ? (
           <div className="py-16 flex flex-col items-center gap-3">
             <span className="animate-spin h-6 w-6 border-2 border-indigo-500 border-t-transparent rounded-full" />
-            <p className="text-sm text-gray-400">Loading...</p>
+            <p className="text-sm text-gray-400 dark:text-slate-500">Loading...</p>
           </div>
         ) : !contexts.length ? (
           <div className="text-center py-16">
             <FiDatabase size={28} className="text-gray-200 mx-auto mb-2" />
-            <p className="text-sm text-gray-400">No context documents yet.</p>
+            <p className="text-sm text-gray-400 dark:text-slate-500">No context documents yet.</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-50">
+          <div className="divide-y divide-gray-50 dark:divide-slate-800">
             {contexts.map((ctx) => (
-              <div key={ctx._id} className="px-6 py-4 hover:bg-gray-50/80 transition">
+              <div key={ctx._id} className="px-6 py-4 hover:bg-gray-50/80 dark:hover:bg-ink-raised/80 transition">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-gray-900 text-sm">{ctx.title}</p>
+                    <p className="font-bold text-gray-900 dark:text-white text-sm">{ctx.title}</p>
                     <div className="flex flex-wrap gap-1.5 mt-2">
                       {ctx.keywords?.map((kw, i) => (
-                        <span key={i} className="bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs px-2.5 py-0.5 rounded-full font-medium">{kw}</span>
+                        <span key={i} className="bg-indigo-100 dark:bg-ink-raised text-indigo-700 dark:text-ink-link border border-indigo-200 text-xs px-2.5 py-0.5 rounded-full font-medium">{kw}</span>
                       ))}
                     </div>
-                    <p className="text-xs text-gray-500 mt-2 line-clamp-2 leading-relaxed">{ctx.information}</p>
+                    <p className="text-xs text-gray-500 dark:text-slate-400 mt-2 line-clamp-2 leading-relaxed">{ctx.information}</p>
                   </div>
                   <button onClick={() => handleDelete(ctx._id)}
-                    className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-red-50 text-gray-400 hover:text-red-500 transition flex-shrink-0 border border-transparent hover:border-red-100">
+                    className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-red-50 text-gray-400 dark:text-slate-500 hover:text-red-500 transition flex-shrink-0 border border-transparent hover:border-red-100">
                     <FiTrash2 size={13} />
                   </button>
                 </div>
@@ -601,23 +601,23 @@ function TranslationSuggestions() {
   };
 
   const statusBadge = (s) => ({
-    pending: 'bg-amber-100 text-amber-700 border-amber-200',
-    approved: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-    rejected: 'bg-red-100 text-red-700 border-red-200',
-  }[s] || 'bg-gray-100 text-gray-600 border-gray-200');
+    pending: 'bg-amber-100 dark:bg-ink-raised text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-900',
+    approved: 'bg-emerald-100 dark:bg-ink-raised text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900',
+    rejected: 'bg-red-100 dark:bg-ink-raised text-red-700 dark:text-red-300 border-red-200 dark:border-red-900',
+  }[s] || 'bg-gray-100 dark:bg-ink-raised text-gray-600 dark:text-slate-400 border-gray-200 dark:border-slate-800');
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-black text-gray-900 mb-0.5">Translation Suggestions</h2>
-        <p className="text-sm text-gray-500">Users suggest better words — approve to add them to the dictionary</p>
+        <h2 className="text-xl font-black text-gray-900 dark:text-white mb-0.5">Translation Suggestions</h2>
+        <p className="text-sm text-gray-500 dark:text-slate-400">Users suggest better words — approve to add them to the dictionary</p>
       </div>
 
       <div className="flex gap-2">
         {['pending', 'approved', 'rejected'].map((s) => (
           <button key={s} onClick={() => setStatus(s)}
             className={`px-4 py-2 rounded-xl text-sm font-medium capitalize transition ${
-              status === s ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
+              status === s ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white dark:bg-ink-card text-gray-600 dark:text-slate-400 border border-gray-200 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-ink-raised'
             }`}>
             {s}
           </button>
@@ -625,50 +625,50 @@ function TranslationSuggestions() {
       </div>
 
       {snippet && (
-        <div className="bg-white border border-emerald-200 rounded-2xl shadow-sm p-6">
+        <div className="bg-white dark:bg-ink-card border border-emerald-200 dark:border-emerald-900 rounded-2xl shadow-sm p-6">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-bold text-gray-900 text-sm">Copy into glossary.json (under terms)</h3>
+            <h3 className="font-bold text-gray-900 dark:text-white text-sm">Copy into glossary.json (under terms)</h3>
             <button onClick={copySnippet}
               className="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg font-semibold transition">
               Copy snippet
             </button>
           </div>
           <pre className="bg-gray-900 text-gray-100 text-xs rounded-xl p-4 overflow-x-auto">{snippet.snippet}</pre>
-          <p className="text-xs text-gray-500 mt-2">{snippet.hint}</p>
+          <p className="text-xs text-gray-500 dark:text-slate-400 mt-2">{snippet.hint}</p>
         </div>
       )}
 
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+      <div className="bg-white dark:bg-ink-card border border-gray-100 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <FiGlobe size={14} className="text-indigo-500" />
-            <h3 className="font-bold text-gray-900 text-sm capitalize">{status} suggestions</h3>
+            <FiGlobe size={14} className="text-indigo-500 dark:text-ink-link" />
+            <h3 className="font-bold text-gray-900 dark:text-white text-sm capitalize">{status} suggestions</h3>
           </div>
-          <span className="text-xs text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full font-medium">{suggestions.length} total</span>
+          <span className="text-xs text-gray-400 dark:text-slate-500 bg-gray-100 dark:bg-ink-raised px-2.5 py-1 rounded-full font-medium">{suggestions.length} total</span>
         </div>
         {loading ? (
           <div className="py-16 flex flex-col items-center gap-3">
             <span className="animate-spin h-6 w-6 border-2 border-indigo-500 border-t-transparent rounded-full" />
-            <p className="text-sm text-gray-400">Loading...</p>
+            <p className="text-sm text-gray-400 dark:text-slate-500">Loading...</p>
           </div>
         ) : !suggestions.length ? (
           <div className="text-center py-16">
             <FiGlobe size={28} className="text-gray-200 mx-auto mb-2" />
-            <p className="text-sm text-gray-400">No {status} suggestions.</p>
+            <p className="text-sm text-gray-400 dark:text-slate-500">No {status} suggestions.</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-50">
+          <div className="divide-y divide-gray-50 dark:divide-slate-800">
             {suggestions.map((s) => (
-              <div key={s._id} className="px-6 py-4 hover:bg-gray-50/80 transition">
+              <div key={s._id} className="px-6 py-4 hover:bg-gray-50/80 dark:hover:bg-ink-raised/80 transition">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-gray-900 text-sm">
-                      {s.word} <span className="text-gray-400 font-medium">→</span>{' '}
-                      <span className="text-indigo-700">{s.suggestedTranslation}</span>{' '}
-                      <span className="text-xs font-medium text-gray-500">({s.language})</span>
+                    <p className="font-bold text-gray-900 dark:text-white text-sm">
+                      {s.word} <span className="text-gray-400 dark:text-slate-500 font-medium">→</span>{' '}
+                      <span className="text-indigo-700 dark:text-ink-link">{s.suggestedTranslation}</span>{' '}
+                      <span className="text-xs font-medium text-gray-500 dark:text-slate-400">({s.language})</span>
                     </p>
-                    {s.note && <p className="text-xs text-gray-500 mt-1 leading-relaxed">{s.note}</p>}
-                    <p className="text-xs text-gray-400 mt-2">
+                    {s.note && <p className="text-xs text-gray-500 dark:text-slate-400 mt-1 leading-relaxed">{s.note}</p>}
+                    <p className="text-xs text-gray-400 dark:text-slate-500 mt-2">
                       by {s.suggestedBy?.name || s.suggestedBy?.email || 'unknown'} ·{' '}
                       {s.createdAt ? formatDistanceToNow(new Date(s.createdAt), { addSuffix: true }) : ''}
                       {s.status !== 'pending' && ` · ${s.status}`}
@@ -686,7 +686,7 @@ function TranslationSuggestions() {
                           <FiCheck size={12} /> Approve
                         </button>
                         <button onClick={() => decide(s._id, 'reject')} disabled={actingId === s._id}
-                          className="inline-flex items-center gap-1 bg-white border border-red-200 hover:bg-red-50 text-red-600 text-xs px-3 py-2 rounded-lg font-semibold transition disabled:opacity-50">
+                          className="inline-flex items-center gap-1 bg-white dark:bg-ink-card border border-red-200 dark:border-red-900 hover:bg-red-50 text-red-600 dark:text-red-400 text-xs px-3 py-2 rounded-lg font-semibold transition disabled:opacity-50">
                           <FiX size={12} /> Reject
                         </button>
                       </>
@@ -716,51 +716,51 @@ function FeedbackList() {
   }, []);
 
   const categoryBadge = (category) => ({
-    Bug: 'bg-red-100 text-red-700 border-red-200',
-    Suggestion: 'bg-indigo-100 text-indigo-700 border-indigo-200',
-    Other: 'bg-gray-100 text-gray-600 border-gray-200',
-  }[category] || 'bg-gray-100 text-gray-600 border-gray-200');
+    Bug: 'bg-red-100 dark:bg-ink-raised text-red-700 dark:text-red-300 border-red-200 dark:border-red-900',
+    Suggestion: 'bg-indigo-100 dark:bg-ink-raised text-indigo-700 dark:text-ink-link border-indigo-200',
+    Other: 'bg-gray-100 dark:bg-ink-raised text-gray-600 dark:text-slate-400 border-gray-200 dark:border-slate-800',
+  }[category] || 'bg-gray-100 dark:bg-ink-raised text-gray-600 dark:text-slate-400 border-gray-200 dark:border-slate-800');
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-black text-gray-900 mb-0.5">Feedback</h2>
-        <p className="text-sm text-gray-500">Tester reports from the floating Feedback button — newest first</p>
+        <h2 className="text-xl font-black text-gray-900 dark:text-white mb-0.5">Feedback</h2>
+        <p className="text-sm text-gray-500 dark:text-slate-400">Tester reports from the floating Feedback button — newest first</p>
       </div>
 
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+      <div className="bg-white dark:bg-ink-card border border-gray-100 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <FiMessageSquare size={14} className="text-indigo-500" />
-            <h3 className="font-bold text-gray-900 text-sm">All feedback</h3>
+            <FiMessageSquare size={14} className="text-indigo-500 dark:text-ink-link" />
+            <h3 className="font-bold text-gray-900 dark:text-white text-sm">All feedback</h3>
           </div>
-          <span className="text-xs text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full font-medium">{items.length} total</span>
+          <span className="text-xs text-gray-400 dark:text-slate-500 bg-gray-100 dark:bg-ink-raised px-2.5 py-1 rounded-full font-medium">{items.length} total</span>
         </div>
         {loading ? (
           <div className="py-16 flex flex-col items-center gap-3">
             <span className="animate-spin h-6 w-6 border-2 border-indigo-500 border-t-transparent rounded-full" />
-            <p className="text-sm text-gray-400">Loading...</p>
+            <p className="text-sm text-gray-400 dark:text-slate-500">Loading...</p>
           </div>
         ) : !items.length ? (
           <div className="text-center py-16">
             <FiMessageSquare size={28} className="text-gray-200 mx-auto mb-2" />
-            <p className="text-sm text-gray-400">No feedback yet.</p>
+            <p className="text-sm text-gray-400 dark:text-slate-500">No feedback yet.</p>
           </div>
         ) : (
-          <ul className="divide-y divide-gray-100">
+          <ul className="divide-y divide-gray-100 dark:divide-slate-800">
             {items.map((item) => (
               <li key={item._id} className="px-6 py-4">
                 <div className="flex items-center gap-2 flex-wrap mb-1.5">
                   <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${categoryBadge(item.category)}`}>
                     {item.category}
                   </span>
-                  <span className="font-mono text-xs text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">{item.page}</span>
-                  <span className="text-xs text-gray-400 ml-auto">
+                  <span className="font-mono text-xs text-gray-500 dark:text-slate-400 bg-gray-100 dark:bg-ink-raised px-1.5 py-0.5 rounded">{item.page}</span>
+                  <span className="text-xs text-gray-400 dark:text-slate-500 ml-auto">
                     {item.createdAt ? formatDistanceToNow(new Date(item.createdAt), { addSuffix: true }) : ''}
                   </span>
                 </div>
-                <p className="text-sm text-gray-800 whitespace-pre-wrap">{item.message}</p>
-                <p className="text-xs text-gray-400 mt-1.5">
+                <p className="text-sm text-gray-800 dark:text-slate-100 whitespace-pre-wrap">{item.message}</p>
+                <p className="text-xs text-gray-400 dark:text-slate-500 mt-1.5">
                   {item.name || 'Anonymous'}
                   {item.user?.email ? ` · ${item.user.email}` : ''}
                 </p>
@@ -802,7 +802,7 @@ export default function Admin() {
   if (!user?.isAdmin) return <Navigate to="/dashboard" replace />;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 dark:bg-ink-page flex">
       <Seo title="Penlix Admin" description="Penlix admin panel — users, credits and activity." path="/admin" noindex />
 
       {/* ── Dark Sidebar ────────────────────────────────────── */}
@@ -813,11 +813,11 @@ export default function Admin() {
           </div>
           <div>
             <p className="text-sm font-black text-white tracking-tight">Penlix</p>
-            <p className="text-xs text-gray-400">Admin Panel</p>
+            <p className="text-xs text-gray-400 dark:text-slate-500">Admin Panel</p>
           </div>
         </div>
 
-        <p className="text-xs font-bold text-gray-600 uppercase tracking-widest px-3 mb-2">Navigation</p>
+        <p className="text-xs font-bold text-gray-600 dark:text-slate-400 uppercase tracking-widest px-3 mb-2">Navigation</p>
         <nav className="space-y-0.5 flex-1">
           {NAV.map(({ key, label, icon: Icon }) => (
             <button key={key} onClick={() => setSection(key)}
@@ -833,11 +833,11 @@ export default function Admin() {
 
         <div className="mt-auto pt-4 border-t border-white/10">
           <div className="px-3 mb-3">
-            <p className="text-xs text-gray-600 mb-0.5">Signed in as</p>
+            <p className="text-xs text-gray-600 dark:text-slate-400 mb-0.5">Signed in as</p>
             <p className="text-xs font-semibold text-gray-300 truncate">{user?.email}</p>
           </div>
           <Link to="/dashboard"
-            className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs text-gray-500 hover:text-white hover:bg-white/10 transition font-medium">
+            className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs text-gray-500 dark:text-slate-400 hover:text-white hover:bg-white/10 transition font-medium">
             <FiArrowLeft size={13} /> Back to Dashboard
           </Link>
         </div>
@@ -846,13 +846,13 @@ export default function Admin() {
       {/* ── Main Content ─────────────────────────────────────── */}
       <main className="flex-1 overflow-y-auto">
         {/* Top bar */}
-        <div className="bg-white border-b border-gray-100 px-8 py-4 flex items-center justify-between shadow-sm">
+        <div className="bg-white dark:bg-ink-card border-b border-gray-100 dark:border-slate-800 px-8 py-4 flex items-center justify-between shadow-sm">
           <div>
-            <h1 className="font-black text-gray-900 text-lg">{NAV.find((n) => n.key === section)?.label}</h1>
-            <p className="text-xs text-gray-400">Penlix Admin · {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+            <h1 className="font-black text-gray-900 dark:text-white text-lg">{NAV.find((n) => n.key === section)?.label}</h1>
+            <p className="text-xs text-gray-400 dark:text-slate-500">Penlix Admin · {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs bg-violet-100 text-violet-700 border border-violet-200 font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
+            <span className="text-xs bg-violet-100 dark:bg-ink-raised text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-900 font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
               <FiShield size={10} /> Admin Access
             </span>
           </div>

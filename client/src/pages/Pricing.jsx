@@ -92,17 +92,17 @@ export default function Pricing() {
       <Seo title="Penlix Pricing — Buy Credits, No Subscription" description="Buy Penlix credits once and use them whenever. Simple, transparent pricing with no subscriptions and no surprises." path="/pricing" />
       <div className="max-w-5xl mx-auto px-4 py-16">
         <div className="text-center mb-14">
-          <span className="inline-block bg-indigo-100 text-indigo-700 text-sm font-semibold px-4 py-1.5 rounded-full mb-4">
+          <span className="inline-block bg-indigo-100 dark:bg-ink-raised text-indigo-700 dark:text-ink-link text-sm font-semibold px-4 py-1.5 rounded-full mb-4">
             Pricing
           </span>
-          <h1 className="text-4xl font-extrabold text-gray-900 mb-3">
+          <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-3">
             Simple, transparent pricing
           </h1>
-          <p className="text-gray-500 text-lg max-w-xl mx-auto">
+          <p className="text-gray-500 dark:text-slate-400 text-lg max-w-xl mx-auto">
             Buy credits once, use them whenever. No subscriptions, no surprises.
           </p>
           {error && (
-            <p className="mt-4 text-red-500 text-sm bg-red-50 inline-block px-4 py-2 rounded-lg">{error}</p>
+            <p className="mt-4 text-red-500 text-sm bg-red-50 dark:bg-ink-raised inline-block px-4 py-2 rounded-lg">{error}</p>
           )}
         </div>
 
@@ -112,7 +112,7 @@ export default function Pricing() {
           </div>
         ) : loadError ? (
           <div className="text-center py-16">
-            <p className="text-red-500 text-sm bg-red-50 inline-block px-4 py-2 rounded-lg mb-4">{loadError}</p>
+            <p className="text-red-500 text-sm bg-red-50 dark:bg-ink-raised inline-block px-4 py-2 rounded-lg mb-4">{loadError}</p>
             <div>
               <button
                 onClick={loadPlans}
@@ -127,8 +127,8 @@ export default function Pricing() {
             {displayPlans.map((plan) => (
               <div
                 key={plan.id}
-                className={`relative rounded-2xl border p-8 flex flex-col bg-white shadow-sm transition hover:shadow-md
-                  ${plan.popular ? 'border-indigo-500 ring-2 ring-indigo-500' : 'border-gray-200'}`}
+                className={`relative rounded-2xl border p-8 flex flex-col bg-white dark:bg-ink-card shadow-sm transition hover:shadow-md
+                  ${plan.popular ? 'border-indigo-500 ring-2 ring-indigo-500' : 'border-gray-200 dark:border-slate-800'}`}
               >
                 {plan.popular && (
                   <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-xs font-bold px-4 py-1 rounded-full shadow">
@@ -137,20 +137,20 @@ export default function Pricing() {
                 )}
 
                 <div className="mb-6">
-                  <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">{plan.name}</p>
+                  <p className="text-sm font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1">{plan.name}</p>
                   <div className="flex items-end gap-1">
-                    <span className="text-4xl font-extrabold text-gray-900">{plan.price}</span>
-                    {!plan.free && <span className="text-gray-400 text-sm mb-1">one-time</span>}
+                    <span className="text-4xl font-extrabold text-gray-900 dark:text-white">{plan.price}</span>
+                    {!plan.free && <span className="text-gray-400 dark:text-slate-500 text-sm mb-1">one-time</span>}
                   </div>
                   <div className="flex items-center gap-1.5 mt-2">
-                    <FiZap className="text-indigo-500" size={14} />
-                    <span className="text-sm font-semibold text-indigo-600">{plan.credits} credits</span>
+                    <FiZap className="text-indigo-500 dark:text-ink-link" size={14} />
+                    <span className="text-sm font-semibold text-indigo-600 dark:text-ink-link">{plan.credits} credits</span>
                   </div>
                 </div>
 
                 <ul className="space-y-3 mb-8 flex-1">
                   {plan.features.map((f) => (
-                    <li key={f} className="flex items-start gap-2 text-sm text-gray-600">
+                    <li key={f} className="flex items-start gap-2 text-sm text-gray-600 dark:text-slate-400">
                       <FiCheck className="text-green-500 flex-shrink-0 mt-0.5" size={15} />
                       {f}
                     </li>
@@ -164,7 +164,7 @@ export default function Pricing() {
                     ${plan.popular
                       ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md'
                       : plan.free
-                        ? 'border border-gray-300 text-gray-700 hover:bg-gray-50'
+                        ? 'border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-ink-raised'
                         : 'bg-violet-600 text-white hover:bg-violet-700'
                     }`}
                 >
@@ -175,7 +175,7 @@ export default function Pricing() {
           </div>
         )}
 
-        <p className="text-center text-xs text-gray-400 mt-10">
+        <p className="text-center text-xs text-gray-400 dark:text-slate-500 mt-10">
           Payments are processed securely by Stripe. Credits never expire.
         </p>
       </div>

@@ -8,7 +8,7 @@
   }
 
   html.dark body {
-    @apply bg-gray-950 text-gray-100;
+    @apply bg-ink-page text-gray-100;
   }
 }
 /* ── Blog post body (rendered Markdown) ────────────────────────── */

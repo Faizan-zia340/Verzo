@@ -42,7 +42,7 @@ export default function Login() {
 
   const isDbError = DB_ERROR_KEYWORDS.some((k) => error.toLowerCase().includes(k));
 
-  const inputClass = 'w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white transition placeholder-gray-400';
+  const inputClass = 'w-full bg-gray-50 dark:bg-ink-page border border-gray-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white dark:focus:bg-ink-raised transition placeholder-gray-400 dark:placeholder-slate-500';
 
   return (
     <div className="min-h-screen flex">
@@ -74,7 +74,7 @@ export default function Login() {
           </div>
         </div>
 
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
+        <div className="bg-white/5 dark:bg-ink-card/5 border border-white/10 rounded-2xl p-5">
           <p className="text-gray-300 text-sm leading-relaxed">
             I built Penlix because AI writing kept sounding like a robot. Every word it
             generates is checked to sound human — that is the whole point.
@@ -83,30 +83,30 @@ export default function Login() {
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white text-xs font-bold">F</div>
             <div>
               <p className="text-white text-xs font-semibold">M. Faizan</p>
-              <p className="text-gray-400 text-xs">Founder, Penlix</p>
+              <p className="text-gray-400 dark:text-slate-500 text-xs">Founder, Penlix</p>
             </div>
           </div>
         </div>
       </div>
 
       {/* ── Right: Form ─────────────────────────────────────── */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-white">
+      <div className="flex-1 flex items-center justify-center p-8 bg-white dark:bg-ink-card">
         <div className="w-full max-w-[360px]">
 
           {/* Mobile logo */}
           <Link to="/" className="flex items-center gap-2 mb-10 lg:hidden">
             <img src="/brand/penlix-mark.svg" alt="Penlix" className="h-8 w-auto" />
-            <span className="font-black text-gray-900 text-xl">Penlix</span>
+            <span className="font-black text-gray-900 dark:text-white text-xl">Penlix</span>
           </Link>
 
-          <h1 className="text-3xl font-black text-gray-950 mb-1 tracking-tight">Welcome back</h1>
-          <p className="text-gray-500 text-sm mb-8">Sign in to continue writing</p>
+          <h1 className="text-3xl font-black text-gray-950 dark:text-white mb-1 tracking-tight">Welcome back</h1>
+          <p className="text-gray-500 dark:text-slate-400 text-sm mb-8">Sign in to continue writing</p>
 
           {error && (
             <div className={`text-sm px-4 py-3.5 rounded-xl mb-6 flex items-start gap-3 ${
               isDbError
-                ? 'bg-amber-50 border border-amber-200 text-amber-800'
-                : 'bg-red-50 border border-red-100 text-red-700'
+                ? 'bg-amber-50 dark:bg-ink-raised border border-amber-200 dark:border-amber-900 text-amber-800 dark:text-amber-300'
+                : 'bg-red-50 dark:bg-ink-raised border border-red-100 dark:border-red-900 text-red-700 dark:text-red-300'
             }`}>
               {isDbError
                 ? <FiRefreshCw size={15} className="flex-shrink-0 mt-0.5 text-amber-500" />
@@ -127,18 +127,18 @@ export default function Login() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">Email</label>
+              <label className="block text-xs font-semibold text-gray-700 dark:text-slate-200 mb-1.5 uppercase tracking-wide">Email</label>
               <input type="email" name="email" value={form.email} onChange={handleChange} required autoComplete="email"
                 placeholder="you@example.com" className={inputClass} />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1.5 uppercase tracking-wide">Password</label>
+              <label className="block text-xs font-semibold text-gray-700 dark:text-slate-200 mb-1.5 uppercase tracking-wide">Password</label>
               <input type="password" name="password" value={form.password} onChange={handleChange} required autoComplete="current-password"
                 placeholder="••••••••" className={inputClass} />
             </div>
 
             <div className="flex justify-end">
-              <Link to="/forgot-password" className="text-indigo-600 hover:text-indigo-800 font-semibold text-sm transition">
+              <Link to="/forgot-password" className="text-indigo-600 dark:text-ink-link hover:text-indigo-800 dark:hover:text-ink-link font-semibold text-sm transition">
                 Forgot password?
               </Link>
             </div>
@@ -154,13 +154,13 @@ export default function Login() {
             </button>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-gray-100 flex items-center justify-between text-sm">
-            <Link to="/" className="text-gray-400 hover:text-gray-600 flex items-center gap-1 transition">
+          <div className="mt-6 pt-6 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between text-sm">
+            <Link to="/" className="text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400 flex items-center gap-1 transition">
               <FiArrowLeft size={12} /> Home
             </Link>
-            <span className="text-gray-500">
+            <span className="text-gray-500 dark:text-slate-400">
               No account?{' '}
-              <Link to="/register" className="text-indigo-600 hover:text-indigo-800 font-semibold transition">
+              <Link to="/register" className="text-indigo-600 dark:text-ink-link hover:text-indigo-800 dark:hover:text-ink-link font-semibold transition">
                 Sign up free
               </Link>
             </span>
