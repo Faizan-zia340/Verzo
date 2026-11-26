@@ -39,23 +39,23 @@ Every one is a content problem, not a production problem — a human can write t
 
 AI content is safe when it answers a real reader's question, is edited by a human who checks the facts, and is original — your angle, your examples, your data. It must also be honest: no invented statistics, no fake reviews, no claims the product cannot back up.
 
-Verzo's blog follows this rule: posts are fact-checked against the live product and examples are real outputs.
+Penlix's blog follows this rule: posts are fact-checked against the live product and examples are real outputs.
 
-## A safe AI workflow with Verzo
+## A safe AI workflow with Penlix
 
 **Step 1: Start with the reader, not the keyword.** Write down your reader's actual question. If it would not help a real person, do not write it.
 
 **Step 2: Prompt with specifics.** Topic, audience and tone — a specific prompt beats a vague one every time.
 
-**Step 3: Generate.** On [Verzo](/register), a blog usually costs 1 credit, and free signup comes with 20 free credits.
+**Step 3: Generate.** On [Penlix](/register), a blog usually costs 1 credit, and free signup comes with 20 free credits.
 
-**Step 4: Read the Reality Check.** Verzo's AI scores its own output out of 10 on Human-ness, Punchiness and No-Cliché. It is self-scoring, not a second reviewer — a low score means regenerate or tune.
+**Step 4: Read the Reality Check.** Penlix's AI scores its own output out of 10 on Human-ness, Punchiness and No-Cliché. It is self-scoring, not a second reviewer — a low score means regenerate or tune.
 
 **Step 5: Edit like a human.** Add one thing the AI could not know — your experience, your example, your opinion. Check every number and claim, then publish. A blog usually also gets an SEO package (meta title, description, 5 keywords) — usually, not always, so check first.
 
 ## Example 1: A real AI output that reads human
 
-A real Verzo output, generated on 25 November 2026 in a live test (social post, English UK):
+A real Penlix output, generated on 25 November 2026 in a live test (social post, English UK):
 
 > Feeling sluggish by 3 PM? Your desk job might be draining more than just your energy.
 >
@@ -65,11 +65,11 @@ A real Verzo output, generated on 25 November 2026 in a live test (social post, 
 >
 > How many glasses have you had today?
 
-It works because it is concrete — "3 PM", "desk job", "a few sips". Verzo's Reality Check scored it 9 out of 10.
+It works because it is concrete — "3 PM", "desk job", "a few sips". Penlix's Reality Check scored it 9 out of 10.
 
 ## Example 2: A real AI ad that does not sound like an ad
 
-Another real Verzo output, generated on 24 November 2026 (Google search ad, English US):
+Another real Penlix output, generated on 24 November 2026 (Google search ad, English US):
 
 > **Tired of Feeling Sluggish and Dehydrated?**
 >
@@ -81,7 +81,7 @@ It names a real product, a real problem and a real benefit — no hype words lik
 
 ## Example 3: Thin versus helpful — the same topic, twice
 
-This example is illustrative, not a Verzo output. Same topic, two drafts:
+This example is illustrative, not a Penlix output. Same topic, two drafts:
 
 **Thin draft (would not rank):**
 
@@ -106,11 +106,11 @@ Yes, if it is the most helpful result. Google says AI "doesn't give content any 
 **Do I have to disclose that AI helped write my content?**
 Google's Who, How and Why guidance says it helps readers to know how content was produced — guidance, not a requirement. This blog is honest about AI help.
 
-**How does Verzo keep AI content safe for SEO?**
-Three ways: every draft gets a Reality Check score, the output is yours to edit, and Verzo's posts are fact-checked against the live product. [Pricing](/pricing) starts at $4.99; free signup includes 20 credits.
+**How does Penlix keep AI content safe for SEO?**
+Three ways: every draft gets a Reality Check score, the output is yours to edit, and Penlix's posts are fact-checked against the live product. [Pricing](/pricing) starts at $4.99; free signup includes 20 credits.
 
 ## The bottom line
 
 AI content does not hurt SEO. Unhelpful content does — and AI makes it easy to produce at scale. Use AI for the draft, a human for the judgement, and Google's test — would this page help a real person?
 
-Try it yourself: [sign up free on Verzo](/register) and write your first AI-assisted post.
+Try it yourself: [sign up free on Penlix](/register) and write your first AI-assisted post.

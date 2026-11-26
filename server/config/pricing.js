@@ -1,5 +1,5 @@
 // server/config/pricing.js (NEW)
-// Single source of truth for Verzo pricing. The live Pricing page and both
+// Single source of truth for Penlix pricing. The live Pricing page and both
 // Stripe flows read from here — never hardcode a price or credit amount
 // anywhere else. Amounts are in cents (Stripe convention).
 // Decided by Faizy 2026-11-25: the .99 packages win over the old

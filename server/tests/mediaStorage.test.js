@@ -34,8 +34,8 @@ const restoreEnv = () => {
 const fakeCloudinary = (impl = {}) => ({
   uploader: {
     upload: async (dataUri, opts) => ({
-      secure_url: 'https://res.cloudinary.com/demo/image/upload/v1/verzo/abc/test.webp',
-      public_id: 'verzo/abc/test',
+      secure_url: 'https://res.cloudinary.com/demo/image/upload/v1/penlix/abc/test.webp',
+      public_id: 'penlix/abc/test',
       bytes: 12345,
       format: 'webp',
       ...impl.uploadResult,
@@ -46,11 +46,11 @@ const fakeCloudinary = (impl = {}) => ({
 
 describe('buildUploadFolder', () => {
   it('namespaces uploads per user', () => {
-    assert.equal(buildUploadFolder('64f0000000000000000000aa'), 'verzo/64f0000000000000000000aa');
+    assert.equal(buildUploadFolder('64f0000000000000000000aa'), 'penlix/64f0000000000000000000aa');
   });
 
   it('strips characters that could escape the folder', () => {
-    assert.equal(buildUploadFolder('../../etc'), 'verzo/etc');
+    assert.equal(buildUploadFolder('../../etc'), 'penlix/etc');
   });
 });
 
@@ -94,9 +94,9 @@ describe('uploadImage (fake Cloudinary client)', () => {
       mimeType: 'image/jpeg',
     }, { cloudinary: fake });
     assert.equal(out.mediaType, 'image');
-    assert.equal(out.mediaPublicId, 'verzo/abc/test');
+    assert.equal(out.mediaPublicId, 'penlix/abc/test');
     assert.match(out.mediaUrl, /^https:\/\/res\.cloudinary\.com\//);
-    assert.equal(captured.opts.folder, 'verzo/64f0000000000000000000aa');
+    assert.equal(captured.opts.folder, 'penlix/64f0000000000000000000aa');
     assert.equal(captured.opts.resource_type, 'image');
     assert.equal(captured.opts.transformation[0].width, 1600);
     assert.match(captured.dataUri, /^data:image\/jpeg;base64,/);
@@ -134,7 +134,7 @@ describe('uploadAudio (fake Cloudinary client)', () => {
     const fake = fakeCloudinary();
     fake.uploader.upload = async (dataUri, opts) => {
       captured = { dataUri, opts };
-      return { secure_url: 'https://res.cloudinary.com/demo/video/upload/v1/x.mp3', public_id: 'verzo/u1/a', bytes: 999, format: 'mp3' };
+      return { secure_url: 'https://res.cloudinary.com/demo/video/upload/v1/x.mp3', public_id: 'penlix/u1/a', bytes: 999, format: 'mp3' };
     };
     const out = await uploadAudio(Buffer.from('fake-mp3'), {
       userId: 'u1',
@@ -159,16 +159,16 @@ describe('deleteMedia (best-effort)', () => {
       captured = { publicId, opts };
       return { result: 'ok' };
     };
-    const out = await deleteMedia('verzo/u1/a', { resourceType: 'video' }, { cloudinary: fake });
+    const out = await deleteMedia('penlix/u1/a', { resourceType: 'video' }, { cloudinary: fake });
     assert.equal(out.ok, true);
-    assert.equal(captured.publicId, 'verzo/u1/a');
+    assert.equal(captured.publicId, 'penlix/u1/a');
     assert.equal(captured.opts.resource_type, 'video');
   });
 
   it('treats "not found" as clean (file already gone)', async () => {
     const fake = fakeCloudinary();
     fake.uploader.destroy = async () => ({ result: 'not found' });
-    const out = await deleteMedia('verzo/u1/gone', {}, { cloudinary: fake });
+    const out = await deleteMedia('penlix/u1/gone', {}, { cloudinary: fake });
     assert.equal(out.ok, true);
   });
 
@@ -177,13 +177,13 @@ describe('deleteMedia (best-effort)', () => {
     fake.uploader.destroy = async () => {
       throw new Error('boom');
     };
-    const out = await deleteMedia('verzo/u1/a', {}, { cloudinary: fake });
+    const out = await deleteMedia('penlix/u1/a', {}, { cloudinary: fake });
     assert.equal(out.ok, false);
   });
 
   it('skips silently when unconfigured or public_id is empty', async () => {
     for (const k of CLOUD_KEYS) delete process.env[k];
-    assert.deepEqual(await deleteMedia('verzo/u1/a', {}, { cloudinary: fakeCloudinary() }), {
+    assert.deepEqual(await deleteMedia('penlix/u1/a', {}, { cloudinary: fakeCloudinary() }), {
       ok: false,
       skipped: true,
     });

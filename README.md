@@ -1,6 +1,6 @@
-# Verzo
+# Penlix
 
-Verzo is an AI content SaaS. Users register, get free credits, and spend 1 credit per generation to create blog posts, social media posts, emails, ads, and product descriptions — in 23 languages — with a quality check and an auto-generated SEO package on every generation.
+Penlix is an AI content SaaS. Users register, get free credits, and spend 1 credit per generation to create blog posts, social media posts, emails, ads, and product descriptions — in 23 languages — with a quality check and an auto-generated SEO package on every generation.
 
 - **Live site:** https://verzo-ecru.vercel.app
 - **Live backend:** https://verzo-backend.onrender.com (`/api/health` returns JSON)
@@ -96,14 +96,14 @@ cd server && npm install && node server.js # Express on http://localhost:3001 (P
 | #5 | `feature/purpose-templates` | 26 purpose-based templates, human-style prompts, two-pass generation |
 | #7 | `feature/seo-batch` | Sitemap reduced to `/` + `/pricing`, per-page SEO with react-helmet-async |
 | #8 | `feature/security-critical-fixes` | Fixes C1 (reset-URL poisoning), C2 (CORS wildcard), H1 (open `/rag`), H2 (public `/api/context`) |
-| #9 | `feature/user-quota-messages` | Per-user quota limits, quota errors branded "Verzo" (never "Gemini") |
+| #9 | `feature/user-quota-messages` | Per-user quota limits, quota errors branded "Penlix" (never "Gemini") |
 | #10 | `feature/voice-image-crosslang` | Voice input, image input, cross-language drift fix, email subtypes, new content types, blog image picker |
 
 Agreed merge order: #8 → #7 → #9 → #5 → #10. #9 must be rebased onto main after #8 (both touch `generate.js` and `package.json`); #5 needs main synced in before merge; #10 must be rebased onto main after #5 and its email subtypes merged into #5's purposes system (no duplicate email-type system).
 
 ## Known issues
 
-- **Gemini free-tier quota (429):** the shared quota exhausts fast under load; the live 429 error still says "Gemini" (PR #9 rebrands it to Verzo). No key rotation to evade quota — against Google's terms.
+- **Gemini free-tier quota (429):** the shared quota exhausts fast under load; the live 429 error still says "Gemini" (PR #9 rebrands it to Penlix). No key rotation to evade quota — against Google's terms.
 - **Pricing mismatch:** the Pricing page says Pro $10 = 100 credits and Enterprise $40 = 500, but the payment code grants starter 499 → 50, growth 999 → 120, pro 1999 → 300 credits. Needs one source of truth for packages.
 - **H3 — Stripe webhook double-credit:** the webhook credits the user on every `payment_intent.succeeded` event with no idempotency check, so a redelivered event double-credits.
 - **Credit-check race:** `creditCheck` only reads the balance; the deduction is a separate `$inc` after generation, so two concurrent requests can both pass with 1 credit.
