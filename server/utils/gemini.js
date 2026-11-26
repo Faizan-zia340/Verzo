@@ -35,7 +35,7 @@ After the content, always append a "REALITY CHECK" section in this exact format:
 const geminiError = (err) => {
   const msg = err.message || '';
   // Provider detail stays in the server log only — the thrown error is
-  // always a Verzo-branded message safe to show to users.
+  // always a Penlix-branded message safe to show to users.
   logger.error({ msg: msg.slice(0, 200) }, 'AI provider error');
   const mapped = mapProviderError(err);
   const e = new Error(mapped.message);

@@ -9,7 +9,7 @@ const errorHandler = (err, req, res, next) => {
   const isOperational = err.isOperational === true || OPERATIONAL_STATUS_CODES.has(status);
 
   // Safety net: a provider name (Gemini, Google, OpenAI, ...) must never
-  // reach the user in an error message. Swap it for a Verzo-branded one.
+  // reach the user in an error message. Swap it for a Penlix-branded one.
   // The original message is still written to the server log below.
   message = sanitizeUserMessage(status, message, err.retryAfter || null);
 

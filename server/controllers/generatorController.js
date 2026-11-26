@@ -11,13 +11,13 @@ import { io } from '../server.js';
 import logger from '../utils/logger.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { refundCredit } from '../utils/credits.js';
-import { mapProviderError, verzoUnavailableMessage } from '../utils/quotaMessages.js';
+import { mapProviderError, penlixUnavailableMessage } from '../utils/quotaMessages.js';
 
 const checkKey = () => {
   if (!process.env.GEMINI_API_KEY) {
-    // Real cause stays in the log; users only ever see the Verzo message.
+    // Real cause stays in the log; users only ever see the Penlix message.
     logger.error('AI API key is not configured on the server.');
-    const err = new Error(verzoUnavailableMessage());
+    const err = new Error(penlixUnavailableMessage());
     err.statusCode = 503;
     throw err;
   }
@@ -141,7 +141,7 @@ export const streamGenerate = asyncHandler(async (req, res) => {
       }
     } catch (err) {
       const msg = err.message || '';
-      // Provider detail stays in the log; the SSE error is Verzo-branded.
+      // Provider detail stays in the log; the SSE error is Penlix-branded.
       // The credit was reserved by the middleware, so a stream failure
       // must give it back (refundOnce guards double refunds).
       const mapped = mapProviderError(err);
@@ -238,7 +238,7 @@ export const streamGenerate = asyncHandler(async (req, res) => {
     await refundOnce();
     if (!res.headersSent) throw err;
     // Headers already sent (SSE in progress): never leak a raw provider or
-    // database message to the client — send a Verzo-branded error instead.
+    // database message to the client — send a Penlix-branded error instead.
     const mapped = mapProviderError(err);
     logger.error({ err: err.message }, 'Stream failed after headers sent');
     res.write(`data: ${JSON.stringify({ error: mapped.message, retryAfter: mapped.retryAfter })}\n\n`);

@@ -7,7 +7,7 @@ import { validate, generateSchema } from '../utils/validators.js';
 import getClient, { MODEL, API_VERSION } from '../config/gemini.js';
 import logger from '../utils/logger.js';
 import asyncHandler from '../utils/asyncHandler.js';
-import { mapProviderError, verzoUnavailableMessage } from '../utils/quotaMessages.js';
+import { mapProviderError, penlixUnavailableMessage } from '../utils/quotaMessages.js';
 
 const router = Router();
 
@@ -28,7 +28,7 @@ router.post('/rag', protect, genLimit, generateAIContent);
 // Diagnostic: verify the AI key works without consuming user credits
 router.get('/ping-ai', protect, asyncHandler(async (req, res) => {
   if (!process.env.GEMINI_API_KEY) {
-    return res.status(503).json({ ok: false, error: verzoUnavailableMessage() });
+    return res.status(503).json({ ok: false, error: penlixUnavailableMessage() });
   }
   try {
     const genAI = getClient();

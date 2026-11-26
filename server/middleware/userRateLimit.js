@@ -1,4 +1,4 @@
-import { verzoBusyMessage } from '../utils/quotaMessages.js';
+import { penlixBusyMessage } from '../utils/quotaMessages.js';
 
 const buckets = new Map();
 
@@ -24,7 +24,7 @@ const userRateLimit = (maxPerHour = 10, label = 'Generation') => (req, res, next
     const retryAfterSec = Math.ceil((bucket.resetAt - now) / 1000);
     res.set('Retry-After', String(retryAfterSec));
     return res.status(429).json({
-      message: verzoBusyMessage(retryAfterSec),
+      message: penlixBusyMessage(retryAfterSec),
       retryAfter: retryAfterSec,
     });
   }

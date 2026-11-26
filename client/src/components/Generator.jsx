@@ -443,7 +443,7 @@ export default function Generator() {
     );
   };
 
-  const isRateLimit = error.toLowerCase().includes('rate limit') || error.toLowerCase().includes('verzo is busy');
+  const isRateLimit = error.toLowerCase().includes('rate limit') || error.toLowerCase().includes('penlix is busy');
 
   return (
     <div className="space-y-5">

@@ -54,7 +54,7 @@ export const analyzePDF = asyncHandler(async (req, res) => {
   const model = getModel();
 
   // Any provider failure (quota, overload, bad key) is mapped to a
-  // Verzo-branded error by geminiError — the raw message never reaches
+  // Penlix-branded error by geminiError — the raw message never reaches
   // the user.
   let analysisText = '';
   try {
