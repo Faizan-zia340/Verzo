@@ -48,8 +48,8 @@ export default function Home() {
       <Seo title="Penlix — AI Content That Converts" description="Penlix is an AI content generator that writes, refines and organises marketing content — blogs, emails, social posts and ads — in minutes." path="/" />
 
       {/* ── Hero ───────────────────────────────────────────────── */}
-      <section className="relative bg-gradient-to-b from-slate-50 via-teak-50/30 to-white pt-20 pb-28 px-4">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-teak-100/40 via-transparent to-transparent" />
+      <section className="relative bg-gradient-to-b from-slate-50 via-teak-50/30 to-white dark:from-ink-page dark:via-teak-950/25 dark:to-ink-card pt-20 pb-28 px-4">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-teak-100/40 via-transparent to-transparent dark:from-teak-500/15 dark:via-transparent dark:to-transparent" />
 
         <div className="max-w-4xl mx-auto text-center relative">
           <motion.div {...fade(0)}>
@@ -61,7 +61,7 @@ export default function Home() {
 
           <motion.h1 {...fade(0.07)} className="text-6xl sm:text-7xl font-black text-gray-950 dark:text-white leading-[1.04] mb-6 tracking-tight">
             Write content that<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-teak-600 via-teak-600 to-teak-700">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-teak-600 via-teak-600 to-teak-700 dark:from-teak-400 dark:via-teak-400 dark:to-teak-300">
               actually converts
             </span>
           </motion.h1>
