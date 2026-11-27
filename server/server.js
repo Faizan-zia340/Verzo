@@ -2,7 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import mongoose from 'mongoose';
 import http from 'http';
-import { Server } from 'socket.io';
+import { initSocket } from './utils/socket.js';
 import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
@@ -39,7 +39,7 @@ validateEnv();
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
+const io = initSocket(server, {
   cors: {
     origin: corsOriginCheck,
     methods: ['GET', 'POST'],
@@ -141,11 +141,6 @@ if (isProd) {
     res.sendFile(path.join(clientDist, 'index.html'));
   });
 }
-
-io.on('connection', (socket) => {
-  socket.on('join', (userId) => socket.join(userId));
-  socket.on('disconnect', () => {});
-});
 
 app.use(errorHandler);
 
