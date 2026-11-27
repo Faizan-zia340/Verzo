@@ -33,7 +33,7 @@ Audience ke hisaab se chunein — ghalat dialect se blog ajeeb lagta hai.
 
 **4. Human edit.** AI draft ko apni awaaz mein dhal lein — aik do jumle apne lafzon mein, headings check karein, phir publish karein. Bina parhe publish karna sab se bari ghalti hai.
 
-## Example 1: Penlix ka asli Roman Urdu output — email
+## Misaal 1: Penlix ka asli Roman Urdu output — email
 
 Ye Penlix ka asal output hai, 24 November 2026 ke test mein generate hua (email, Roman Urdu):
 
@@ -55,7 +55,7 @@ Ye Penlix ka asal output hai, 24 November 2026 ke test mein generate hua (email,
 
 Ye output theek hai: lehja natural hai, "hai na?" aur "pakki wali" Karachi style mein hain. Kamzori — "HydraLife" wali lines generic hain, human edit se behtar ho sakti hain.
 
-## Example 2: Penlix ka asli Roman Urdu output — short post
+## Misaal 2: Penlix ka asli Roman Urdu output — short post
 
 Ye Penlix ka asal output hai, 25 November 2026 ke test mein generate hua (social post, Roman Urdu). Output ke upar wala "Agent 1" label hata diya gaya hai — wo Penlix ka aik known bug hai, content ka hissa nahi:
 
@@ -71,7 +71,7 @@ Ye Penlix ka asal output hai, 25 November 2026 ke test mein generate hua (social
 
 Chhoti post ke liye acha output hai — mukhtasar jumle, seedhi baat. Lekin blog ke liye lambi prompt chahiye hoti hai, warna sirf aik paragraph milta hai.
 
-## Example 3: Karachi vs Lahore — lafzon ka farq
+## Misaal 3: Karachi vs Lahore — lafzon ka farq
 
 Karachi aur Lahore dialects ke fresh outputs banane ki koshish ki gayi, lekin 25 November ki shaam Gemini ka free quota khatam tha — naye outputs nahi ban sake. Is liye farq unki asal instructions se dikhaya gaya hai:
 
@@ -89,7 +89,7 @@ Farq saaf hai: aik baat, do lehje. "yaar, kya scene hai" wali audience ke liye K
 4. **Spelling mein be-tarteebi:** Aik hi blog mein "kya" aur "kia" dono — reader confuse hota hai. Aik style chunein.
 5. **Bina parhe publish karna:** AI kabhi topic se hat jata hai — publish se pehle poora blog khud parhein.
 
-## FAQ
+## Aksar Pooche Jane Wale Sawalat
 
 **Kya Penlix Roman Urdu mein blog likh sakta hai?**
 Ji — Karachi aur Lahore dialects ke saath. Output ki language hamesha check karein; ghalat ho to dobara generate karein.

@@ -24,17 +24,17 @@ Pehle ye samajh lein ke Roman Urdu blog likhna waqt zaya karna nahi, aik moqa ha
 
 Penlix mein Roman Urdu ke do dialects hain — Karachi aur Lahore. Ye sirf aik label nahi; lafzon ka chunao aur lehja waqai farq karta hai.
 
-**Step 1: Topic aur angle tay karein.** Pehle ye likh lein ke blog kis ke liye hai aur kya kehna hai. Misal: "Karachi ki garmi mein sehat ka khayal — ghar baithe asaan tips."
+**Marhala 1: Topic aur angle tay karein.** Pehle ye likh lein ke blog kis ke liye hai aur kya kehna hai. Misal: "Karachi ki garmi mein sehat ka khayal — ghar baithe asaan tips."
 
-**Step 2: Language chunein.** Generator mein language "Roman Urdu (Karachi)" ya "Roman Urdu (Lahore)" select karein. Karachi dialect mein "aap" aur shehri lafz zyada natural lagte hain; Lahore dialect thoda naram lehja deta hai.
+**Marhala 2: Language chunein.** Generator mein language "Roman Urdu (Karachi)" ya "Roman Urdu (Lahore)" select karein. Karachi dialect mein "aap" aur shehri lafz zyada natural lagte hain; Lahore dialect thoda naram lehja deta hai.
 
-**Step 3: Prompt saaf likhein.** Acha prompt aadha kaam hai. Ye likhein: topic, audience, aur tone. Misal: "Karachi ki garmi mein bachon ki sehat ka khayal rakhne par 800 words ka blog likhein, tone friendly ho, aur har tip ke saath aik misaal ho."
+**Marhala 3: Prompt saaf likhein.** Acha prompt aadha kaam hai. Ye likhein: topic, audience, aur tone. Misal: "Karachi ki garmi mein bachon ki sehat ka khayal rakhne par 800 words ka blog likhein, tone friendly ho, aur har tip ke saath aik misaal ho."
 
-**Step 4: Generate karein aur Reality Check dekhein.** Doosra AI reviewer output ko 10 mein se score deta hai — human-ness, punchiness aur clichés par. Score kam ho to dobara generate karein ya tune karein.
+**Marhala 4: Generate karein aur Haqeeqat Check dekhein.** Doosra AI reviewer output ko 10 mein se score deta hai — insani lehja, asar aur ghise-pite jumlon par. Score kam ho to dobara generate karein ya tune karein.
 
-**Step 5: Edit karein aur publish karein.** AI draft ko apni awaaz mein dhal lein — aik do jumle apne lafzon mein likhein, headings check karein, aur phir publish karein.
+**Marhala 5: Edit karein aur publish karein.** AI draft ko apni awaaz mein dhal lein — aik do jumle apne lafzon mein likhein, headings check karein, aur phir publish karein.
 
-## Example 1: Prompt se blog intro tak
+## Misaal 1: Prompt se blog intro tak
 
 **Topic:** Karachi ki garmi mein pani peena
 
@@ -46,7 +46,7 @@ Penlix mein Roman Urdu ke do dialects hain — Karachi aur Lahore. Ye sirf aik l
 
 Ye intro theek hai: reader se seedha baat karta hai, koi mushkil lafz nahi.
 
-## Example 2: Kharab draft vs behtar draft
+## Misaal 2: Kharab draft vs behtar draft
 
 **Kharab draft (bohat generic):**
 
@@ -60,7 +60,7 @@ Ye jumle ghalat nahi, lekin in mein kuch naya nahi — reader doosri line par ru
 
 Farq saaf hai: behtar draft mein aik khaas number hai, aik khaas sheher hai, aur aik aisi baat hai jo reader pehle nahi janta tha.
 
-## Example 3: SEO title aur description
+## Misaal 3: SEO title aur description
 
 Har blog ke saath Penlix aik SEO package bhi banata hai — meta title, meta description aur 5 keywords. Misal:
 
@@ -84,7 +84,7 @@ Ye package is liye zaroori hai ke Google ko samajh aaye ke aap ka blog kis bare 
 - **Misaal dein, daawa nahi:** "Pani peena acha hai" kehne se behtar hai "aik ghante mein aik litre pani" jaisi khaas baat likhna.
 - **End par sawal chhodein:** "Aap garmi mein pani ka khayal kaise rakhte hain?" — comments aane lagenge aur blog zinda rahega.
 
-## FAQ
+## Aksar Pooche Jane Wale Sawalat
 
 **Kya AI Roman Urdu theek se likh sakta hai?**
 Ji, lekin tool ka farq hai. Aam AI tools Roman Urdu ko English jaisa likh dete hain ya ajeeb jumle banate hain. Penlix mein Roman Urdu ke alag dialects (Karachi aur Lahore) hain, is liye output zyada natural hota hai. Phir bhi, publish karne se pehle aik dafa khud parhna zaroori hai.

@@ -78,7 +78,7 @@ Ce qui fonctionne ici : l'objet annonce le but, l'appel est formel, la demande e
 4. **Tutoiement mal placé.** Vouvoyer un premier contact est la règle. Le tutoiement dans un premier e-mail formel est une erreur fréquente.
 5. **Envoyer sans relire.** Les noms, les dates et les liens sont les trois choses les plus susceptibles d'être fausses si vos détails étaient faux. Relisez le brouillon une fois avant d'envoyer.
 
-## FAQ
+## Questions fréquentes
 
 **Penlix écrit-il en français ?**
 Oui — choisissez le français comme langue et le résultat sera rédigé en français.

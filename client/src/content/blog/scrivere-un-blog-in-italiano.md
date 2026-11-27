@@ -31,7 +31,7 @@ Ogni generazione di tipo Blog restituisce lo stesso pacchetto:
 
 - **L'articolo stesso** — apertura, corpo organizzato, conclusione.
 - **Un pacchetto SEO** — meta titolo, meta descrizione e 5 parole chiave, così l'articolo è pronto per la pubblicazione.
-- **Un Reality Check** — un punteggio da 1 a 10 per umanità, incisività e assenza di cliché. È la Penlix che valuta la propria bozza — un'autovalutazione, non un secondo revisore — quindi usalo come suggerimento, non come garanzia.
+- **Una Verifica di realtà** — un punteggio da 1 a 10 per umanità, incisività e assenza di cliché. È la Penlix che valuta la propria bozza — un'autovalutazione, non un secondo revisore — quindi usalo come suggerimento, non come garanzia.
 - **Un selettore di caratteri** — cambia il carattere del testo generato direttamente nella scheda del risultato e poi copialo o esportalo in TXT, PDF o DOCX.
 
 ## Come scrivere un buon prompt in italiano
@@ -48,10 +48,10 @@ Se hai una foto ma non le parole, usa la generazione da immagine: carica una fot
 
 1. **Pubblicare senza leggere.** Controlla sempre nomi, numeri e date prima di pubblicare. Un prezzo sbagliato o un nome storpiato si nota subito.
 2. **Argomento troppo ampio.** "Il marketing" non è un argomento, è una biblioteca. Restrinngi: "Come una piccola libreria usa Instagram per vendere di più."
-3. **Ignorare il Reality Check.** Se il punteggio è basso, rigenera o rifinisci invece di pubblicare comunque.
+3. **Ignorare la Verifica di realtà.** Se il punteggio è basso, rigenera o rifinisci invece di pubblicare comunque.
 4. **Usare sempre lo stesso tono.** Un blog che suona sempre uguale stanca. Cambia tono in base all'argomento: leggero per le storie, diretto per le guide.
 
-## FAQ
+## Domande frequenti
 
 **Quanto costa un articolo?**
 1 credito per generazione. La registrazione gratuita include 20 crediti; i [piani](/pricing) partono da $4,99 per 50 crediti.

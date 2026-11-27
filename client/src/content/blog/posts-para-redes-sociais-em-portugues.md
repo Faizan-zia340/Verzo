@@ -57,7 +57,7 @@ Perceba a estrutura: gancho, informação, pergunta e uma recompensa por comenta
 3. **Sem chamada para ação.** Um post sem pedido é um post sem resposta. Termine sempre com uma pergunta ou um convite.
 4. **Tom errado para o público.** Legenda formal para público jovem, ou gíria demais para um cliente corporativo — o tom tem que combinar com quem vai ler.
 
-## FAQ
+## Perguntas Frequentes
 
 **Quantos créditos custa uma legenda?**
 1 crédito por geração. O cadastro gratuito inclui 20 créditos; os [planos](/pricing) começam em $4,99 por 50 créditos.
