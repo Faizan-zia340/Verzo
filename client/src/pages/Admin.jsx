@@ -815,7 +815,7 @@ export default function Admin() {
       {sidebarOpen && (
         <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={() => setSidebarOpen(false)} aria-hidden="true" />
       )}
-      <aside className={`fixed md:static inset-y-0 left-0 z-50 md:z-auto w-64 max-w-[85vw] bg-gray-900 flex flex-col py-6 px-3 flex-shrink-0 shadow-xl overflow-y-auto transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} ${sidebarCollapsed ? 'md:hidden' : ''}`}>
+      <aside className={`fixed md:static inset-y-0 left-0 z-50 md:z-auto w-64 max-w-[70vw] bg-gray-900 flex flex-col py-6 px-3 flex-shrink-0 shadow-xl overflow-y-auto transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} ${sidebarCollapsed ? 'md:hidden' : ''}`}>
         <div className="flex items-center justify-between px-3 mb-8">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center shadow-lg">
