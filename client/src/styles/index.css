@@ -12,8 +12,10 @@
   }
 }
 /* ── Blog post body (rendered Markdown) ────────────────────────── */
-/* Applied to the div that receives marked HTML in BlogPost.jsx.     */
+/* Applied to the div that receives marked HTML in BlogPost.jsx.
+   overflow-wrap keeps long words/URLs from overflowing on mobile. */
 @layer components {
+  .blog-content { overflow-wrap: break-word; word-break: break-word; }
   .blog-content h2 { @apply text-2xl font-bold text-gray-900 dark:text-white mt-10 mb-4; }
   .blog-content h3 { @apply text-xl font-semibold text-gray-900 dark:text-white mt-8 mb-3; }
   .blog-content p { @apply text-gray-700 dark:text-gray-300 leading-relaxed mb-4; }
