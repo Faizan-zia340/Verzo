@@ -42,7 +42,7 @@ const AuthSpinner = () => (
       {[0, 1, 2].map((i) => (
         <motion.div
           key={i}
-          className="w-2 h-2 rounded-full bg-indigo-500"
+          className="w-2 h-2 rounded-full bg-teak-500"
           animate={{ y: [0, -7, 0], opacity: [0.4, 1, 0.4] }}
           transition={{ duration: 0.65, repeat: Infinity, delay: i * 0.13, ease: 'easeInOut' }}
         />
@@ -100,7 +100,7 @@ export default function App() {
             toastOptions={{
               duration: 3000,
               style: { borderRadius: '12px', fontSize: '13px', fontWeight: 500, boxShadow: '0 4px 24px rgba(0,0,0,0.10)' },
-              success: { iconTheme: { primary: '#6366f1', secondary: '#fff' } },
+              success: { iconTheme: { primary: '#8b6f47', secondary: '#fff' } },
             }}
           />
           <Navbar />

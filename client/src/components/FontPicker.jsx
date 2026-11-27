@@ -11,7 +11,7 @@ export default function FontPicker({ script, value, onChange }) {
       <select
         value={value || ''}
         onChange={(e) => onChange(e.target.value || null)}
-        className="border border-gray-200 dark:border-slate-800 rounded-lg px-2 py-1.5 text-xs text-gray-700 dark:text-slate-200 bg-white dark:bg-ink-card focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        className="border border-gray-200 dark:border-slate-800 rounded-lg px-2 py-1.5 text-xs text-gray-700 dark:text-slate-200 bg-white dark:bg-ink-card focus:outline-none focus:ring-2 focus:ring-teak-500"
         aria-label="Content font"
       >
         {group.defaultFont === null && <option value="">Default</option>}

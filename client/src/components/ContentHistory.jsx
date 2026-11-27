@@ -36,11 +36,11 @@ function HistoryItem({ item, index, onDelete, onFavorite, onRegenerate, regenera
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.28, delay: index * 0.05, ease: 'easeOut' }}
-      whileHover={{ boxShadow: '0 4px 16px rgba(99,102,241,0.08)' }}
+      whileHover={{ boxShadow: '0 4px 16px rgba(139,111,71,0.08)' }}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs font-semibold bg-indigo-100 dark:bg-ink-raised text-indigo-700 dark:text-ink-link px-2 py-0.5 rounded-full uppercase">{item.type}</span>
+          <span className="text-xs font-semibold bg-teak-100 dark:bg-ink-raised text-teak-700 dark:text-teak-400 px-2 py-0.5 rounded-full uppercase">{item.type}</span>
           {item.language && item.language !== 'english' && (
             <span className="text-xs font-semibold bg-amber-100 dark:bg-ink-raised text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded-full capitalize">{item.language.replace('_', ' ')}</span>
           )}
@@ -132,8 +132,8 @@ function HistoryItem({ item, index, onDelete, onFavorite, onRegenerate, regenera
                 {item.output}
               </div>
               {item.seoData?.title && (
-                <div className="border border-indigo-100 rounded-xl p-3 bg-indigo-50 dark:bg-ink-raised space-y-2">
-                  <p className="text-xs font-semibold text-indigo-700 dark:text-ink-link uppercase tracking-wide">SEO Package</p>
+                <div className="border border-teak-100 rounded-xl p-3 bg-teak-50 dark:bg-ink-raised space-y-2">
+                  <p className="text-xs font-semibold text-teak-700 dark:text-teak-400 uppercase tracking-wide">SEO Package</p>
                   <div>
                     <span className="text-xs text-gray-500 dark:text-slate-400 font-medium">Title: </span>
                     <span className="text-xs text-gray-800 dark:text-slate-100">{item.seoData.title}</span>
@@ -145,7 +145,7 @@ function HistoryItem({ item, index, onDelete, onFavorite, onRegenerate, regenera
                   {item.seoData.keywords?.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-1">
                       {item.seoData.keywords.map((kw, i) => (
-                        <span key={i} className="bg-indigo-200 text-indigo-800 dark:text-ink-link text-xs px-2 py-0.5 rounded-full">{kw}</span>
+                        <span key={i} className="bg-teak-200 text-teak-800 dark:text-teak-400 text-xs px-2 py-0.5 rounded-full">{kw}</span>
                       ))}
                     </div>
                   )}
@@ -264,7 +264,7 @@ export default function ContentHistory() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setFavoriteOnly(false)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${!favoriteOnly ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-ink-raised text-gray-500 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-ink-raised'}`}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${!favoriteOnly ? 'bg-teak-600 text-white' : 'bg-gray-100 dark:bg-ink-raised text-gray-500 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-ink-raised'}`}
           >
             All content
           </button>

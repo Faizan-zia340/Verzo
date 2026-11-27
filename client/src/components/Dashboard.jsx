@@ -8,7 +8,7 @@ const DashboardChart = lazy(() => import('./DashboardChart.jsx'));
 
 const PLAN_COLORS = {
   free: 'text-gray-600 dark:text-slate-400 bg-gray-100 dark:bg-ink-raised',
-  pro: 'text-indigo-700 dark:text-ink-link bg-indigo-100 dark:bg-ink-raised',
+  pro: 'text-teak-700 dark:text-teak-400 bg-teak-100 dark:bg-ink-raised',
   enterprise: 'text-violet-700 dark:text-violet-300 bg-violet-100 dark:bg-ink-raised',
 };
 
@@ -41,9 +41,9 @@ export default function DashboardStats() {
       label: 'Credits',
       value: user?.credits ?? '—',
       sub: 'Available to use',
-      iconBg: 'bg-indigo-100 dark:bg-ink-raised',
-      iconColor: 'text-indigo-600 dark:text-ink-link',
-      valueCls: 'font-black text-2xl text-indigo-600 dark:text-ink-link',
+      iconBg: 'bg-teak-100 dark:bg-ink-raised',
+      iconColor: 'text-teak-600 dark:text-teak-400',
+      valueCls: 'font-black text-2xl text-teak-600 dark:text-teak-400',
     },
     {
       icon: FiTrendingUp,

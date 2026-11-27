@@ -10,7 +10,7 @@ export default function DashboardChart({ data }) {
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <FiActivity size={14} className="text-indigo-500 dark:text-ink-link" />
+          <FiActivity size={14} className="text-teak-600 dark:text-teak-400" />
           <p className="text-sm font-bold text-gray-900 dark:text-white">Recent Usage</p>
         </div>
         <span className="text-xs text-gray-400 dark:text-slate-500 bg-gray-100 dark:bg-ink-raised px-2.5 py-1 rounded-full font-medium">Last {data.length}</span>
@@ -25,7 +25,7 @@ export default function DashboardChart({ data }) {
           />
           <Bar dataKey="used" radius={[6, 6, 0, 0]}>
             {data.map((_, i) => (
-              <Cell key={i} fill={i === data.length - 1 ? '#6366f1' : '#e0e7ff'} />
+              <Cell key={i} fill={i === data.length - 1 ? '#8b6f47' : '#e2d2b8'} />
             ))}
           </Bar>
         </BarChart>

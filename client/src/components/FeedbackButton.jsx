@@ -37,7 +37,7 @@ export default function FeedbackButton() {
   return (
     <>
       <button onClick={openForm}
-        className="fixed bottom-5 right-5 z-40 flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white pl-3.5 pr-4 py-2.5 rounded-full text-sm font-semibold shadow-lg shadow-indigo-500/30 transition">
+        className="fixed bottom-5 right-5 z-40 flex items-center gap-2 bg-teak-600 hover:bg-teak-700 text-white pl-3.5 pr-4 py-2.5 rounded-full text-sm font-semibold shadow-lg shadow-teak-500/30 transition">
         <FiMessageSquare size={15} /> Feedback
       </button>
 
@@ -64,7 +64,7 @@ export default function FeedbackButton() {
                   <p className="font-bold text-gray-900 dark:text-white text-sm mb-1">Thanks! Your feedback was sent.</p>
                   <p className="text-xs text-gray-500 dark:text-slate-400 mb-5">We read every report.</p>
                   <button onClick={() => setOpen(false)}
-                    className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700 transition">
+                    className="bg-teak-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-teak-700 transition">
                     Close
                   </button>
                 </div>
@@ -75,7 +75,7 @@ export default function FeedbackButton() {
                   </p>
                   <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Type</label>
                   <select value={category} onChange={(e) => setCategory(e.target.value)}
-                    className="w-full border border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-ink-page rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-ink-raised transition mb-4">
+                    className="w-full border border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-ink-page rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teak-500 focus:bg-white dark:focus:bg-ink-raised transition mb-4">
                     {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                   </select>
                   <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">
@@ -83,15 +83,15 @@ export default function FeedbackButton() {
                   </label>
                   <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Ali"
                     maxLength={100}
-                    className="w-full border border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-ink-page rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-ink-raised transition mb-4" />
+                    className="w-full border border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-ink-page rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teak-500 focus:bg-white dark:focus:bg-ink-raised transition mb-4" />
                   <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">What happened?</label>
                   <textarea value={message} onChange={(e) => setMessage(e.target.value)} required maxLength={2000} rows={4}
                     placeholder="Describe the issue or your suggestion..."
-                    className="w-full border border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-ink-page rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-ink-raised transition resize-none mb-1" />
+                    className="w-full border border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-ink-page rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teak-500 focus:bg-white dark:focus:bg-ink-raised transition resize-none mb-1" />
                   <p className="text-xs text-gray-400 dark:text-slate-500 text-right mb-3">{message.length}/2000</p>
                   {error && <p className="text-red-500 text-xs mb-3 bg-red-50 dark:bg-ink-raised px-3 py-2 rounded-lg border border-red-100">{error}</p>}
                   <button type="submit" disabled={sending}
-                    className="w-full bg-indigo-600 text-white py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700 transition disabled:opacity-60 flex items-center justify-center gap-1.5 shadow-sm">
+                    className="w-full bg-teak-600 text-white py-2.5 rounded-xl text-sm font-bold hover:bg-teak-700 transition disabled:opacity-60 flex items-center justify-center gap-1.5 shadow-sm">
                     {sending
                       ? <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
                       : <><FiSend size={13} /> Send feedback</>}

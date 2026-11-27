@@ -108,7 +108,7 @@ export default function PDFAnalyzer() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-slate-50">
+    <div className="min-h-screen bg-gradient-to-br from-teak-50 via-white to-slate-50">
       <Seo title="Penlix PDF Analyzer — Study Notes & Tests" description="Upload a PDF and get structured study notes, chapter summaries and a 10-question test bank instantly." path="/pdf" noindex />
       <div className="max-w-3xl mx-auto px-4 py-12">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
@@ -120,7 +120,7 @@ export default function PDFAnalyzer() {
           {/* Upload area */}
           <div
             className={`relative border-2 border-dashed rounded-2xl p-10 text-center transition cursor-pointer ${
-              file ? 'border-indigo-400 bg-indigo-50' : 'border-gray-200 dark:border-slate-800 bg-white dark:bg-ink-card hover:border-indigo-300 hover:bg-indigo-50/30 dark:hover:bg-ink-raised/30'
+              file ? 'border-teak-400 bg-teak-50' : 'border-gray-200 dark:border-slate-800 bg-white dark:bg-ink-card hover:border-teak-300 hover:bg-teak-50/30 dark:hover:bg-ink-raised/30'
             }`}
             onDragOver={(e) => e.preventDefault()}
             onDrop={handleDrop}
@@ -130,8 +130,8 @@ export default function PDFAnalyzer() {
 
             {file ? (
               <div className="flex items-center justify-center gap-3">
-                <div className="w-12 h-12 bg-indigo-100 dark:bg-ink-raised rounded-xl flex items-center justify-center">
-                  <FiFileText size={22} className="text-indigo-600 dark:text-ink-link" />
+                <div className="w-12 h-12 bg-teak-100 dark:bg-ink-raised rounded-xl flex items-center justify-center">
+                  <FiFileText size={22} className="text-teak-600 dark:text-teak-400" />
                 </div>
                 <div className="text-left">
                   <p className="font-semibold text-gray-900 dark:text-white text-sm">{file.name}</p>
@@ -146,8 +146,8 @@ export default function PDFAnalyzer() {
               </div>
             ) : (
               <>
-                <div className="w-14 h-14 bg-indigo-100 dark:bg-ink-raised rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <FiUpload size={24} className="text-indigo-600 dark:text-ink-link" />
+                <div className="w-14 h-14 bg-teak-100 dark:bg-ink-raised rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <FiUpload size={24} className="text-teak-600 dark:text-teak-400" />
                 </div>
                 <p className="font-semibold text-gray-700 dark:text-slate-200 mb-1">Drop your PDF here</p>
                 <p className="text-sm text-gray-400 dark:text-slate-500">or click to browse · Max 10MB</p>
@@ -160,7 +160,7 @@ export default function PDFAnalyzer() {
               initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
               onClick={handleAnalyze} disabled={loading}
               whileTap={{ scale: 0.98 }}
-              className="mt-4 w-full bg-indigo-600 text-white py-3.5 rounded-xl font-semibold hover:bg-indigo-700 transition disabled:opacity-60 flex items-center justify-center gap-2 shadow-sm"
+              className="mt-4 w-full bg-teak-600 text-white py-3.5 rounded-xl font-semibold hover:bg-teak-700 transition disabled:opacity-60 flex items-center justify-center gap-2 shadow-sm"
             >
               {loading
                 ? <><span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" /> Analyzing PDF...</>
@@ -187,7 +187,7 @@ export default function PDFAnalyzer() {
                     { label: 'Chunks', value: result.chunks },
                   ].map(({ label, value }) => (
                     <div key={label} className="bg-white dark:bg-ink-card border border-gray-100 dark:border-slate-800 rounded-xl p-3 text-center shadow-sm">
-                      <p className="text-xl font-bold text-indigo-600 dark:text-ink-link">{value}</p>
+                      <p className="text-xl font-bold text-teak-600 dark:text-teak-400">{value}</p>
                       <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">{label}</p>
                     </div>
                   ))}
@@ -201,7 +201,7 @@ export default function PDFAnalyzer() {
                         key={key}
                         onClick={() => setTab(key)}
                         className={`flex-1 flex items-center justify-center gap-1.5 py-3 text-sm font-medium transition ${
-                          tab === key ? 'bg-indigo-600 text-white' : 'text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-ink-raised'
+                          tab === key ? 'bg-teak-600 text-white' : 'text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-ink-raised'
                         }`}
                       >
                         <Icon size={14} /> {label}
@@ -228,7 +228,7 @@ export default function PDFAnalyzer() {
                   <button onClick={handleExportPDF} className="flex items-center gap-1.5 text-xs bg-red-50 dark:bg-ink-raised hover:bg-red-100 text-red-600 dark:text-red-400 px-4 py-2 rounded-lg font-medium transition">
                     <FiDownload size={12} /> Export PDF
                   </button>
-                  <button onClick={() => { setFile(null); setResult(null); }} className="flex items-center gap-1.5 text-xs bg-indigo-50 dark:bg-ink-raised hover:bg-indigo-100 dark:hover:bg-ink-raised text-indigo-700 dark:text-ink-link px-4 py-2 rounded-lg font-medium transition">
+                  <button onClick={() => { setFile(null); setResult(null); }} className="flex items-center gap-1.5 text-xs bg-teak-50 dark:bg-ink-raised hover:bg-teak-100 dark:hover:bg-ink-raised text-teak-700 dark:text-teak-400 px-4 py-2 rounded-lg font-medium transition">
                     <FiUpload size={12} /> Analyze Another
                   </button>
                 </div>

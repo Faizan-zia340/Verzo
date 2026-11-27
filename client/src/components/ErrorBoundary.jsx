@@ -55,7 +55,7 @@ class ErrorBoundary extends React.Component {
               width: 56,
               height: 56,
               borderRadius: 16,
-              backgroundColor: '#4F46E5',
+              backgroundColor: '#8B6F47',
               color: '#fff',
               display: 'flex',
               alignItems: 'center',
@@ -75,7 +75,7 @@ class ErrorBoundary extends React.Component {
             type="button"
             onClick={this.handleReload}
             style={{
-              backgroundColor: '#4F46E5',
+              backgroundColor: '#8B6F47',
               color: '#fff',
               border: 'none',
               borderRadius: 12,

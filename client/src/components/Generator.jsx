@@ -193,8 +193,8 @@ const TEMPLATES = [
   {
     Icon: FiMail,
     label: 'Cold Email',
-    color: 'text-indigo-600 dark:text-ink-link',
-    bg: 'bg-indigo-50 dark:bg-ink-raised',
+    color: 'text-teak-600 dark:text-teak-400',
+    bg: 'bg-teak-50 dark:bg-ink-raised',
     form: {
       type: 'email', subtype: 'cold_outreach', tone: 'professional', length: 'short', language: 'english_us', format: 'paragraphs',
       prompt: 'Write a cold outreach email to a potential B2B SaaS client. Include a personalized opener, state the value proposition in 2 sentences, and close with a soft CTA to schedule a 15-minute discovery call. Keep it under 150 words.',
@@ -315,7 +315,7 @@ const TUNE_ACTIONS = [
   { key: 'reduce_hype', label: '🎯 Reduce Hype' },
 ];
 
-const selectClass = 'w-full border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-slate-100 bg-white dark:bg-ink-card focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500';
+const selectClass = 'w-full border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-slate-100 bg-white dark:bg-ink-card focus:outline-none focus:ring-2 focus:ring-teak-500 focus:border-teak-500';
 
 const stripMarkers = (text) => text.replace(/\[IMAGE:\d+\]/g, '').replace(/\n{3,}/g, '\n\n').trim();
 
@@ -737,8 +737,8 @@ export default function Generator() {
   // direction. Shared by the PDF (print) and DOCX downloads.
   const exportDocHtml = () => {
     const fontLink = font ? `<link rel="stylesheet" href="${googleFontsUrl(font)}">` : '';
-    const seoLine = seoData?.title ? `<hr/><p style="color:#4f46e5;"><b>SEO:</b> ${seoData.title}</p>` : '';
-    return `<html><head><meta charset="utf-8">${fontLink}<style>body{font-family:${stack};font-size:11pt;line-height:${lineHeight || 1.6};margin:2cm;} h1{color:#4f46e5;} p{margin:0.5em 0;}</style></head><body dir="${dir}"><h1>${form.type.toUpperCase()} Content</h1><p><b>Prompt:</b> ${form.prompt}</p><hr/>${exportBodyHtml()}${seoLine}</body></html>`;
+    const seoLine = seoData?.title ? `<hr/><p style="color:#8b6f47;"><b>SEO:</b> ${seoData.title}</p>` : '';
+    return `<html><head><meta charset="utf-8">${fontLink}<style>body{font-family:${stack};font-size:11pt;line-height:${lineHeight || 1.6};margin:2cm;} h1{color:#8b6f47;} p{margin:0.5em 0;}</style></head><body dir="${dir}"><h1>${form.type.toUpperCase()} Content</h1><p><b>Prompt:</b> ${form.prompt}</p><hr/>${exportBodyHtml()}${seoLine}</body></html>`;
   };
 
   // jsPDF's built-in fonts are Latin-only and it cannot shape Arabic-script
@@ -837,7 +837,7 @@ export default function Generator() {
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => applyTemplate({ form: tplForm })}
-              className="bg-white dark:bg-ink-card border border-gray-200 dark:border-slate-800 rounded-xl p-4 text-left hover:border-indigo-300 hover:shadow-md transition flex items-start gap-3 min-w-0"
+              className="bg-white dark:bg-ink-card border border-gray-200 dark:border-slate-800 rounded-xl p-4 text-left hover:border-teak-300 hover:shadow-md transition flex items-start gap-3 min-w-0"
             >
               <div className={`w-9 h-9 ${bg} rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5`}>
                 <Icon size={16} className={color} />
@@ -895,7 +895,7 @@ export default function Generator() {
             <textarea
               name="writingSample" value={form.writingSample || ''} onChange={handleChange} rows={2} maxLength={1500}
               placeholder="Paste a paragraph you wrote, in your own voice..."
-              className="w-full border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none placeholder-gray-400 dark:placeholder-slate-500"
+              className="w-full border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teak-500 focus:border-teak-500 resize-none placeholder-gray-400 dark:placeholder-slate-500"
             />
             <div className="text-xs text-gray-400 dark:text-slate-500 mt-1">{(form.writingSample || '').length} / 1500 characters</div>
           </div>
@@ -942,7 +942,7 @@ export default function Generator() {
                 className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg font-medium transition ${
                   listening
                     ? 'bg-red-100 dark:bg-ink-raised text-red-700 dark:text-red-300 animate-pulse'
-                    : 'bg-indigo-50 dark:bg-ink-raised text-indigo-700 dark:text-ink-link hover:bg-indigo-100 dark:hover:bg-ink-raised'
+                    : 'bg-teak-50 dark:bg-ink-raised text-teak-700 dark:text-teak-400 hover:bg-teak-100 dark:hover:bg-ink-raised'
                 } disabled:opacity-40`}
               >
                 <FiMic size={12} /> {listening ? 'Listening… tap to stop' : 'Speak'}
@@ -951,7 +951,7 @@ export default function Generator() {
             <textarea
               name="prompt" value={form.prompt} onChange={handleChange} rows={4} required={!imageFile}
               placeholder="Describe what you want to generate, or pick a quick template above... (or tap Speak and say it — with a photo attached, you can leave this blank)"
-              className="w-full border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2.5 text-sm text-gray-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none placeholder-gray-400 dark:placeholder-slate-500"
+              className="w-full border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2.5 text-sm text-gray-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teak-500 focus:border-teak-500 resize-none placeholder-gray-400 dark:placeholder-slate-500"
             />
            <div className="flex items-center justify-between mt-1.5 text-xs text-gray-400 dark:text-slate-500">
              <span>{form.prompt.length.toLocaleString()} characters</span>
@@ -962,8 +962,8 @@ export default function Generator() {
           {/* RAG — answer from saved knowledge (admin context documents) */}
           <div className="border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2.5">
             <label className="flex items-center gap-2 text-sm text-gray-800 dark:text-slate-100 cursor-pointer">
-              <input type="checkbox" checked={useRag} onChange={(e) => setUseRag(e.target.checked)} disabled={loading} className="accent-indigo-600 h-4 w-4" />
-              <FiDatabase size={14} className="text-indigo-600 dark:text-ink-link" />
+              <input type="checkbox" checked={useRag} onChange={(e) => setUseRag(e.target.checked)} disabled={loading} className="accent-teak-600 h-4 w-4" />
+              <FiDatabase size={14} className="text-teak-600 dark:text-teak-400" />
               <span className="font-medium">Use saved knowledge (RAG)</span>
               <span className="text-xs text-gray-400 dark:text-slate-500 font-normal">— 1 credit, answers from your saved context documents</span>
             </label>
@@ -972,7 +972,7 @@ export default function Generator() {
                 <input
                   value={ragKeywords} onChange={(e) => setRagKeywords(e.target.value)} disabled={loading}
                   placeholder="Topic keywords (optional, comma-separated) — helps match the right document"
-                  className="w-full border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-slate-100 bg-white dark:bg-ink-card focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400 dark:placeholder-slate-500"
+                  className="w-full border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-slate-100 bg-white dark:bg-ink-card focus:outline-none focus:ring-2 focus:ring-teak-500 focus:border-teak-500 placeholder-gray-400 dark:placeholder-slate-500"
                 />
                 <p className="text-xs text-gray-400 dark:text-slate-500 mt-1.5">RAG answers your prompt directly from saved knowledge, so it skips the type details below.</p>
               </div>
@@ -995,7 +995,7 @@ export default function Generator() {
                 </div>
               </div>
             ) : (
-              <label className="flex items-center justify-center gap-2 w-full border border-dashed border-gray-300 dark:border-slate-700 rounded-lg px-3 py-3 text-sm text-gray-500 dark:text-slate-400 hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-ink-link transition cursor-pointer">
+              <label className="flex items-center justify-center gap-2 w-full border border-dashed border-gray-300 dark:border-slate-700 rounded-lg px-3 py-3 text-sm text-gray-500 dark:text-slate-400 hover:border-teak-400 hover:text-teak-600 dark:hover:text-teak-400 transition cursor-pointer">
                 <FiUpload size={14} />
                 <span>Upload an image to write about</span>
                 <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImageSelect} className="hidden" />
@@ -1017,7 +1017,7 @@ export default function Generator() {
                   <input
                     name={field.name} value={form[field.name] || ''} onChange={handleChange}
                     placeholder={field.placeholder}
-                    className={`w-full border rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-slate-100 bg-white dark:bg-ink-card focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400 dark:placeholder-slate-500 ${fieldErrors[field.name] ? 'border-red-400' : 'border-gray-200 dark:border-slate-800'}`}
+                    className={`w-full border rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-slate-100 bg-white dark:bg-ink-card focus:outline-none focus:ring-2 focus:ring-teak-500 focus:border-teak-500 placeholder-gray-400 dark:placeholder-slate-500 ${fieldErrors[field.name] ? 'border-red-400' : 'border-gray-200 dark:border-slate-800'}`}
                   />
                   {fieldErrors[field.name] && (
                     <p className="text-xs text-red-600 dark:text-red-400 mt-1">{fieldErrors[field.name]}</p>
@@ -1049,7 +1049,7 @@ export default function Generator() {
           <motion.button
             type="submit" disabled={loading}
             whileTap={{ scale: 0.98 }}
-            className="w-full bg-indigo-600 text-white py-3 rounded-xl font-semibold hover:bg-indigo-700 transition disabled:opacity-60 flex items-center justify-center gap-2 text-sm shadow-sm"
+            className="w-full bg-teak-600 text-white py-3 rounded-xl font-semibold hover:bg-teak-700 transition disabled:opacity-60 flex items-center justify-center gap-2 text-sm shadow-sm"
           >
             {loading
               ? <><span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />{fetchingImages ? 'Analyzing images...' : 'Generating...'}</>
@@ -1082,7 +1082,7 @@ export default function Generator() {
               {[0, 1, 2].map((i) => (
                 <motion.div
                   key={i}
-                  className="w-2 h-2 rounded-full bg-indigo-400"
+                  className="w-2 h-2 rounded-full bg-teak-400"
                   animate={{ y: [0, -5, 0], opacity: [0.4, 1, 0.4] }}
                   transition={{ duration: 0.65, repeat: Infinity, delay: i * 0.13, ease: 'easeInOut' }}
                 />
@@ -1115,7 +1115,7 @@ export default function Generator() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <FontPicker script={script} value={font} onChange={setFont} />
-                  <button onClick={handleCopy} className="flex items-center gap-1.5 text-xs bg-gray-100 dark:bg-ink-raised hover:bg-indigo-50 dark:hover:bg-ink-raised hover:text-indigo-700 dark:hover:text-ink-link text-gray-600 dark:text-slate-400 px-3 py-1.5 rounded-lg transition font-medium">
+                  <button onClick={handleCopy} className="flex items-center gap-1.5 text-xs bg-gray-100 dark:bg-ink-raised hover:bg-teak-50 dark:hover:bg-ink-raised hover:text-teak-700 dark:hover:text-teak-400 text-gray-600 dark:text-slate-400 px-3 py-1.5 rounded-lg transition font-medium">
                     {copied ? <><FiCheck size={12} /> Copied!</> : <><FiCopy size={12} /> Copy</>}
                   </button>
                   <button onClick={handleDownloadTxt} className="flex items-center gap-1.5 text-xs bg-gray-100 dark:bg-ink-raised hover:bg-gray-200 dark:hover:bg-ink-raised text-gray-600 dark:text-slate-400 px-3 py-1.5 rounded-lg transition font-medium">
@@ -1136,7 +1136,7 @@ export default function Generator() {
                 style={{ fontFamily: stack, lineHeight }}
               >
                 {renderContent()}
-                {loading && <span className="inline-block w-0.5 h-4 bg-indigo-500 animate-pulse ml-0.5 align-middle" />}
+                {loading && <span className="inline-block w-0.5 h-4 bg-teak-500 animate-pulse ml-0.5 align-middle" />}
               </div>
 
               {/* Quality check result */}
@@ -1183,10 +1183,10 @@ export default function Generator() {
                         key={key}
                         onClick={() => handleTune(key)}
                         disabled={!!tuning}
-                        className="text-xs border border-gray-200 dark:border-slate-800 bg-white dark:bg-ink-card text-gray-700 dark:text-slate-200 hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-ink-link hover:bg-indigo-50 dark:hover:bg-ink-raised px-3 py-1.5 rounded-lg transition disabled:opacity-40 font-medium"
+                        className="text-xs border border-gray-200 dark:border-slate-800 bg-white dark:bg-ink-card text-gray-700 dark:text-slate-200 hover:border-teak-400 hover:text-teak-600 dark:hover:text-teak-400 hover:bg-teak-50 dark:hover:bg-ink-raised px-3 py-1.5 rounded-lg transition disabled:opacity-40 font-medium"
                       >
                         {tuning === key
-                          ? <span className="flex items-center gap-1"><span className="animate-spin h-3 w-3 border border-indigo-400 border-t-transparent rounded-full" /> Rewriting...</span>
+                          ? <span className="flex items-center gap-1"><span className="animate-spin h-3 w-3 border border-teak-400 border-t-transparent rounded-full" /> Rewriting...</span>
                           : label
                         }
                       </button>
@@ -1201,8 +1201,8 @@ export default function Generator() {
               {/* SEO Panel */}
               <div className="bg-white dark:bg-ink-card rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-5">
                 <div className="flex items-center gap-2 mb-4">
-                  <div className="w-7 h-7 bg-indigo-100 dark:bg-ink-raised rounded-lg flex items-center justify-center">
-                    <FiZap size={13} className="text-indigo-600 dark:text-ink-link" />
+                  <div className="w-7 h-7 bg-teak-100 dark:bg-ink-raised rounded-lg flex items-center justify-center">
+                    <FiZap size={13} className="text-teak-600 dark:text-teak-400" />
                   </div>
                   <h3 className="font-semibold text-gray-900 dark:text-white text-sm">SEO Package</h3>
                 </div>
@@ -1224,7 +1224,7 @@ export default function Generator() {
                   <div className="space-y-3">
                     <div>
                       <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1">Meta Title</p>
-                      <div className="bg-indigo-50 dark:bg-ink-raised border border-indigo-100 rounded-lg px-3 py-2">
+                      <div className="bg-teak-50 dark:bg-ink-raised border border-teak-100 rounded-lg px-3 py-2">
                         <p className="text-sm text-gray-800 dark:text-slate-100 font-medium">{seoData.title || '—'}</p>
                       </div>
                     </div>
@@ -1238,7 +1238,7 @@ export default function Generator() {
                       <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Keywords</p>
                       <div className="flex flex-wrap gap-1.5">
                         {(seoData.keywords || []).map((kw, i) => (
-                          <span key={i} className="bg-indigo-100 dark:bg-ink-raised text-indigo-700 dark:text-ink-link text-xs px-2.5 py-0.5 rounded-full font-medium">{kw}</span>
+                          <span key={i} className="bg-teak-100 dark:bg-ink-raised text-teak-700 dark:text-teak-400 text-xs px-2.5 py-0.5 rounded-full font-medium">{kw}</span>
                         ))}
                       </div>
                     </div>
@@ -1311,7 +1311,7 @@ export default function Generator() {
                       </div>
                       <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Stock Photos</h3>
                     </div>
-                    <button onClick={() => setShowImages(!showImages)} className="text-xs text-indigo-600 dark:text-ink-link hover:text-indigo-800 dark:hover:text-ink-link font-medium">
+                    <button onClick={() => setShowImages(!showImages)} className="text-xs text-teak-600 dark:text-teak-400 hover:text-teak-800 dark:hover:text-teak-300 font-medium">
                       {showImages ? 'Hide' : 'Show'}
                     </button>
                   </div>
@@ -1363,11 +1363,11 @@ export default function Generator() {
                           type="button"
                           onClick={() => handlePickImage(slot, oi)}
                           title={opt.credit || opt.alt || 'Unsplash photo'}
-                          className={`relative rounded-lg overflow-hidden border-2 transition ${selected ? 'border-indigo-500 ring-2 ring-indigo-200' : 'border-transparent hover:border-indigo-300'}`}
+                          className={`relative rounded-lg overflow-hidden border-2 transition ${selected ? 'border-teak-500 ring-2 ring-teak-200' : 'border-transparent hover:border-teak-300'}`}
                         >
                           <img src={opt.thumb || opt.url} alt={opt.alt || 'Blog image option'} className="w-full h-14 object-cover" loading="lazy" />
                           {selected && (
-                            <span className="absolute top-1 right-1 w-4 h-4 bg-indigo-600 rounded-full flex items-center justify-center">
+                            <span className="absolute top-1 right-1 w-4 h-4 bg-teak-600 rounded-full flex items-center justify-center">
                               <FiCheck size={9} className="text-white" />
                             </span>
                           )}
