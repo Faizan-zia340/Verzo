@@ -10,6 +10,23 @@
   html.dark body {
     @apply bg-ink-page text-gray-100;
   }
+
+  /* Chrome paints its own pale background on autofilled fields, which
+     overrides the dark input background — so an autofilled email or
+     password turns white while the rest of the form stays dark.
+     Force the autofill layer to match the theme instead. */
+  input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
+    -webkit-text-fill-color: #111827;
+    caret-color: #111827;
+    transition: background-color 9999s ease-in-out 0s;
+  }
+  html.dark input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #020617 inset;
+    -webkit-text-fill-color: #ffffff;
+    caret-color: #ffffff;
+    transition: background-color 9999s ease-in-out 0s;
+  }
 }
 /* ── Blog post body (rendered Markdown) ────────────────────────── */
 /* Applied to the div that receives marked HTML in BlogPost.jsx.
