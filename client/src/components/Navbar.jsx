@@ -22,6 +22,14 @@ export default function Navbar() {
 
   useEffect(() => { setMenuOpen(false); }, [location.pathname]);
 
+  /* While the drawer is open, lock the page behind it so scrolling
+     stays inside the drawer (the drawer has its own hidden scroller)
+     instead of moving the whole app. */
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
+
   const themeButton = (
     <button
       onClick={() => setDarkMode((value) => !value)}
@@ -125,7 +133,7 @@ export default function Navbar() {
             <FiX size={18} />
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-1">
+        <div className="flex-1 overflow-y-auto scrollbar-hide px-4 py-3 space-y-1">
           <Link to="/pricing" className="block text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white text-sm font-medium px-3 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition">
             Pricing
           </Link>
