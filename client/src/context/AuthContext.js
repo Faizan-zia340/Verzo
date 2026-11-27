@@ -22,10 +22,26 @@ export function AuthProvider({ children }) {
       .finally(() => setLoading(false));
   }, []);
 
+  // Returns the response data as-is: the caller (Login) decides what to
+  // do with it — a plain sign-in returns { user }, a two-step sign-in
+  // returns { requires2FA, email } and no session is created yet.
   const login = async (email, password) => {
     const { data } = await api.post('/auth/login', { email, password });
+    return data;
+  };
+
+  // Second step of sign-in: verifies the 6-digit code and, on success,
+  // signs the user in exactly as login() used to.
+  const verifyTwoFactor = async (email, code) => {
+    const { data } = await api.post('/auth/2fa/verify', { email, code });
     localStorage.setItem('user', JSON.stringify(data.user));
     setUser(data.user);
+    return data;
+  };
+
+  // Turns two-step verification on or off for the signed-in user.
+  const toggleTwoFactor = async (enabled) => {
+    const { data } = await api.post('/auth/2fa/toggle', { enabled });
     return data;
   };
 
@@ -42,7 +58,7 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
-  return <AuthContext.Provider value={{ user, setUser, loading, login, register, logout }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, setUser, loading, login, register, logout, verifyTwoFactor, toggleTwoFactor }}>{children}</AuthContext.Provider>;
 }
 
 export const useAuth = () => useContext(AuthContext);

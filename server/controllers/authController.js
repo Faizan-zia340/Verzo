@@ -3,8 +3,16 @@ import User from '../models/User.js';
 import { FREE_SIGNUP_CREDITS } from '../config/pricing.js';
 import { generateToken, cookieOptions } from '../utils/jwt.js';
 import asyncHandler from '../utils/asyncHandler.js';
-import { sendPasswordResetEmail, sendVerificationEmail } from '../utils/sendEmail.js';
+import { sendPasswordResetEmail, sendVerificationEmail, sendTwoFactorEmail } from '../utils/sendEmail.js';
 import { createVerificationToken, applyVerificationGrant } from '../utils/emailVerification.js';
+import {
+  isLocked,
+  lockRetryAfterSeconds,
+  recordFailedLogin,
+  hashTwoFactorCode,
+  isTwoFactorCodeValid,
+  TWO_FACTOR_CODE_TTL_MS,
+} from '../utils/loginSecurity.js';
 
 const formatUser = (user) => ({
   id: user._id,
@@ -13,6 +21,10 @@ const formatUser = (user) => ({
   credits: user.credits,
   subscription: user.subscription,
   isAdmin: user.isAdmin === true,
+  // Exposed so the Dashboard Security card can show the current
+  // two-step verification state; false for accounts created before
+  // two-step verification existed.
+  twoFactorEnabled: user.twoFactorEnabled === true,
   // Accounts created before verification existed have no such field; a
   // missing value reads as verified so the 19 existing accounts are
   // unaffected. Only an explicit `false` (a new unverified registration)
@@ -65,12 +77,81 @@ export const register = asyncHandler(async (req, res) => {
 export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
-  if (!user || !(await user.comparePassword(password))) {
+  // Same generic 401 whether the email exists or not, so an attacker
+  // cannot probe for registered addresses. No counter is touched when
+  // there is no account.
+  if (!user) {
     return res.status(401).json({ message: 'Invalid email or password' });
   }
+  // 5 failed attempts lock the account for 15 minutes (see
+  // server/utils/loginSecurity.js). A locked account gets a 423 with the
+  // seconds left until it unlocks, so the client can say how long to wait.
+  if (isLocked(user)) {
+    const retryAfter = lockRetryAfterSeconds(user);
+    const minutes = Math.max(1, Math.ceil(retryAfter / 60));
+    return res.status(423).json({
+      message: `Account locked after too many failed sign-in attempts. Please try again in ${minutes} minute${minutes === 1 ? '' : 's'}.`,
+      retryAfter,
+    });
+  }
+  if (!(await user.comparePassword(password))) {
+    recordFailedLogin(user);
+    await user.save();
+    return res.status(401).json({ message: 'Invalid email or password' });
+  }
+  // Password correct: clear any lockout counters before issuing a session.
+  user.loginAttempts = 0;
+  user.lockUntil = undefined;
+  // Two-step verification is opt-in for users and mandatory for admins.
+  // When it applies, no cookie or JWT is issued yet: the sign-in only
+  // completes after the 6-digit code is verified (verifyTwoFactor).
+  const needsTwoFactor = user.twoFactorEnabled === true || user.isAdmin === true;
+  if (needsTwoFactor) {
+    const code = String(crypto.randomInt(100000, 1000000));
+    user.twoFactorCode = hashTwoFactorCode(code);
+    user.twoFactorExpires = new Date(Date.now() + TWO_FACTOR_CODE_TTL_MS);
+    await user.save();
+    // A failed email must not fail the sign-in: the code is still valid
+    // for 10 minutes and the sender logs a warning of its own.
+    await sendTwoFactorEmail({ to: user.email, code });
+    return res.status(200).json({ requires2FA: true, email: user.email });
+  }
+  await user.save();
   const token = generateToken(user._id);
   res.cookie('token', token, cookieOptions());
   res.status(200).json({ user: formatUser(user) });
+});
+
+// POST /api/auth/2fa/verify — second step of sign-in. The code is only
+// ever compared as its SHA-256 hash (see loginSecurity.js); a missing,
+// expired or wrong code gets the same generic 401.
+export const verifyTwoFactor = asyncHandler(async (req, res) => {
+  const { email, code } = req.body;
+  const user = await User.findOne({ email });
+  if (!user || !isTwoFactorCodeValid(user, code)) {
+    return res.status(401).json({ message: 'Invalid or expired sign-in code' });
+  }
+  user.twoFactorCode = undefined;
+  user.twoFactorExpires = undefined;
+  user.loginAttempts = 0;
+  user.lockUntil = undefined;
+  await user.save();
+  const token = generateToken(user._id);
+  res.cookie('token', token, cookieOptions());
+  res.status(200).json({ user: formatUser(user) });
+});
+
+// POST /api/auth/2fa/toggle — turn two-step verification on or off for
+// the signed-in user. Admin accounts must keep it on.
+export const toggleTwoFactor = asyncHandler(async (req, res) => {
+  const { enabled } = req.body;
+  const user = req.user;
+  if (user.isAdmin === true && enabled === false) {
+    return res.status(403).json({ message: 'Two-step verification is required for admin accounts and cannot be turned off.' });
+  }
+  user.twoFactorEnabled = enabled;
+  await user.save();
+  res.status(200).json({ twoFactorEnabled: user.twoFactorEnabled === true });
 });
 
 export const getMe = asyncHandler(async (req, res) => {

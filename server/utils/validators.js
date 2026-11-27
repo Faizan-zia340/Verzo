@@ -21,6 +21,21 @@ export const loginSchema = Joi.object({
   password: Joi.string().required(),
 });
 
+// Second step of sign-in: the 6-digit code emailed after a password login
+// (only when two-step verification applies). The code is exactly 6 digits.
+export const twoFactorVerifySchema = Joi.object({
+  email: Joi.string().email().required(),
+  code: Joi.string().pattern(/^\d{6}$/).required().messages({
+    'string.pattern.base': 'Sign-in code must be 6 digits',
+  }),
+});
+
+// Turn two-step verification on or off (admin accounts cannot turn it off
+// — the controller enforces that, this schema only checks the shape).
+export const twoFactorToggleSchema = Joi.object({
+  enabled: Joi.boolean().required(),
+});
+
 export const forgotPasswordSchema = Joi.object({
   email: Joi.string().email().required(),
 });

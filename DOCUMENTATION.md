@@ -366,6 +366,11 @@ Stores account information and credit balance.
 | `stripeCustomerId` | String | Stripe customer reference |
 | `resetPasswordToken` | String | SHA-256 hash of the password-reset token (never the raw token) |
 | `resetPasswordExpires` | Date | Reset-token expiry, about 1 hour after issue |
+| `loginAttempts` | Number | Failed sign-in count since the last success; resets when the account locks (see below) |
+| `lockUntil` | Date | Locked-until timestamp after 5 failed sign-ins (15-minute lock) |
+| `twoFactorEnabled` | Boolean | Two-step verification on/off (mandatory for admins, opt-in for users) |
+| `twoFactorCode` | String | SHA-256 hash of the 6-digit sign-in code (never the raw code) |
+| `twoFactorExpires` | Date | Sign-in code expiry, about 10 minutes after issue |
 | `createdAt` | Date | Account creation timestamp |
 
 **Methods:**
@@ -460,7 +465,9 @@ Stores reference knowledge used to augment AI prompts before generation.
 | Method | Path | Auth | Description |
 |---|---|---|---|
 | POST | `/register` | No | Create account (20 free credits), returns JWT in httpOnly cookie |
-| POST | `/login` | No | Login, returns JWT in httpOnly cookie |
+| POST | `/login` | No | Login, returns JWT in httpOnly cookie; 5 failed attempts lock the account for 15 minutes (423), and accounts with two-step verification on (or admins) get `{ requires2FA: true, email }` instead of a session |
+| POST | `/2fa/verify` | No | Verify the 6-digit sign-in code emailed after login; returns JWT in httpOnly cookie on success |
+| POST | `/2fa/toggle` | JWT | Turn two-step verification on or off; admins cannot turn it off (403) |
 | GET | `/me` | JWT | Returns current user info |
 | POST | `/forgot-password` | No | Request a reset link; always returns the same generic message, whether or not the email is registered |
 | POST | `/reset-password/:token` | No | Set a new password (min. 6 characters) with a valid, unexpired reset token; clears the token on success |
@@ -558,6 +565,8 @@ Handles user registration and login.
 - **`getMe`** — returns the currently authenticated user's data from `req.user`
 - **`forgotPassword`** — generates a secure random reset token, stores only its SHA-256 hash with a 1-hour expiry, and emails a `/reset-password/:token` link via Resend when `RESEND_API_KEY` and `EMAIL_FROM` are set; otherwise no email is sent and the response stays generic
 - **`resetPassword`** — verifies the token hash and expiry, sets the new password (hashed by the User pre-save hook, as on registration), and clears the token
+
+**Login lockout and two-step verification.** Five failed sign-in attempts lock an account for 15 minutes: the 5th failure sets `lockUntil` and resets the counter, and any sign-in while locked returns 423 with `retryAfter` (seconds until unlock). A wrong password always returns the same generic 401, whether or not the email is registered, so the lockout cannot be used to probe for accounts. Sign-in attempts are also capped per IP by the auth rate limiter: 5 attempts per 15 minutes per IP on `/login`, `/register` and `/2fa/verify` (`server/server.js` `authLimiter`). Two-step verification is an email OTP: opt-in for users (toggled from the Dashboard Security card), mandatory for admin accounts. When it applies, a correct password does not issue a session — instead a 6-digit code is emailed (valid 10 minutes, only its SHA-256 hash is stored) and the client must POST it to `/2fa/verify` to complete the sign-in. The pure lockout/code helpers live in `server/utils/loginSecurity.js` and are covered by `server/tests/authLockout2fa.test.js`.
 
 Frontend pages: `/forgot-password` (request a link), `/reset-password/:token` (set a new password), and a “Forgot password?” link on the Login page.
 

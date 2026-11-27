@@ -38,6 +38,17 @@ const userSchema = new mongoose.Schema({
   // never the raw token. Expires about 1 hour after it is issued.
   resetPasswordToken: { type: String },
   resetPasswordExpires: { type: Date },
+  // Login lockout: 5 failed sign-in attempts lock the account for 15
+  // minutes (see server/utils/loginSecurity.js). The counter resets when
+  // the lock is set, and a successful sign-in clears both fields.
+  loginAttempts: { type: Number, default: 0 },
+  lockUntil: { type: Date },
+  // Two-step verification (email OTP): opt-in for users, mandatory for
+  // admins. Only the SHA-256 hash of the 6-digit sign-in code is stored,
+  // never the raw code. Expires about 10 minutes after it is issued.
+  twoFactorEnabled: { type: Boolean, default: false },
+  twoFactorCode: { type: String },
+  twoFactorExpires: { type: Date },
   createdAt: { type: Date, default: Date.now },
 });
 

@@ -88,7 +88,7 @@ const limiter = rateLimit({
 });
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: 5,
   standardHeaders: true,
   legacyHeaders: false,
   message: { message: 'Too many sign-in attempts on Penlix. Please try again in a few minutes.' },
@@ -98,6 +98,7 @@ app.use('/api/', limiter);
 
 app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', authLimiter);
+app.use('/api/auth/2fa/verify', authLimiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/generate', generateRoutes);
 app.use('/api/user', userRoutes);

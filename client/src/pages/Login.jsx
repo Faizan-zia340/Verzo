@@ -16,11 +16,16 @@ const FEATURES = [
 ];
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, verifyTwoFactor, setUser } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  // Two-step sign-in: after a password login that requires it, the form
+  // switches to the 6-digit code step instead of signing the user in.
+  const [step, setStep] = useState('password');
+  const [code, setCode] = useState('');
+  const [twoFactorEmail, setTwoFactorEmail] = useState('');
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -29,6 +34,14 @@ export default function Login() {
     setLoading(true); setError('');
     try {
       const data = await login(form.email, form.password);
+      if (data.requires2FA) {
+        setTwoFactorEmail(data.email || form.email);
+        setCode('');
+        setStep('code');
+        return;
+      }
+      localStorage.setItem('user', JSON.stringify(data.user));
+      setUser(data.user);
       toast.success('Welcome back!');
       navigate(data.user?.isAdmin ? '/admin' : '/dashboard');
     } catch (err) {
@@ -39,6 +52,25 @@ export default function Login() {
       setLoading(false);
     }
   };
+
+  const handleVerify = async (e) => {
+    e.preventDefault();
+    setLoading(true); setError('');
+    try {
+      const data = await verifyTwoFactor(twoFactorEmail, code);
+      toast.success('Welcome back!');
+      navigate(data.user?.isAdmin ? '/admin' : '/dashboard');
+    } catch (err) {
+      const message = err.response?.data?.message || 'Verification failed. Please try again.';
+      setError(message);
+      toast.error(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Digits only, max 6 — the code the server emailed is 6 digits.
+  const handleCodeChange = (e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6));
 
   const isDbError = DB_ERROR_KEYWORDS.some((k) => error.toLowerCase().includes(k));
 
@@ -126,6 +158,33 @@ export default function Login() {
             </div>
           )}
 
+          {step === 'code' ? (
+            <form onSubmit={handleVerify} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 dark:text-slate-200 mb-1.5 uppercase tracking-wide">Sign-in code</label>
+                <input type="text" inputMode="numeric" autoComplete="one-time-code" value={code} onChange={handleCodeChange} required
+                  placeholder="123456" className={`${inputClass} tracking-[0.5em] text-center font-bold`} />
+                <p className="text-xs text-gray-500 dark:text-slate-400 mt-2 leading-relaxed">
+                  We sent a 6-digit sign-in code to {twoFactorEmail}. It expires in 10 minutes.
+                </p>
+              </div>
+
+              <button type="submit" disabled={loading || code.length !== 6}
+                className="w-full bg-teak-600 hover:bg-teak-700 text-white py-3.5 rounded-xl font-bold transition disabled:opacity-60 text-sm shadow-md shadow-teak-900/20 mt-2">
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+                    Verifying...
+                  </span>
+                ) : 'Verify code'}
+              </button>
+
+              <button type="button" onClick={() => { setStep('password'); setError(''); }}
+                className="w-full text-center text-sm text-gray-500 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-100 transition">
+                Back to sign in
+              </button>
+            </form>
+          ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-xs font-semibold text-gray-700 dark:text-slate-200 mb-1.5 uppercase tracking-wide">Email</label>
@@ -154,6 +213,7 @@ export default function Login() {
               ) : 'Sign in'}
             </button>
           </form>
+          )}
 
           <div className="mt-6 pt-6 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between text-sm">
             <Link to="/" className="text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400 flex items-center gap-1 transition">

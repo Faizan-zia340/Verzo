@@ -74,4 +74,36 @@ export const sendVerificationEmail = async ({ to, verifyUrl }) => {
   }
 };
 
+export const sendTwoFactorEmail = async ({ to, code }) => {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.EMAIL_FROM;
+  if (!apiKey || !from) {
+    logger.warn('Two-step verification email not sent: RESEND_API_KEY or EMAIL_FROM is not set');
+    return false;
+  }
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from,
+        to,
+        subject: 'Your Penlix sign-in code',
+        html: `<p>Your Penlix sign-in code is:</p><p style="font-size: 32px; font-weight: bold; letter-spacing: 4px;">${code}</p><p>It expires in 10 minutes.</p><p>If you did not try to sign in, you can safely ignore this email.</p>`,
+      }),
+    });
+    if (!res.ok) {
+      logger.warn({ status: res.status }, 'Two-step verification email was not accepted by the email service');
+      return false;
+    }
+    return true;
+  } catch (err) {
+    logger.warn({ err: err.message }, 'Two-step verification email failed to send');
+    return false;
+  }
+};
+
 export default sendPasswordResetEmail;

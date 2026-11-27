@@ -19,14 +19,38 @@ const greet = () => {
 };
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { user, toggleTwoFactor } = useAuth();
   const { fetchCredits, credits, loading: creditsLoading } = useCredits();
   const [tab, setTab] = useState('generate');
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  // Two-step verification switch. The initial state comes from the user
+  // profile (formatUser exposes twoFactorEnabled) and is re-synced when
+  // the profile loads, so an already-enabled account shows as on.
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+  const [twoFactorLoading, setTwoFactorLoading] = useState(false);
 
   useEffect(() => { fetchCredits(); }, [fetchCredits]);
+
+  useEffect(() => {
+    setTwoFactorEnabled(user?.twoFactorEnabled === true);
+  }, [user?.twoFactorEnabled]);
+
+  const handleToggleTwoFactor = async () => {
+    setTwoFactorLoading(true);
+    try {
+      const data = await toggleTwoFactor(!twoFactorEnabled);
+      setTwoFactorEnabled(data.twoFactorEnabled === true);
+      toast.success(data.twoFactorEnabled
+        ? 'Two-step verification enabled. Signing in will now also need a code sent to your email.'
+        : 'Two-step verification disabled.');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Could not update two-step verification. Please try again.');
+    } finally {
+      setTwoFactorLoading(false);
+    }
+  };
 
   const dashboardLoading = creditsLoading;
 
@@ -201,6 +225,32 @@ export default function Dashboard() {
           >
             <FiDownload size={14} />
             {downloading ? 'Preparing…' : 'Download my data'}
+          </button>
+        </div>
+
+        {/* Security — two-step verification (email OTP). */}
+        <div className="mt-4 bg-white dark:bg-ink-card border border-gray-200 dark:border-slate-800 rounded-2xl p-5 flex items-center justify-between gap-4 flex-wrap">
+          <div>
+            <h2 className="text-sm font-bold text-gray-900 dark:text-white">Two-step verification</h2>
+            <p className="text-xs text-gray-500 dark:text-slate-400 mt-1 max-w-md leading-relaxed">
+              When on, signing in also needs a 6-digit code sent to your email.
+              {user?.isAdmin ? ' Required for admin accounts and cannot be turned off.' : ''}
+            </p>
+          </div>
+          <button
+            onClick={handleToggleTwoFactor}
+            disabled={twoFactorLoading || user?.isAdmin === true}
+            className={`text-sm font-bold px-4 py-2.5 rounded-xl transition flex-shrink-0 disabled:opacity-60 ${
+              twoFactorEnabled
+                ? 'bg-teak-600 hover:bg-teak-700 text-white'
+                : 'bg-gray-100 dark:bg-ink-raised hover:bg-gray-200 dark:hover:bg-ink-raised text-gray-700 dark:text-slate-200'
+            }`}
+          >
+            {twoFactorLoading
+              ? 'Saving…'
+              : twoFactorEnabled
+                ? user?.isAdmin ? 'Enabled' : 'Enabled — turn off'
+                : 'Enable'}
           </button>
         </div>
       </div>
