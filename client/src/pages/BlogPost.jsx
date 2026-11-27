@@ -47,10 +47,10 @@ export default function BlogPost() {
 
   if (!post) {
     return (
-      <main className="bg-white dark:bg-gray-950 min-h-screen flex items-center justify-center px-4">
+      <main className="bg-white dark:bg-ink-page min-h-screen flex items-center justify-center px-4">
         <div className="text-center max-w-md py-20">
           <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-3">Post not found</h1>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">
+          <p className="text-gray-600 dark:text-slate-300 mb-6">
             This blog post doesn&apos;t exist — it may have moved or the link may be wrong.
           </p>
           <Link
@@ -65,7 +65,7 @@ export default function BlogPost() {
   }
 
   return (
-    <main className="bg-white dark:bg-gray-950 min-h-screen">
+    <main className="bg-white dark:bg-ink-page min-h-screen">
       <article className="max-w-3xl mx-auto px-4 sm:px-6 pt-14 pb-20">
         <div className="flex items-center justify-between mb-8">
           <Link
@@ -104,7 +104,7 @@ export default function BlogPost() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               to="/register"
-              className="inline-flex items-center gap-2 bg-white text-indigo-700 px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-indigo-50 transition"
+              className="inline-flex items-center gap-2 bg-white dark:bg-ink-card text-indigo-700 dark:text-ink-link px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-indigo-50 dark:hover:bg-ink-raised transition"
             >
               Get started free <FiArrowRight size={14} />
             </Link>

@@ -45,24 +45,24 @@ export default function FeedbackButton() {
         {open && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 px-4">
             <motion.div initial={{ opacity: 0, scale: 0.95, y: 8 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 8 }}
-              className="bg-white rounded-2xl shadow-2xl border border-gray-100 w-full max-w-md p-6">
+              className="bg-white dark:bg-ink-card rounded-2xl shadow-2xl border border-gray-100 dark:border-slate-800 w-full max-w-md p-6">
               <div className="flex items-center justify-between mb-1">
-                <h3 className="text-base font-bold text-gray-900">Send feedback</h3>
-                <button onClick={() => setOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition">
+                <h3 className="text-base font-bold text-gray-900 dark:text-white">Send feedback</h3>
+                <button onClick={() => setOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-ink-raised text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400 transition">
                   <FiX size={16} />
                 </button>
               </div>
-              <p className="text-xs text-gray-500 mb-5">
+              <p className="text-xs text-gray-500 dark:text-slate-400 mb-5">
                 Found something wrong or have an idea? Tell us — it helps improve Penlix.
               </p>
 
               {sent ? (
                 <div className="text-center py-6">
-                  <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <FiCheck size={22} className="text-emerald-600" />
+                  <div className="w-12 h-12 bg-emerald-100 dark:bg-ink-raised rounded-full flex items-center justify-center mx-auto mb-3">
+                    <FiCheck size={22} className="text-emerald-600 dark:text-emerald-400" />
                   </div>
-                  <p className="font-bold text-gray-900 text-sm mb-1">Thanks! Your feedback was sent.</p>
-                  <p className="text-xs text-gray-500 mb-5">We read every report.</p>
+                  <p className="font-bold text-gray-900 dark:text-white text-sm mb-1">Thanks! Your feedback was sent.</p>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 mb-5">We read every report.</p>
                   <button onClick={() => setOpen(false)}
                     className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700 transition">
                     Close
@@ -70,26 +70,26 @@ export default function FeedbackButton() {
                 </div>
               ) : (
                 <form onSubmit={submit}>
-                  <p className="text-xs text-gray-500 mb-4">
-                    Page: <span className="font-mono text-gray-700 bg-gray-100 px-1.5 py-0.5 rounded">{pathname}</span>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 mb-4">
+                    Page: <span className="font-mono text-gray-700 dark:text-slate-200 bg-gray-100 dark:bg-ink-raised px-1.5 py-0.5 rounded">{pathname}</span>
                   </p>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">Type</label>
+                  <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Type</label>
                   <select value={category} onChange={(e) => setCategory(e.target.value)}
-                    className="w-full border border-gray-200 bg-gray-50 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition mb-4">
+                    className="w-full border border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-ink-page rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-ink-raised transition mb-4">
                     {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                   </select>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">
-                    Your name <span className="text-gray-400 font-normal normal-case">(optional)</span>
+                  <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">
+                    Your name <span className="text-gray-400 dark:text-slate-500 font-normal normal-case">(optional)</span>
                   </label>
                   <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Ali"
                     maxLength={100}
-                    className="w-full border border-gray-200 bg-gray-50 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition mb-4" />
-                  <label className="block text-xs font-semibold text-gray-600 mb-1.5 uppercase tracking-wide">What happened?</label>
+                    className="w-full border border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-ink-page rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-ink-raised transition mb-4" />
+                  <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">What happened?</label>
                   <textarea value={message} onChange={(e) => setMessage(e.target.value)} required maxLength={2000} rows={4}
                     placeholder="Describe the issue or your suggestion..."
-                    className="w-full border border-gray-200 bg-gray-50 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition resize-none mb-1" />
-                  <p className="text-xs text-gray-400 text-right mb-3">{message.length}/2000</p>
-                  {error && <p className="text-red-500 text-xs mb-3 bg-red-50 px-3 py-2 rounded-lg border border-red-100">{error}</p>}
+                    className="w-full border border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-ink-page rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-ink-raised transition resize-none mb-1" />
+                  <p className="text-xs text-gray-400 dark:text-slate-500 text-right mb-3">{message.length}/2000</p>
+                  {error && <p className="text-red-500 text-xs mb-3 bg-red-50 dark:bg-ink-raised px-3 py-2 rounded-lg border border-red-100">{error}</p>}
                   <button type="submit" disabled={sending}
                     className="w-full bg-indigo-600 text-white py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700 transition disabled:opacity-60 flex items-center justify-center gap-1.5 shadow-sm">
                     {sending

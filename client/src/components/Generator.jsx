@@ -171,8 +171,8 @@ const TEMPLATES = [
   {
     Icon: FiHome,
     label: 'Real Estate Blog',
-    color: 'text-emerald-600',
-    bg: 'bg-emerald-50',
+    color: 'text-emerald-600 dark:text-emerald-400',
+    bg: 'bg-emerald-50 dark:bg-ink-raised',
     form: {
       type: 'blog', tone: 'professional', length: 'medium', language: 'english_us', format: 'headings',
       prompt: 'Write a compelling blog post about why 2026 is the best year to invest in real estate. Include 3 bullet points on market trends, mention rising demand in suburban areas, and end with a strong call to action encouraging first-time investors to act now.',
@@ -182,8 +182,8 @@ const TEMPLATES = [
   {
     Icon: FiSmartphone,
     label: 'Social Media Post',
-    color: 'text-violet-600',
-    bg: 'bg-violet-50',
+    color: 'text-violet-600 dark:text-violet-400',
+    bg: 'bg-violet-50 dark:bg-ink-raised',
     form: {
       type: 'social', tone: 'friendly', length: 'short', language: 'english_us', format: 'paragraphs',
       prompt: 'Create a high-engagement Instagram caption for a motivational business post. Use 2-3 relevant emojis, write a hook in the first line, and end with a question to drive comments. Target audience: entrepreneurs aged 25-40.',
@@ -193,8 +193,8 @@ const TEMPLATES = [
   {
     Icon: FiMail,
     label: 'Cold Email',
-    color: 'text-indigo-600',
-    bg: 'bg-indigo-50',
+    color: 'text-indigo-600 dark:text-ink-link',
+    bg: 'bg-indigo-50 dark:bg-ink-raised',
     form: {
       type: 'email', subtype: 'cold_outreach', tone: 'professional', length: 'short', language: 'english_us', format: 'paragraphs',
       prompt: 'Write a cold outreach email to a potential B2B SaaS client. Include a personalized opener, state the value proposition in 2 sentences, and close with a soft CTA to schedule a 15-minute discovery call. Keep it under 150 words.',
@@ -204,8 +204,8 @@ const TEMPLATES = [
   {
     Icon: FiBriefcase,
     label: 'Cover Letter',
-    color: 'text-amber-600',
-    bg: 'bg-amber-50',
+    color: 'text-amber-600 dark:text-amber-400',
+    bg: 'bg-amber-50 dark:bg-ink-raised',
     form: {
       type: 'cover_letter', tone: 'professional', length: 'medium', language: 'english_us', format: 'paragraphs',
       prompt: 'Write a cover letter for a frontend developer role. Highlight React and TypeScript experience and a passion for accessible, fast user interfaces.',
@@ -315,7 +315,7 @@ const TUNE_ACTIONS = [
   { key: 'reduce_hype', label: '🎯 Reduce Hype' },
 ];
 
-const selectClass = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500';
+const selectClass = 'w-full border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-slate-100 bg-white dark:bg-ink-card focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500';
 
 const stripMarkers = (text) => text.replace(/\[IMAGE:\d+\]/g, '').replace(/\n{3,}/g, '\n\n').trim();
 
@@ -730,22 +730,22 @@ export default function Generator() {
             const img = shownImages[parseInt(match[1])];
             if (!img) return null;
             return (
-              <div key={i} className="my-5 rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+              <div key={i} className="my-5 rounded-xl overflow-hidden border border-gray-100 dark:border-slate-800 shadow-sm">
                 <img
                   src={img.dataUrl || img.url}
                   alt={img.alt}
                   className="w-full object-cover max-h-72"
                   loading="lazy"
                 />
-                <div className="bg-gray-50 px-3 py-2 space-y-0.5">
+                <div className="bg-gray-50 dark:bg-ink-page px-3 py-2 space-y-0.5">
                   {img.extractedText && (
-                    <p className="text-xs text-gray-600 italic">
+                    <p className="text-xs text-gray-600 dark:text-slate-400 italic">
                       📝 <span className="font-medium">Text in image (EN):</span> "{img.extractedText}"
                     </p>
                   )}
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-gray-400 dark:text-slate-500">
                     📷{' '}
-                    <a href={img.creditUrl} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-gray-600 transition">
+                    <a href={img.creditUrl} target="_blank" rel="noopener noreferrer" className="hover:underline hover:text-gray-600 dark:hover:text-slate-400 transition">
                       {img.credit}
                     </a>
                   </p>
@@ -765,22 +765,22 @@ export default function Generator() {
     <div className="space-y-5">
       {/* Quick Templates */}
       <div>
-        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Quick Templates</p>
-        <div className="grid grid-cols-3 gap-3">
+        <p className="text-xs font-semibold text-gray-400 dark:text-slate-500 uppercase tracking-wide mb-3">Quick Templates</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {TEMPLATES.map(({ Icon, label, color, bg, form: tplForm }) => (
             <motion.button
               key={label}
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => applyTemplate({ form: tplForm })}
-              className="bg-white border border-gray-200 rounded-xl p-4 text-left hover:border-indigo-300 hover:shadow-md transition flex items-start gap-3"
+              className="bg-white dark:bg-ink-card border border-gray-200 dark:border-slate-800 rounded-xl p-4 text-left hover:border-indigo-300 hover:shadow-md transition flex items-start gap-3 min-w-0"
             >
               <div className={`w-9 h-9 ${bg} rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5`}>
                 <Icon size={16} className={color} />
               </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-800 leading-tight">{label}</p>
-                <p className="text-xs text-gray-400 mt-0.5">Quick template</p>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-gray-800 dark:text-slate-100 leading-tight">{label}</p>
+                <p className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">Quick template</p>
               </div>
             </motion.button>
           ))}
@@ -788,8 +788,8 @@ export default function Generator() {
       </div>
 
       {/* Generator Form */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-5">Generate Content</h2>
+      <div className="bg-white dark:bg-ink-card rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-6">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-5">Generate Content</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Row 1: Type, Tone, Length, Format */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -800,7 +800,7 @@ export default function Generator() {
               { name: 'format', label: 'Format', options: FORMATS },
             ].map(({ name, label, options }) => (
               <div key={name}>
-                <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
+                <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">{label}</label>
                 <select name={name} value={form[name]} onChange={handleChange} className={selectClass}>
                   {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                 </select>
@@ -811,14 +811,14 @@ export default function Generator() {
           {/* Purpose + Reading level */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Purpose <span className="text-gray-400 font-normal">(optional — sets the structure and required details)</span></label>
+              <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">Purpose <span className="text-gray-400 dark:text-slate-500 font-normal">(optional — sets the structure and required details)</span></label>
               <select name="purpose" value={form.purpose || ''} onChange={handleChange} className={selectClass}>
                 <option value="">General {form.type}</option>
                 {(PURPOSES[form.type] || []).map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Reading level</label>
+              <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">Reading level</label>
               <select name="readingLevel" value={form.readingLevel || 'standard'} onChange={handleChange} className={selectClass}>
                 {READING_LEVELS.map((l) => <option key={l} value={l}>{l.charAt(0).toUpperCase() + l.slice(1)}</option>)}
               </select>
@@ -827,18 +827,18 @@ export default function Generator() {
 
           {/* Writing sample — voice matching (optional, max 1500 chars) */}
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Writing sample <span className="text-gray-400 font-normal">(optional — the AI matches its voice, never copies its content)</span></label>
+            <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">Writing sample <span className="text-gray-400 dark:text-slate-500 font-normal">(optional — the AI matches its voice, never copies its content)</span></label>
             <textarea
               name="writingSample" value={form.writingSample || ''} onChange={handleChange} rows={2} maxLength={1500}
               placeholder="Paste a paragraph you wrote, in your own voice..."
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none placeholder-gray-400"
+              className="w-full border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none placeholder-gray-400 dark:placeholder-slate-500"
             />
-            <div className="text-xs text-gray-400 mt-1">{(form.writingSample || '').length} / 1500 characters</div>
+            <div className="text-xs text-gray-400 dark:text-slate-500 mt-1">{(form.writingSample || '').length} / 1500 characters</div>
           </div>
 
           {/* Row 2: Language (grouped) */}
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Language & Dialect <span className="text-gray-400 font-normal">(23 options)</span></label>
+            <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">Language & Dialect <span className="text-gray-400 dark:text-slate-500 font-normal">(23 options)</span></label>
             <select name="language" value={form.language} onChange={handleChange} className={selectClass}>
               {LANGUAGES.map(({ group, options }) => (
                 <optgroup key={group} label={group}>
@@ -851,7 +851,7 @@ export default function Generator() {
           {/* Category / style — email categories and social captions */}
           {form.type === 'email' && (
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Email Category</label>
+              <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">Email Category</label>
               <select name="subtype" value={form.subtype || 'general'} onChange={handleChange} className={selectClass}>
                 {EMAIL_SUBTYPES.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
@@ -859,7 +859,7 @@ export default function Generator() {
           )}
           {form.type === 'social' && (
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Social Style</label>
+              <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">Social Style</label>
               <select name="subtype" value={form.subtype || 'post'} onChange={handleChange} className={selectClass}>
                 {SOCIAL_SUBTYPES.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
               </select>
@@ -868,8 +868,8 @@ export default function Generator() {
 
           {/* Prompt + voice input */}
           <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-xs font-medium text-gray-600">Prompt</label>
+            <div className="flex items-center justify-between gap-2 mb-1">
+              <label className="block text-xs font-medium text-gray-600 dark:text-slate-400">Prompt</label>
               <button
                 type="button"
                 onClick={startVoice}
@@ -877,8 +877,8 @@ export default function Generator() {
                 title={voiceSupported ? (listening ? 'Tap to stop listening' : 'Tap and speak your prompt') : 'Voice input is not supported in this browser — try Chrome'}
                 className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg font-medium transition ${
                   listening
-                    ? 'bg-red-100 text-red-700 animate-pulse'
-                    : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100'
+                    ? 'bg-red-100 dark:bg-ink-raised text-red-700 dark:text-red-300 animate-pulse'
+                    : 'bg-indigo-50 dark:bg-ink-raised text-indigo-700 dark:text-ink-link hover:bg-indigo-100 dark:hover:bg-ink-raised'
                 } disabled:opacity-40`}
               >
                 <FiMic size={12} /> {listening ? 'Listening… tap to stop' : 'Speak'}
@@ -887,9 +887,9 @@ export default function Generator() {
             <textarea
               name="prompt" value={form.prompt} onChange={handleChange} rows={4} required={!imageFile}
               placeholder="Describe what you want to generate, or pick a quick template above... (or tap Speak and say it — with a photo attached, you can leave this blank)"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none placeholder-gray-400"
+              className="w-full border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2.5 text-sm text-gray-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 resize-none placeholder-gray-400 dark:placeholder-slate-500"
             />
-           <div className="flex items-center justify-between mt-1.5 text-xs text-gray-400">
+           <div className="flex items-center justify-between mt-1.5 text-xs text-gray-400 dark:text-slate-500">
              <span>{form.prompt.length.toLocaleString()} characters</span>
              <span>{form.prompt.trim() ? form.prompt.trim().split(/\s+/).length.toLocaleString() : 0} words</span>
            </div>
@@ -897,21 +897,21 @@ export default function Generator() {
 
           {/* Image input — optional context for the generation */}
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">
-              Image (optional) <span className="text-gray-400 font-normal">— JPG, PNG or WebP, max 5 MB. The AI writes about what is in your photo.</span>
+            <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">
+              Image (optional) <span className="text-gray-400 dark:text-slate-500 font-normal">— JPG, PNG or WebP, max 5 MB. The AI writes about what is in your photo.</span>
             </label>
             {imagePreview ? (
               <div className="flex items-start gap-3">
-                <img src={imagePreview} alt="Upload preview" className="w-28 h-20 object-cover rounded-lg border border-gray-200" />
-                <div className="flex flex-col gap-1.5">
-                  <p className="text-xs text-gray-600 truncate max-w-[220px]">{imageFile?.name}</p>
-                  <button type="button" onClick={clearImage} className="flex items-center gap-1 text-xs text-red-600 hover:text-red-800 font-medium w-fit">
+                <img src={imagePreview} alt="Upload preview" className="w-28 h-20 object-cover rounded-lg border border-gray-200 dark:border-slate-800" />
+                <div className="flex flex-col gap-1.5 min-w-0">
+                  <p className="text-xs text-gray-600 dark:text-slate-400 truncate max-w-full">{imageFile?.name}</p>
+                  <button type="button" onClick={clearImage} className="flex items-center gap-1 text-xs text-red-600 dark:text-red-400 hover:text-red-800 font-medium w-fit">
                     <FiX size={12} /> Remove image
                   </button>
                 </div>
               </div>
             ) : (
-              <label className="flex items-center justify-center gap-2 w-full border border-dashed border-gray-300 rounded-lg px-3 py-3 text-sm text-gray-500 hover:border-indigo-400 hover:text-indigo-600 transition cursor-pointer">
+              <label className="flex items-center justify-center gap-2 w-full border border-dashed border-gray-300 dark:border-slate-700 rounded-lg px-3 py-3 text-sm text-gray-500 dark:text-slate-400 hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-ink-link transition cursor-pointer">
                 <FiUpload size={14} />
                 <span>Upload an image to write about</span>
                 <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImageSelect} className="hidden" />
@@ -921,35 +921,35 @@ export default function Generator() {
 
           {/* Required details for the selected type + purpose */}
           <div>
-            <p className="text-xs font-medium text-gray-600 mb-2">
-              Required details <span className="text-gray-400 font-normal">(for {form.purpose || form.type} — no placeholders are used, so these must be real)</span>
+            <p className="text-xs font-medium text-gray-600 dark:text-slate-400 mb-2">
+              Required details <span className="text-gray-400 dark:text-slate-500 font-normal">(for {form.purpose || form.type} — no placeholders are used, so these must be real)</span>
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {fieldsForForm(form).map((field) => (
                 <div key={field.name}>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                  <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">
                     {field.label} <span className="text-red-500">*</span>
                   </label>
                   <input
                     name={field.name} value={form[field.name] || ''} onChange={handleChange}
                     placeholder={field.placeholder}
-                    className={`w-full border rounded-lg px-3 py-2 text-sm text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400 ${fieldErrors[field.name] ? 'border-red-400' : 'border-gray-200'}`}
+                    className={`w-full border rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-slate-100 bg-white dark:bg-ink-card focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400 dark:placeholder-slate-500 ${fieldErrors[field.name] ? 'border-red-400' : 'border-gray-200 dark:border-slate-800'}`}
                   />
                   {fieldErrors[field.name] && (
-                    <p className="text-xs text-red-600 mt-1">{fieldErrors[field.name]}</p>
+                    <p className="text-xs text-red-600 dark:text-red-400 mt-1">{fieldErrors[field.name]}</p>
                   )}
                 </div>
               ))}
             </div>
             {fieldsForForm(form).some((f) => f.name === 'applyLink' || f.name === 'contact') && (
-              <p className="text-xs text-gray-400 mt-2">Apply link or contact — at least one of the two is required.</p>
+              <p className="text-xs text-gray-400 dark:text-slate-500 mt-2">Apply link or contact — at least one of the two is required.</p>
             )}
           </div>
 
           {/* Error */}
           {error && (
             <div className={`flex items-start gap-2.5 px-4 py-3 rounded-xl text-sm ${
-              isRateLimit ? 'bg-amber-50 border border-amber-200 text-amber-800' : 'bg-red-50 border border-red-200 text-red-700'
+              isRateLimit ? 'bg-amber-50 border border-amber-200 text-amber-800' : 'bg-red-50 dark:bg-ink-raised border border-red-200 dark:border-red-900 text-red-700 dark:text-red-300'
             }`}>
               {isRateLimit
                 ? <FiRefreshCw size={15} className="mt-0.5 flex-shrink-0 text-amber-500" />
@@ -983,12 +983,12 @@ export default function Generator() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.22 }}
-            className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-3"
+            className="bg-white dark:bg-ink-card rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6 space-y-3"
           >
             {[1, 0.7, 0.85, 0.55].map((w, i) => (
               <motion.div
                 key={i}
-                className="h-3 rounded-full bg-gray-100"
+                className="h-3 rounded-full bg-gray-100 dark:bg-ink-raised"
                 style={{ width: `${w * 100}%` }}
                 animate={{ opacity: [0.4, 0.85, 0.4] }}
                 transition={{ duration: 1.4, repeat: Infinity, delay: i * 0.18, ease: 'easeInOut' }}
@@ -1003,7 +1003,7 @@ export default function Generator() {
                   transition={{ duration: 0.65, repeat: Infinity, delay: i * 0.13, ease: 'easeInOut' }}
                 />
               ))}
-              <span className="text-xs text-gray-400 ml-1">AI is writing…</span>
+              <span className="text-xs text-gray-400 dark:text-slate-500 ml-1">AI is writing…</span>
             </div>
           </motion.div>
         )}
@@ -1019,35 +1019,35 @@ export default function Generator() {
             className="grid grid-cols-1 lg:grid-cols-3 gap-4"
           >
             {/* Main output */}
-            <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <div className="lg:col-span-2 bg-white dark:bg-ink-card rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6">
               <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
                 <div className="flex items-center gap-2">
-                  <h3 className="font-semibold text-gray-900">Generated Output</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">Generated Output</h3>
                   {hasInlineImages(output) && shownImages.length > 0 && (
-                    <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+                    <span className="text-xs bg-emerald-100 dark:bg-ink-raised text-emerald-700 dark:text-emerald-300 px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
                       <FiImage size={10} /> {shownImages.length} images embedded
                     </span>
                   )}
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <FontPicker script={script} value={font} onChange={setFont} />
-                  <button onClick={handleCopy} className="flex items-center gap-1.5 text-xs bg-gray-100 hover:bg-indigo-50 hover:text-indigo-700 text-gray-600 px-3 py-1.5 rounded-lg transition font-medium">
+                  <button onClick={handleCopy} className="flex items-center gap-1.5 text-xs bg-gray-100 dark:bg-ink-raised hover:bg-indigo-50 dark:hover:bg-ink-raised hover:text-indigo-700 dark:hover:text-ink-link text-gray-600 dark:text-slate-400 px-3 py-1.5 rounded-lg transition font-medium">
                     {copied ? <><FiCheck size={12} /> Copied!</> : <><FiCopy size={12} /> Copy</>}
                   </button>
-                  <button onClick={handleDownloadTxt} className="flex items-center gap-1.5 text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition font-medium">
+                  <button onClick={handleDownloadTxt} className="flex items-center gap-1.5 text-xs bg-gray-100 dark:bg-ink-raised hover:bg-gray-200 dark:hover:bg-ink-raised text-gray-600 dark:text-slate-400 px-3 py-1.5 rounded-lg transition font-medium">
                     <FiDownload size={12} /> TXT
                   </button>
-                  <button onClick={handleDownloadPDF} className="flex items-center gap-1.5 text-xs bg-red-50 hover:bg-red-100 text-red-600 px-3 py-1.5 rounded-lg transition font-medium">
+                  <button onClick={handleDownloadPDF} className="flex items-center gap-1.5 text-xs bg-red-50 dark:bg-ink-raised hover:bg-red-100 text-red-600 dark:text-red-400 px-3 py-1.5 rounded-lg transition font-medium">
                     <FiFileText size={12} /> PDF
                   </button>
-                  <button onClick={handleDownloadDocx} className="flex items-center gap-1.5 text-xs bg-blue-50 hover:bg-blue-100 text-blue-600 px-3 py-1.5 rounded-lg transition font-medium">
+                  <button onClick={handleDownloadDocx} className="flex items-center gap-1.5 text-xs bg-blue-50 dark:bg-ink-raised hover:bg-blue-100 dark:hover:bg-ink-raised text-blue-600 dark:text-blue-400 px-3 py-1.5 rounded-lg transition font-medium">
                     <FiFileText size={12} /> DOCX
                   </button>
                 </div>
               </div>
 
               <div
-                className="bg-gray-50 border border-gray-100 rounded-xl p-4 text-sm text-gray-800 leading-relaxed min-h-[140px]"
+                className="bg-gray-50 dark:bg-ink-page border border-gray-100 dark:border-slate-800 rounded-xl p-4 text-sm text-gray-800 dark:text-slate-100 leading-relaxed min-h-[140px] break-words"
                 dir={dir}
                 style={{ fontFamily: stack, lineHeight }}
               >
@@ -1058,17 +1058,17 @@ export default function Generator() {
               {/* Quality check result */}
               {!loading && qualityReport && (
                 qualityReport.passed ? (
-                  <div className="mt-3 flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm bg-emerald-50 border border-emerald-200 text-emerald-700">
+                  <div className="mt-3 flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm bg-emerald-50 dark:bg-ink-raised border border-emerald-200 dark:border-emerald-900 text-emerald-700 dark:text-emerald-300">
                     <FiCheck size={15} className="flex-shrink-0" />
                     <span className="font-semibold">Quality check passed</span>
                     {qualityReport.retried && <span className="text-xs opacity-80">(fixed on retry)</span>}
                   </div>
                 ) : (
-                  <div className="mt-3 px-4 py-3 rounded-xl text-sm bg-amber-50 border border-amber-200 text-amber-800">
+                  <div className="mt-3 px-4 py-3 rounded-xl text-sm bg-amber-50 dark:bg-ink-raised border border-amber-200 dark:border-amber-900 text-amber-800 dark:text-amber-300">
                     <p className="font-semibold flex items-center gap-2">
                       <FiAlertCircle size={15} /> Quality warnings{qualityReport.retried ? ' (still present after retry)' : ''}
                     </p>
-                    <ul className="list-disc list-inside text-xs mt-1.5 space-y-0.5">
+                    <ul className="list-disc list-inside text-xs mt-1.5 space-y-0.5 break-words">
                       {qualityReport.issues.map((issue, i) => <li key={i}>{issue}</li>)}
                     </ul>
                   </div>
@@ -1077,11 +1077,11 @@ export default function Generator() {
 
               {/* Social Share */}
               {!loading && output && (
-                <div className="mt-3 flex gap-2">
+                <div className="mt-3 flex flex-wrap gap-2">
                   <button onClick={handleShareLinkedIn} className="flex items-center gap-1.5 text-xs bg-[#0077b5]/10 hover:bg-[#0077b5]/20 text-[#0077b5] px-3 py-1.5 rounded-lg transition font-medium">
                     <FiShare2 size={11} /> LinkedIn
                   </button>
-                  <button onClick={handleShareTwitter} className="flex items-center gap-1.5 text-xs bg-sky-50 hover:bg-sky-100 text-sky-600 px-3 py-1.5 rounded-lg transition font-medium">
+                  <button onClick={handleShareTwitter} className="flex items-center gap-1.5 text-xs bg-sky-50 dark:bg-ink-raised hover:bg-sky-100 dark:hover:bg-ink-raised text-sky-600 dark:text-sky-400 px-3 py-1.5 rounded-lg transition font-medium">
                     <FiShare2 size={11} /> Twitter/X
                   </button>
                 </div>
@@ -1089,8 +1089,8 @@ export default function Generator() {
 
               {/* Tune buttons */}
               {!loading && output && (
-                <div className="mt-4 pt-4 border-t border-gray-100">
-                  <p className="text-xs text-gray-400 font-medium mb-2 flex items-center gap-1.5">
+                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-800">
+                  <p className="text-xs text-gray-400 dark:text-slate-500 font-medium mb-2 flex items-center gap-1.5">
                     <FiSliders size={11} /> Refine output — no credits used
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -1099,7 +1099,7 @@ export default function Generator() {
                         key={key}
                         onClick={() => handleTune(key)}
                         disabled={!!tuning}
-                        className="text-xs border border-gray-200 bg-white text-gray-700 hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 px-3 py-1.5 rounded-lg transition disabled:opacity-40 font-medium"
+                        className="text-xs border border-gray-200 dark:border-slate-800 bg-white dark:bg-ink-card text-gray-700 dark:text-slate-200 hover:border-indigo-400 hover:text-indigo-600 dark:hover:text-ink-link hover:bg-indigo-50 dark:hover:bg-ink-raised px-3 py-1.5 rounded-lg transition disabled:opacity-40 font-medium"
                       >
                         {tuning === key
                           ? <span className="flex items-center gap-1"><span className="animate-spin h-3 w-3 border border-indigo-400 border-t-transparent rounded-full" /> Rewriting...</span>
@@ -1115,46 +1115,46 @@ export default function Generator() {
             {/* Right panel: SEO + sidebar images (non-blog) */}
             <div className="space-y-4">
               {/* SEO Panel */}
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+              <div className="bg-white dark:bg-ink-card rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-5">
                 <div className="flex items-center gap-2 mb-4">
-                  <div className="w-7 h-7 bg-indigo-100 rounded-lg flex items-center justify-center">
-                    <FiZap size={13} className="text-indigo-600" />
+                  <div className="w-7 h-7 bg-indigo-100 dark:bg-ink-raised rounded-lg flex items-center justify-center">
+                    <FiZap size={13} className="text-indigo-600 dark:text-ink-link" />
                   </div>
-                  <h3 className="font-semibold text-gray-900 text-sm">SEO Package</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white text-sm">SEO Package</h3>
                 </div>
 
                 {loading && !seoData && (
                   <div className="space-y-2.5">
                     {[1, 0.8, 0.6].map((w, i) => (
-                      <div key={i} className="h-2.5 bg-gray-100 rounded-full animate-pulse" style={{ width: `${w * 100}%` }} />
+                      <div key={i} className="h-2.5 bg-gray-100 dark:bg-ink-raised rounded-full animate-pulse" style={{ width: `${w * 100}%` }} />
                     ))}
-                    <p className="text-xs text-gray-400 mt-2">Generating SEO metadata...</p>
+                    <p className="text-xs text-gray-400 dark:text-slate-500 mt-2">Generating SEO metadata...</p>
                   </div>
                 )}
 
                 {!loading && !seoData && (
-                  <p className="text-xs text-gray-400">SEO metadata appears here after generation.</p>
+                  <p className="text-xs text-gray-400 dark:text-slate-500">SEO metadata appears here after generation.</p>
                 )}
 
                 {seoData && (
                   <div className="space-y-3">
                     <div>
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Meta Title</p>
-                      <div className="bg-indigo-50 border border-indigo-100 rounded-lg px-3 py-2">
-                        <p className="text-sm text-gray-800 font-medium">{seoData.title || '—'}</p>
+                      <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1">Meta Title</p>
+                      <div className="bg-indigo-50 dark:bg-ink-raised border border-indigo-100 rounded-lg px-3 py-2">
+                        <p className="text-sm text-gray-800 dark:text-slate-100 font-medium">{seoData.title || '—'}</p>
                       </div>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Meta Description</p>
-                      <div className="bg-gray-50 border border-gray-100 rounded-lg px-3 py-2">
-                        <p className="text-xs text-gray-700 leading-relaxed">{seoData.description || '—'}</p>
+                      <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1">Meta Description</p>
+                      <div className="bg-gray-50 dark:bg-ink-page border border-gray-100 dark:border-slate-800 rounded-lg px-3 py-2">
+                        <p className="text-xs text-gray-700 dark:text-slate-200 leading-relaxed">{seoData.description || '—'}</p>
                       </div>
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">Keywords</p>
+                      <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Keywords</p>
                       <div className="flex flex-wrap gap-1.5">
                         {(seoData.keywords || []).map((kw, i) => (
-                          <span key={i} className="bg-indigo-100 text-indigo-700 text-xs px-2.5 py-0.5 rounded-full font-medium">{kw}</span>
+                          <span key={i} className="bg-indigo-100 dark:bg-ink-raised text-indigo-700 dark:text-ink-link text-xs px-2.5 py-0.5 rounded-full font-medium">{kw}</span>
                         ))}
                       </div>
                     </div>
@@ -1167,20 +1167,20 @@ export default function Generator() {
                 <motion.div
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5"
+                  className="bg-white dark:bg-ink-card rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-5"
                 >
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 bg-violet-100 rounded-lg flex items-center justify-center">
+                      <div className="w-7 h-7 bg-violet-100 dark:bg-ink-raised rounded-lg flex items-center justify-center">
                         <span className="text-xs">⚡</span>
                       </div>
-                      <h3 className="font-semibold text-gray-900 text-sm">Reality Check</h3>
+                      <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Reality Check</h3>
                     </div>
                     {realityCheck.rating != null && (
                       <div className={`text-sm font-bold px-2.5 py-1 rounded-lg ${
-                        realityCheck.rating >= 8 ? 'bg-emerald-100 text-emerald-700' :
-                        realityCheck.rating >= 6 ? 'bg-amber-100 text-amber-700' :
-                        'bg-red-100 text-red-700'
+                        realityCheck.rating >= 8 ? 'bg-emerald-100 dark:bg-ink-raised text-emerald-700 dark:text-emerald-300' :
+                        realityCheck.rating >= 6 ? 'bg-amber-100 dark:bg-ink-raised text-amber-700 dark:text-amber-300' :
+                        'bg-red-100 dark:bg-ink-raised text-red-700 dark:text-red-300'
                       }`}>
                         {realityCheck.rating}/10
                       </div>
@@ -1190,23 +1190,23 @@ export default function Generator() {
                     {realityCheck.pillars.map((pillar) => {
                       const pct = Math.round((pillar.score / 10) * 100);
                       const color = pillar.score >= 8 ? 'bg-emerald-500' : pillar.score >= 6 ? 'bg-amber-400' : 'bg-red-400';
-                      const textColor = pillar.score >= 8 ? 'text-emerald-700' : pillar.score >= 6 ? 'text-amber-700' : 'text-red-600';
+                      const textColor = pillar.score >= 8 ? 'text-emerald-700 dark:text-emerald-300' : pillar.score >= 6 ? 'text-amber-700 dark:text-amber-300' : 'text-red-600 dark:text-red-400';
                       return (
                         <div key={pillar.name}>
                           <div className="flex items-center justify-between mb-1">
-                            <span className="text-xs font-medium text-gray-700">{pillar.name}</span>
+                            <span className="text-xs font-medium text-gray-700 dark:text-slate-200">{pillar.name}</span>
                             <span className={`text-xs font-bold ${textColor}`}>{pillar.score}/10</span>
                           </div>
-                          <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden mb-1">
+                          <div className="h-1.5 bg-gray-100 dark:bg-ink-raised rounded-full overflow-hidden mb-1">
                             <div className={`h-full ${color} rounded-full transition-all`} style={{ width: `${pct}%` }} />
                           </div>
-                          <p className="text-xs text-gray-400 leading-snug">{pillar.verdict}</p>
+                          <p className="text-xs text-gray-400 dark:text-slate-500 leading-snug">{pillar.verdict}</p>
                         </div>
                       );
                     })}
                   </div>
                   {realityCheck.rating != null && (
-                    <p className="text-xs text-gray-400 mt-3 pt-3 border-t border-gray-100 text-center">
+                    <p className="text-xs text-gray-400 dark:text-slate-500 mt-3 pt-3 border-t border-gray-100 dark:border-slate-800 text-center">
                       Avg score vs leading AI models
                     </p>
                   )}
@@ -1218,16 +1218,16 @@ export default function Generator() {
                 <motion.div
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5"
+                  className="bg-white dark:bg-ink-card rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-5"
                 >
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 bg-emerald-100 rounded-lg flex items-center justify-center">
-                        <FiImage size={13} className="text-emerald-600" />
+                      <div className="w-7 h-7 bg-emerald-100 dark:bg-ink-raised rounded-lg flex items-center justify-center">
+                        <FiImage size={13} className="text-emerald-600 dark:text-emerald-400" />
                       </div>
-                      <h3 className="font-semibold text-gray-900 text-sm">Stock Photos</h3>
+                      <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Stock Photos</h3>
                     </div>
-                    <button onClick={() => setShowImages(!showImages)} className="text-xs text-indigo-600 hover:text-indigo-800 font-medium">
+                    <button onClick={() => setShowImages(!showImages)} className="text-xs text-indigo-600 dark:text-ink-link hover:text-indigo-800 dark:hover:text-ink-link font-medium">
                       {showImages ? 'Hide' : 'Show'}
                     </button>
                   </div>
@@ -1237,14 +1237,14 @@ export default function Generator() {
                         {images.map((img, i) => (
                           <a key={i} href={img.photographerUrl} target="_blank" rel="noopener noreferrer" className="block group">
                             <img src={img.thumb || img.url} alt={img.alt} className="w-full h-24 object-cover rounded-lg group-hover:opacity-90 transition" />
-                            <p className="text-xs text-gray-400 mt-1">📷 {img.photographer} · Unsplash</p>
+                            <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">📷 {img.photographer} · Unsplash</p>
                           </a>
                         ))}
                       </motion.div>
                     )}
                   </AnimatePresence>
                   {!showImages && (
-                    <p className="text-xs text-gray-400">{images.length} photos matched your content.</p>
+                    <p className="text-xs text-gray-400 dark:text-slate-500">{images.length} photos matched your content.</p>
                   )}
                 </motion.div>
               )}
@@ -1257,19 +1257,19 @@ export default function Generator() {
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
+            className="bg-white dark:bg-ink-card rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6"
           >
             <div className="flex items-center gap-2 mb-1">
-              <div className="w-7 h-7 bg-emerald-100 rounded-lg flex items-center justify-center">
-                <FiImage size={13} className="text-emerald-600" />
+              <div className="w-7 h-7 bg-emerald-100 dark:bg-ink-raised rounded-lg flex items-center justify-center">
+                <FiImage size={13} className="text-emerald-600 dark:text-emerald-400" />
               </div>
-              <h3 className="font-semibold text-gray-900 text-sm">Choose blog images</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Choose blog images</h3>
             </div>
-            <p className="text-xs text-gray-400 mb-4">Tap a photo to use it in that spot. Your choice is saved with this post.</p>
+            <p className="text-xs text-gray-400 dark:text-slate-500 mb-4">Tap a photo to use it in that spot. Your choice is saved with this post.</p>
             <div className="space-y-4">
               {shownImages.map((current, slot) => (
                 <div key={slot}>
-                  <p className="text-xs font-medium text-gray-600 mb-2">Image {slot + 1} in your blog</p>
+                  <p className="text-xs font-medium text-gray-600 dark:text-slate-400 mb-2">Image {slot + 1} in your blog</p>
                   <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                     {imageOptions.map((opt, oi) => {
                       const selected = current.url === opt.url;
@@ -1291,7 +1291,7 @@ export default function Generator() {
                       );
                     })}
                   </div>
-                  <p className="text-xs text-gray-400 mt-1.5">📷 {current.credit || current.photographer || 'Unsplash'}</p>
+                  <p className="text-xs text-gray-400 dark:text-slate-500 mt-1.5">📷 {current.credit || current.photographer || 'Unsplash'}</p>
                 </div>
               ))}
             </div>

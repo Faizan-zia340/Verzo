@@ -9,7 +9,7 @@ import { SUGGESTION_LANGUAGES } from '../utils/suggestionLanguages.js';
 // "Suggest a better translation" — lives on blog posts. A suggestion is
 // free, costs no credit, and goes to the admin review queue; it only
 // reaches the glossary after an admin approves it.
-const inputClass = 'w-full border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-gray-100 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500';
+const inputClass = 'w-full border border-gray-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-slate-100 bg-white dark:bg-ink-raised focus:outline-none focus:ring-2 focus:ring-indigo-500';
 
 export default function SuggestTranslation({ postLanguage }) {
   const { user } = useAuth();
@@ -20,9 +20,9 @@ export default function SuggestTranslation({ postLanguage }) {
 
   if (!user) {
     return (
-      <div className="mt-14 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6">
+      <div className="mt-14 bg-white dark:bg-ink-card border border-gray-200 dark:border-slate-800 rounded-2xl p-6">
         <h3 className="font-bold text-gray-900 dark:text-white mb-1">Suggest a better translation</h3>
-        <p className="text-sm text-gray-600 dark:text-gray-300">
+        <p className="text-sm text-gray-600 dark:text-slate-300">
           Know a better word in your language?{' '}
           <Link to="/login" className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
             Sign in
@@ -53,9 +53,9 @@ export default function SuggestTranslation({ postLanguage }) {
   };
 
   return (
-    <div className="mt-14 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6">
+    <div className="mt-14 bg-white dark:bg-ink-card border border-gray-200 dark:border-slate-800 rounded-2xl p-6">
       <h3 className="font-bold text-gray-900 dark:text-white mb-1">Suggest a better translation</h3>
-      <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+      <p className="text-sm text-gray-600 dark:text-slate-300 mb-4">
         Know a better word in your language? Suggest it — an admin reviews it first, and approved
         suggestions go into our dictionary.
       </p>

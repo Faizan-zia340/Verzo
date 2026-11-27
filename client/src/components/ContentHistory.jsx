@@ -32,7 +32,7 @@ function HistoryItem({ item, index, onDelete, onFavorite, onRegenerate, regenera
 
   return (
     <motion.div
-      className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm"
+      className="bg-white dark:bg-ink-card border border-gray-100 dark:border-slate-800 rounded-xl p-4 shadow-sm"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.28, delay: index * 0.05, ease: 'easeOut' }}
@@ -40,11 +40,11 @@ function HistoryItem({ item, index, onDelete, onFavorite, onRegenerate, regenera
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs font-semibold bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full uppercase">{item.type}</span>
+          <span className="text-xs font-semibold bg-indigo-100 dark:bg-ink-raised text-indigo-700 dark:text-ink-link px-2 py-0.5 rounded-full uppercase">{item.type}</span>
           {item.language && item.language !== 'english' && (
-            <span className="text-xs font-semibold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full capitalize">{item.language.replace('_', ' ')}</span>
+            <span className="text-xs font-semibold bg-amber-100 dark:bg-ink-raised text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded-full capitalize">{item.language.replace('_', ' ')}</span>
           )}
-          <span className="text-xs text-gray-400">{formatDistanceToNow(new Date(item.createdAt), { addSuffix: true })}</span>
+          <span className="text-xs text-gray-400 dark:text-slate-500">{formatDistanceToNow(new Date(item.createdAt), { addSuffix: true })}</span>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
           <motion.button
@@ -70,12 +70,12 @@ function HistoryItem({ item, index, onDelete, onFavorite, onRegenerate, regenera
         </div>
       </div>
 
-      <p className="text-sm text-gray-700 font-medium mt-2 mb-3 line-clamp-2">{item.prompt}</p>
+      <p className="text-sm text-gray-700 dark:text-slate-200 font-medium mt-2 mb-3 line-clamp-2">{item.prompt}</p>
 
       <div className="flex items-center gap-3">
         <motion.button
           onClick={() => setExpanded(!expanded)}
-          className="flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 font-medium transition"
+          className="flex items-center gap-1 text-xs text-indigo-600 dark:text-ink-link hover:text-indigo-800 dark:hover:text-ink-link font-medium transition"
           whileTap={{ scale: 0.96 }}
         >
           {expanded ? <><FiChevronUp size={12} /> Hide output</> : <><FiChevronDown size={12} /> Show output</>}
@@ -93,7 +93,7 @@ function HistoryItem({ item, index, onDelete, onFavorite, onRegenerate, regenera
               <motion.button
                 onClick={() => onRegenerate(item._id)}
                 disabled={regenerating}
-                className="flex items-center gap-1 text-xs text-gray-500 hover:text-indigo-600 transition disabled:opacity-50"
+                className="flex items-center gap-1 text-xs text-gray-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-ink-link transition disabled:opacity-50"
                 whileTap={{ scale: 0.95 }}
               >
                 <FiRefreshCw size={11} className={regenerating ? 'animate-spin' : ''} />
@@ -101,14 +101,14 @@ function HistoryItem({ item, index, onDelete, onFavorite, onRegenerate, regenera
               </motion.button>
               <motion.button
                 onClick={handleCopy}
-                className="flex items-center gap-1 text-xs text-gray-500 hover:text-indigo-600 transition"
+                className="flex items-center gap-1 text-xs text-gray-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-ink-link transition"
                 whileTap={{ scale: 0.95 }}
               >
                 {copied ? <><FiCheck size={11} /> Copied</> : <><FiCopy size={11} /> Copy</>}
               </motion.button>
               <motion.button
                 onClick={handleDownload}
-                className="flex items-center gap-1 text-xs text-gray-500 hover:text-indigo-600 transition"
+                className="flex items-center gap-1 text-xs text-gray-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-ink-link transition"
                 whileTap={{ scale: 0.95 }}
               >
                 <FiDownload size={11} /> Download
@@ -128,24 +128,24 @@ function HistoryItem({ item, index, onDelete, onFavorite, onRegenerate, regenera
             className="overflow-hidden"
           >
             <div className="mt-3 space-y-3">
-              <div className="bg-gray-50 rounded-xl p-3 text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+              <div className="bg-gray-50 dark:bg-ink-page rounded-xl p-3 text-sm text-gray-700 dark:text-slate-200 whitespace-pre-wrap break-words leading-relaxed">
                 {item.output}
               </div>
               {item.seoData?.title && (
-                <div className="border border-indigo-100 rounded-xl p-3 bg-indigo-50 space-y-2">
-                  <p className="text-xs font-semibold text-indigo-700 uppercase tracking-wide">SEO Package</p>
+                <div className="border border-indigo-100 rounded-xl p-3 bg-indigo-50 dark:bg-ink-raised space-y-2">
+                  <p className="text-xs font-semibold text-indigo-700 dark:text-ink-link uppercase tracking-wide">SEO Package</p>
                   <div>
-                    <span className="text-xs text-gray-500 font-medium">Title: </span>
-                    <span className="text-xs text-gray-800">{item.seoData.title}</span>
+                    <span className="text-xs text-gray-500 dark:text-slate-400 font-medium">Title: </span>
+                    <span className="text-xs text-gray-800 dark:text-slate-100">{item.seoData.title}</span>
                   </div>
                   <div>
-                    <span className="text-xs text-gray-500 font-medium">Description: </span>
-                    <span className="text-xs text-gray-700">{item.seoData.description}</span>
+                    <span className="text-xs text-gray-500 dark:text-slate-400 font-medium">Description: </span>
+                    <span className="text-xs text-gray-700 dark:text-slate-200">{item.seoData.description}</span>
                   </div>
                   {item.seoData.keywords?.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-1">
                       {item.seoData.keywords.map((kw, i) => (
-                        <span key={i} className="bg-indigo-200 text-indigo-800 text-xs px-2 py-0.5 rounded-full">{kw}</span>
+                        <span key={i} className="bg-indigo-200 text-indigo-800 dark:text-ink-link text-xs px-2 py-0.5 rounded-full">{kw}</span>
                       ))}
                     </div>
                   )}
@@ -264,22 +264,22 @@ export default function ContentHistory() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setFavoriteOnly(false)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${!favoriteOnly ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${!favoriteOnly ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-ink-raised text-gray-500 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-ink-raised'}`}
           >
             All content
           </button>
           <button
             onClick={() => setFavoriteOnly(true)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${favoriteOnly ? 'bg-amber-400 text-white' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${favoriteOnly ? 'bg-amber-400 text-white' : 'bg-gray-100 dark:bg-ink-raised text-gray-500 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-ink-raised'}`}
           >
             <FiStar size={12} fill={favoriteOnly ? 'currentColor' : 'none'} /> Favorites
           </button>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={() => handleExport('csv')} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition">
+          <button onClick={() => handleExport('csv')} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 dark:bg-ink-raised text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-ink-raised transition">
             <FiDownload size={12} /> CSV
           </button>
-          <button onClick={() => handleExport('pdf')} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-50 text-red-700 hover:bg-red-100 transition">
+          <button onClick={() => handleExport('pdf')} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-50 dark:bg-ink-raised text-red-700 dark:text-red-300 hover:bg-red-100 transition">
             <FiFileText size={12} /> PDF
           </button>
         </div>
@@ -292,7 +292,7 @@ export default function ContentHistory() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
         >
-          <p className="text-gray-400 text-sm">{favoriteOnly ? 'No favorite content yet.' : 'No content generated yet.'}</p>
+          <p className="text-gray-400 dark:text-slate-500 text-sm">{favoriteOnly ? 'No favorite content yet.' : 'No content generated yet.'}</p>
           <p className="text-gray-300 text-xs mt-1">{favoriteOnly ? 'Star content to find it quickly here.' : 'Your generations will appear here.'}</p>
         </motion.div>
       ) : (
@@ -312,9 +312,9 @@ export default function ContentHistory() {
             <button
               onClick={handleLoadMore}
               disabled={loadingMore}
-              className="mx-auto flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 text-sm font-semibold transition disabled:opacity-60"
+              className="mx-auto flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 dark:bg-ink-raised text-gray-600 dark:text-slate-400 hover:bg-gray-200 dark:hover:bg-ink-raised text-sm font-semibold transition disabled:opacity-60"
             >
-              {loadingMore && <span className="w-3.5 h-3.5 rounded-full border-2 border-gray-400 border-t-transparent animate-spin" />}
+              {loadingMore && <span className="w-3.5 h-3.5 rounded-full border-2 border-gray-400 dark:border-slate-600 border-t-transparent animate-spin" />}
               {loadingMore ? 'Loading…' : 'Load more'}
             </button>
           )}

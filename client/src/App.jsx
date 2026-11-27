@@ -18,6 +18,7 @@ import Admin from './pages/Admin.jsx';
 import PDFAnalyzer from './pages/PDFAnalyzer.jsx';
 import BlogList from './pages/BlogList.jsx';
 import BlogPost from './pages/BlogPost.jsx';
+import NotFound from './pages/NotFound.jsx';
 
 const pageVariants = {
   initial: { opacity: 0, y: 10 },
@@ -79,6 +80,7 @@ function AnimatedRoutes() {
         <Route path="/dashboard" element={<PrivateRoute><PageWrapper><Dashboard /></PageWrapper></PrivateRoute>} />
         <Route path="/pdf" element={<PrivateRoute><PageWrapper><PDFAnalyzer /></PageWrapper></PrivateRoute>} />
         <Route path="/admin" element={<AdminRoute><PageWrapper><Admin /></PageWrapper></AdminRoute>} />
+        <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
       </Routes>
     </AnimatePresence>
   );

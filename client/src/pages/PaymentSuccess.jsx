@@ -10,12 +10,12 @@ export default function PaymentSuccess() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-ink-page flex items-center justify-center px-4">
       <Seo title="Payment Successful — Penlix" description="Your Penlix payment was successful and your credits are ready to use." path="/payment-success" noindex />
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-10 max-w-md w-full text-center">
+      <div className="bg-white dark:bg-ink-card rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-10 max-w-md w-full text-center">
         <FiCheckCircle size={56} className="text-green-500 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Payment Successful!</h2>
-        <p className="text-gray-500 mb-6">Your credits have been added to your account. Start generating content now.</p>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Payment Successful!</h2>
+        <p className="text-gray-500 dark:text-slate-400 mb-6">Your credits have been added to your account. Start generating content now.</p>
         <Link to="/dashboard" className="bg-indigo-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition inline-block">Go to Dashboard</Link>
       </div>
     </div>
