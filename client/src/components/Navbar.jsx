@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.js';
 import { useCredits } from '../context/CreditContext.js';
-import { FiLogOut, FiGrid, FiShield, FiFileText, FiZap, FiMoon, FiSun, FiMenu, FiX } from 'react-icons/fi';
+import { FiLogOut, FiGrid, FiShield, FiFileText, FiZap, FiMoon, FiSun, FiX } from 'react-icons/fi';
+import DrawerIcon from './DrawerIcon.jsx';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -20,6 +21,14 @@ export default function Navbar() {
   }, [darkMode]);
 
   useEffect(() => { setMenuOpen(false); }, [location.pathname]);
+
+  /* While the drawer is open, lock the page behind it so scrolling
+     stays inside the drawer (the drawer has its own hidden scroller)
+     instead of moving the whole app. */
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [menuOpen]);
 
   const themeButton = (
     <button
@@ -41,7 +50,7 @@ export default function Navbar() {
 
           <Link to="/" className="flex items-center gap-2.5 group">
             <img src="/brand/penlix-mark.svg" alt="Penlix" className="h-8 w-auto dark:hidden" />
-            <img src="/brand/penlix-icon.svg" alt="Penlix" className="h-8 w-8 hidden dark:block rounded-lg" />
+            <img src="/brand/penlix-mark-white.svg" alt="Penlix" className="h-8 w-auto hidden dark:block" />
             <span className="font-black text-gray-900 dark:text-white text-xl tracking-tight">Penlix</span>
           </Link>
 
@@ -99,7 +108,7 @@ export default function Navbar() {
               aria-label={menuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={menuOpen}
             >
-              {menuOpen ? <FiX size={18} /> : <FiMenu size={18} />}
+              {menuOpen ? <FiX size={18} /> : <DrawerIcon size={18} />}
             </button>
           </div>
         </div>
@@ -112,11 +121,11 @@ export default function Navbar() {
       {menuOpen && (
         <div className="fixed inset-0 bg-black/50 z-[60] md:hidden" onClick={() => setMenuOpen(false)} aria-hidden="true" />
       )}
-      <div className={`fixed inset-y-0 right-0 z-[70] md:hidden w-72 max-w-[85vw] bg-white dark:bg-gray-950 shadow-2xl flex flex-col transition-transform duration-300 ${menuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div className={`fixed inset-y-0 right-0 z-[70] md:hidden w-64 max-w-[70vw] bg-white dark:bg-gray-950 shadow-2xl flex flex-col transition-transform duration-300 ${menuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100 dark:border-gray-800">
           <div className="flex items-center gap-2">
             <img src="/brand/penlix-mark.svg" alt="Penlix" className="h-7 w-auto dark:hidden" />
-            <img src="/brand/penlix-icon.svg" alt="Penlix" className="h-7 w-7 hidden dark:block rounded-lg" />
+            <img src="/brand/penlix-mark-white.svg" alt="Penlix" className="h-7 w-auto hidden dark:block" />
             <span className="font-black text-gray-900 dark:text-white text-lg tracking-tight">Penlix</span>
           </div>
           <button onClick={() => setMenuOpen(false)} aria-label="Close menu"
@@ -124,7 +133,7 @@ export default function Navbar() {
             <FiX size={18} />
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-1">
+        <div className="flex-1 overflow-y-auto scrollbar-hide px-4 py-3 space-y-1">
           <Link to="/pricing" className="block text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white text-sm font-medium px-3 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition">
             Pricing
           </Link>

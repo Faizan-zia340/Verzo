@@ -36,7 +36,7 @@ export default function Footer() {
           <div className="col-span-2">
             <Link to="/" className="flex items-center gap-2.5">
               <img src="/brand/penlix-mark.svg" alt="Penlix" className="h-8 w-auto dark:hidden" />
-              <img src="/brand/penlix-icon.svg" alt="Penlix" className="h-8 w-8 hidden dark:block rounded-lg" />
+              <img src="/brand/penlix-mark-white.svg" alt="Penlix" className="h-8 w-auto hidden dark:block" />
               <span className="font-black text-gray-900 dark:text-white text-xl tracking-tight">Penlix</span>
             </Link>
             <p className="mt-3 text-sm text-gray-500 dark:text-slate-400 max-w-xs leading-relaxed">
