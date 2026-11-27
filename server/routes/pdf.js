@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import multer from 'multer';
 import protect from '../middleware/auth.js';
+import reserveCredit from '../middleware/reserveCredit.js';
 import userRateLimit from '../middleware/userRateLimit.js';
 import { analyzePDF } from '../controllers/pdfController.js';
 
@@ -14,6 +15,10 @@ const upload = multer({
   },
 });
 
-router.post('/analyze', protect, userRateLimit(10), upload.single('pdf'), analyzePDF);
+// 1 credit per analysis (reserveCredit). It runs AFTER the upload so a
+// rejected file (wrong type, too large) never reserves a credit; the
+// handler refunds on every failure exit (no file, unreadable PDF, AI
+// failure) and keeps the credit only on a successful analysis.
+router.post('/analyze', protect, userRateLimit(10), upload.single('pdf'), reserveCredit(1), analyzePDF);
 
 export default router;

@@ -6,7 +6,7 @@ import { FiAlertCircle, FiCheck, FiArrowLeft, FiZap } from 'react-icons/fi';
 import Seo from '../components/Seo.jsx';
 
 const PERKS = [
-  '20 free credits instantly — no card needed',
+  '20 free credits after verifying your email — no card needed',
   'Stream AI content in 23 languages',
   'Reality Check scores every generation',
   'SEO package + inline images for blogs',
@@ -26,8 +26,8 @@ export default function Register() {
     e.preventDefault();
     setLoading(true); setError('');
     try {
-      await register(form.name, form.email, form.password);
-      toast.success('Account created — welcome to Penlix!');
+      const { data } = await register(form.name, form.email, form.password);
+      toast.success(data?.message || 'Account created — welcome to Penlix!');
       navigate('/dashboard');
     } catch (err) {
       const message = err.response?.data?.message || 'Registration failed. Please try again.';
@@ -94,7 +94,7 @@ export default function Register() {
           </Link>
 
           <h1 className="text-3xl font-black text-gray-950 dark:text-white mb-1 tracking-tight">Create your account</h1>
-          <p className="text-gray-500 dark:text-slate-400 text-sm mb-8">Get 20 free credits — no card needed</p>
+          <p className="text-gray-500 dark:text-slate-400 text-sm mb-8">Get 20 free credits after verifying your email — no card needed</p>
 
           {error && (
             <div className="flex items-start gap-3 bg-red-50 dark:bg-ink-raised border border-red-100 text-red-700 dark:text-red-300 text-sm px-4 py-3.5 rounded-xl mb-5">

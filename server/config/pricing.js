@@ -13,4 +13,10 @@ export const CREDIT_PACKAGES = {
   pro: { id: 'pro', name: 'Pro', amount: 1999, credits: 300 },
 };
 
+// Maps a credit package to the subscription tier it grants. Any purchase
+// moves the buyer off the `free` tier, so the daily free-credit reset
+// (which only tops up `free` users) never treats purchased credits as a
+// free allowance. Adjust the mapping here when the paid tiers change.
+export const SUBSCRIPTION_FOR_PACKAGE = { starter: 'basic', growth: 'basic', pro: 'pro' };
+
 export const formatPrice = (amountCents) => `$${(amountCents / 100).toFixed(2)}`;

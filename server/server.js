@@ -2,7 +2,6 @@ import 'dotenv/config';
 import express from 'express';
 import mongoose from 'mongoose';
 import http from 'http';
-import { initSocket } from './utils/socket.js';
 import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
@@ -39,13 +38,6 @@ validateEnv();
 
 const app = express();
 const server = http.createServer(app);
-const io = initSocket(server, {
-  cors: {
-    origin: corsOriginCheck,
-    methods: ['GET', 'POST'],
-    credentials: true,
-  },
-});
 
 connectDB();
 scheduleDailyFreeCreditReset();
@@ -158,5 +150,3 @@ process.on('uncaughtException', (err) => {
   server.close(() => process.exit(1));
   setTimeout(() => process.exit(1), 5000).unref();
 });
-
-export { io };

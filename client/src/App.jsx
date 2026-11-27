@@ -11,6 +11,7 @@ import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import ForgotPassword from './pages/ForgotPassword.jsx';
 import ResetPassword from './pages/ResetPassword.jsx';
+import VerifyEmail from './pages/VerifyEmail.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Pricing from './pages/Pricing.jsx';
 import PaymentSuccess from './pages/PaymentSuccess.jsx';
@@ -73,6 +74,7 @@ function AnimatedRoutes() {
         <Route path="/register" element={<PageWrapper><Register /></PageWrapper>} />
         <Route path="/forgot-password" element={<PageWrapper><ForgotPassword /></PageWrapper>} />
         <Route path="/reset-password/:token" element={<PageWrapper><ResetPassword /></PageWrapper>} />
+        <Route path="/verify-email/:token" element={<PageWrapper><VerifyEmail /></PageWrapper>} />
         <Route path="/pricing" element={<PageWrapper><Pricing /></PageWrapper>} />
         <Route path="/blog" element={<PageWrapper><BlogList /></PageWrapper>} />
         <Route path="/blog/:slug" element={<PageWrapper><BlogPost /></PageWrapper>} />

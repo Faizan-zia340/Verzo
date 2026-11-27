@@ -40,4 +40,38 @@ export const sendPasswordResetEmail = async ({ to, resetUrl }) => {
   }
 };
 
+// Mirrors sendPasswordResetEmail: same Resend HTTP API, same env vars, same
+// warn-and-return-false behaviour when the mail service is not configured.
+export const sendVerificationEmail = async ({ to, verifyUrl }) => {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.EMAIL_FROM;
+  if (!apiKey || !from) {
+    logger.warn('Verification email not sent: RESEND_API_KEY or EMAIL_FROM is not set');
+    return false;
+  }
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from,
+        to,
+        subject: 'Verify your Penlix email',
+        html: `<p>Welcome to Penlix. Click the link below to verify your email address and get your 20 free credits. The link expires in 24 hours.</p><p><a href="${verifyUrl}">Verify your email</a></p><p>If you did not create a Penlix account, you can safely ignore this email.</p>`,
+      }),
+    });
+    if (!res.ok) {
+      logger.warn({ status: res.status }, 'Verification email was not accepted by the email service');
+      return false;
+    }
+    return true;
+  } catch (err) {
+    logger.warn({ err: err.message }, 'Verification email failed to send');
+    return false;
+  }
+};
+
 export default sendPasswordResetEmail;
