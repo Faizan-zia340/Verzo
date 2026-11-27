@@ -121,7 +121,7 @@ export default function Navbar() {
       {menuOpen && (
         <div className="fixed inset-0 bg-black/50 z-[60] md:hidden" onClick={() => setMenuOpen(false)} aria-hidden="true" />
       )}
-      <div className={`fixed inset-y-0 right-0 z-[70] md:hidden w-64 max-w-[70vw] bg-white dark:bg-gray-950 shadow-2xl flex flex-col transition-transform duration-300 ${menuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div className={`fixed inset-y-0 right-0 z-[70] md:hidden w-64 max-w-[70vw] bg-white dark:bg-gray-950 shadow-xl flex flex-col transition-transform duration-300 ${menuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100 dark:border-gray-800">
           <div className="flex items-center gap-2">
             <img src="/brand/penlix-mark.svg" alt="Penlix" className="h-7 w-auto dark:hidden" />

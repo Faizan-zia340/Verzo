@@ -36,7 +36,7 @@ function HistoryItem({ item, index, onDelete, onFavorite, onRegenerate, regenera
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.28, delay: index * 0.05, ease: 'easeOut' }}
-      whileHover={{ boxShadow: '0 4px 16px rgba(139,111,71,0.08)' }}
+      whileHover={{ boxShadow: '0 2px 8px rgba(139,111,71,0.06)' }}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2 flex-wrap">

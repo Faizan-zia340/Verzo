@@ -99,7 +99,7 @@ export default function App() {
             position="top-right"
             toastOptions={{
               duration: 3000,
-              style: { borderRadius: '12px', fontSize: '13px', fontWeight: 500, boxShadow: '0 4px 24px rgba(0,0,0,0.10)' },
+              style: { borderRadius: '12px', fontSize: '13px', fontWeight: 500, boxShadow: '0 2px 12px rgba(0,0,0,0.08)' },
               success: { iconTheme: { primary: '#8b6f47', secondary: '#fff' } },
             }}
           />

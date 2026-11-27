@@ -51,7 +51,7 @@ export default function VerifyEmail() {
             <p className="text-gray-500 dark:text-slate-400 text-sm mt-2 leading-relaxed">{message}</p>
             <Link
               to="/dashboard"
-              className="mt-8 w-full bg-teak-600 hover:bg-teak-700 text-white py-3.5 rounded-xl font-bold transition text-sm shadow-lg shadow-teak-200 flex items-center justify-center gap-2"
+              className="mt-8 w-full bg-teak-600 hover:bg-teak-700 text-white py-3.5 rounded-xl font-bold transition text-sm shadow-md shadow-teak-900/20 flex items-center justify-center gap-2"
             >
               <FiZap size={14} /> Start generating
             </Link>
@@ -70,7 +70,7 @@ export default function VerifyEmail() {
             </p>
             <Link
               to="/login"
-              className="mt-8 w-full bg-teak-600 hover:bg-teak-700 text-white py-3.5 rounded-xl font-bold transition text-sm shadow-lg shadow-teak-200 flex items-center justify-center gap-2"
+              className="mt-8 w-full bg-teak-600 hover:bg-teak-700 text-white py-3.5 rounded-xl font-bold transition text-sm shadow-md shadow-teak-900/20 flex items-center justify-center gap-2"
             >
               Back to sign in
             </Link>

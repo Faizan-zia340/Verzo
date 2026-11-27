@@ -21,7 +21,7 @@ export default function DashboardChart({ data }) {
           <YAxis tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} width={24} />
           <Tooltip
             cursor={{ fill: '#f3f4f6', radius: 6 }}
-            contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)', fontSize: 12 }}
+            contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 2px 10px rgba(0,0,0,0.08)', fontSize: 12 }}
           />
           <Bar dataKey="used" radius={[6, 6, 0, 0]}>
             {data.map((_, i) => (

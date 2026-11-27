@@ -62,7 +62,7 @@ export default function DashboardStats() {
         {STATS.map(({ icon: Icon, label, value, sub, iconBg, iconColor, valueCls }) => (
           <motion.div
             key={label}
-            whileHover={{ y: -2, boxShadow: '0 8px 24px rgba(0,0,0,0.07)' }}
+            whileHover={{ y: -2, boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
             className="bg-white dark:bg-ink-card rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-5 transition-shadow"
           >
             <div className="flex items-start justify-between mb-4">

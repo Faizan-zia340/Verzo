@@ -36,7 +36,7 @@ function EditModal({ user, onClose, onSave }) {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 px-4">
       <motion.div initial={{ opacity: 0, scale: 0.95, y: 8 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="bg-white dark:bg-ink-card rounded-2xl shadow-2xl border border-gray-100 dark:border-slate-800 w-full max-w-sm p-6">
+        className="bg-white dark:bg-ink-card rounded-2xl shadow-xl border border-gray-100 dark:border-slate-800 w-full max-w-sm p-6">
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-base font-bold text-gray-900 dark:text-white">Adjust Credits</h3>
           <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-ink-raised text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400 transition">
@@ -80,7 +80,7 @@ function DeleteUserModal({ user, deleting, error, onClose, onConfirm }) {
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 px-4">
       <motion.div initial={{ opacity: 0, scale: 0.95, y: 8 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="bg-white dark:bg-ink-card rounded-2xl shadow-2xl border border-gray-100 dark:border-slate-800 w-full max-w-sm p-6">
+        className="bg-white dark:bg-ink-card rounded-2xl shadow-xl border border-gray-100 dark:border-slate-800 w-full max-w-sm p-6">
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-base font-bold text-gray-900 dark:text-white">Delete User</h3>
           <button onClick={onClose} disabled={deleting} className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-ink-raised text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400 transition disabled:opacity-60">
@@ -815,7 +815,7 @@ export default function Admin() {
       {sidebarOpen && (
         <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={() => setSidebarOpen(false)} aria-hidden="true" />
       )}
-      <aside className={`fixed md:static inset-y-0 left-0 z-50 md:z-auto w-64 max-w-[70vw] bg-gray-900 flex flex-col py-6 px-3 flex-shrink-0 shadow-xl overflow-y-auto transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} ${sidebarCollapsed ? 'md:hidden' : ''}`}>
+      <aside className={`fixed md:static inset-y-0 left-0 z-50 md:z-auto w-64 max-w-[70vw] bg-gray-900 flex flex-col py-6 px-3 flex-shrink-0 shadow-lg overflow-y-auto transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} ${sidebarCollapsed ? 'md:hidden' : ''}`}>
         <div className="flex items-center justify-between px-3 mb-8">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 bg-gradient-to-br from-teak-500 to-teak-700 rounded-xl flex items-center justify-center shadow-lg">
@@ -838,7 +838,7 @@ export default function Admin() {
             <button key={key} onClick={() => { setSection(key); setSidebarOpen(false); }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition ${
                 section === key
-                  ? 'bg-teak-600 text-white shadow-sm shadow-teak-500/30'
+                  ? 'bg-teak-600 text-white shadow-sm shadow-teak-900/20'
                   : 'text-gray-400 hover:text-white hover:bg-white/8'
               }`}>
               <Icon size={15} /> {label}

@@ -37,7 +37,7 @@ export default function FeedbackButton() {
   return (
     <>
       <button onClick={openForm}
-        className="fixed bottom-5 right-5 z-40 flex items-center gap-2 bg-teak-600 hover:bg-teak-700 text-white pl-3.5 pr-4 py-2.5 rounded-full text-sm font-semibold shadow-lg shadow-teak-500/30 transition">
+        className="fixed bottom-5 right-5 z-40 flex items-center gap-2 bg-teak-600 hover:bg-teak-700 text-white pl-3.5 pr-4 py-2.5 rounded-full text-sm font-semibold shadow-md shadow-teak-900/25 transition">
         <FiMessageSquare size={15} /> Feedback
       </button>
 
@@ -45,7 +45,7 @@ export default function FeedbackButton() {
         {open && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 px-4">
             <motion.div initial={{ opacity: 0, scale: 0.95, y: 8 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 8 }}
-              className="bg-white dark:bg-ink-card rounded-2xl shadow-2xl border border-gray-100 dark:border-slate-800 w-full max-w-md p-6">
+              className="bg-white dark:bg-ink-card rounded-2xl shadow-xl border border-gray-100 dark:border-slate-800 w-full max-w-md p-6">
               <div className="flex items-center justify-between mb-1">
                 <h3 className="text-base font-bold text-gray-900 dark:text-white">Send feedback</h3>
                 <button onClick={() => setOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-xl hover:bg-gray-100 dark:hover:bg-ink-raised text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-400 transition">

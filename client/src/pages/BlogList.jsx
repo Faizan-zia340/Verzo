@@ -37,7 +37,7 @@ export default function BlogList() {
             <Link
               key={post.slug}
               to={`/blog/${post.slug}`}
-              className="group bg-white dark:bg-ink-card border border-gray-200 dark:border-slate-800 rounded-2xl p-6 hover:border-teak-300 dark:hover:border-teak-700 hover:shadow-lg hover:shadow-teak-100/50 dark:hover:shadow-none transition flex flex-col"
+              className="group bg-white dark:bg-ink-card border border-gray-200 dark:border-slate-800 rounded-2xl p-6 hover:border-teak-300 dark:hover:border-teak-700 hover:shadow-md dark:hover:shadow-none transition flex flex-col"
             >
               <span className="self-start bg-teak-50 dark:bg-teak-950 text-teak-700 dark:text-teak-300 text-xs font-semibold px-2.5 py-1 rounded-full mb-4">
                 {post.keyword}

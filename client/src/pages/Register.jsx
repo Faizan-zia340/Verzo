@@ -122,7 +122,7 @@ export default function Register() {
             </div>
 
             <button type="submit" disabled={loading}
-              className="w-full bg-teak-600 hover:bg-teak-700 text-white py-3.5 rounded-xl font-bold transition disabled:opacity-60 text-sm shadow-lg shadow-teak-200 mt-2 flex items-center justify-center gap-2">
+              className="w-full bg-teak-600 hover:bg-teak-700 text-white py-3.5 rounded-xl font-bold transition disabled:opacity-60 text-sm shadow-md shadow-teak-900/20 mt-2 flex items-center justify-center gap-2">
               {loading ? (
                 <><span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" /> Creating account...</>
               ) : (

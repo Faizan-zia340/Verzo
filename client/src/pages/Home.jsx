@@ -74,13 +74,13 @@ export default function Home() {
           <motion.div {...fade(0.2)} className="flex flex-col sm:flex-row gap-3 justify-center mb-10">
             {!loading && (loggedIn ? (
               <Link to="/dashboard"
-                className="inline-flex items-center justify-center gap-2 bg-teak-600 hover:bg-teak-700 text-white px-8 py-4 rounded-xl font-bold text-base transition shadow-xl shadow-teak-200/60">
+                className="inline-flex items-center justify-center gap-2 bg-teak-600 hover:bg-teak-700 text-white px-8 py-4 rounded-xl font-bold text-base transition shadow-md shadow-teak-900/25">
                 Go to Dashboard <FiArrowRight size={16} />
               </Link>
             ) : (
               <>
                 <Link to="/register"
-                  className="inline-flex items-center justify-center gap-2 bg-teak-600 hover:bg-teak-700 text-white px-8 py-4 rounded-xl font-bold text-base transition shadow-xl shadow-teak-200/60">
+                  className="inline-flex items-center justify-center gap-2 bg-teak-600 hover:bg-teak-700 text-white px-8 py-4 rounded-xl font-bold text-base transition shadow-md shadow-teak-900/25">
                   Start free — 20 credits <FiArrowRight size={16} />
                 </Link>
                 <Link to="/login"
@@ -140,7 +140,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.25 + i * 0.04 }}
-              whileHover={{ y: -4, boxShadow: '0 16px 40px rgba(0,0,0,0.08)' }}
+              whileHover={{ y: -4, boxShadow: '0 6px 16px rgba(0,0,0,0.06)' }}
               className={`bg-white dark:bg-ink-card rounded-2xl border ${border} shadow-sm p-6 flex flex-col gap-4 cursor-default transition-shadow`}
             >
               <div className={`w-11 h-11 ${bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
@@ -159,7 +159,7 @@ export default function Home() {
       <section className="max-w-2xl mx-auto px-4 pb-32">
         <motion.div
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}
-          className="relative bg-gradient-to-br from-teak-600 via-teak-600 to-teak-700 rounded-3xl p-12 shadow-2xl shadow-teak-300/40 text-center overflow-hidden"
+          className="relative bg-gradient-to-br from-teak-600 via-teak-600 to-teak-700 rounded-3xl p-12 shadow-lg shadow-teak-900/25 text-center overflow-hidden"
         >
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-teak-500/30 via-transparent to-transparent" />
           <div className="relative">
