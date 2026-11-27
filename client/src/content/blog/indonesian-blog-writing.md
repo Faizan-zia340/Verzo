@@ -27,7 +27,7 @@ Tipe Blog di Penlix memperpendek proses itu. Pilih bahasa Indonesian, tulis topi
 
 - **Artikel blog lengkap** — pembuka yang menarik, isi yang terorganisir, dan penutup.
 - **Paket SEO** — meta title, meta description, dan 5 keyword, sehingga artikel siap diterbitkan.
-- **Skor Reality Check** — Human-ness, Punchiness, dan No-Cliché, masing-masing dari 10. Ini adalah Penlix menilai drafnya sendiri — bukan peninjau kedua — jadi skor rendah adalah isyarat untuk generate ulang atau menyetel ulang, bukan jaminan.
+- **Skor Cek Realitas** — Kemanusiaan, Ketajaman, dan Tanpa Klise, masing-masing dari 10. Ini adalah Penlix menilai drafnya sendiri — bukan peninjau kedua — jadi skor rendah adalah isyarat untuk generate ulang atau menyetel ulang, bukan jaminan.
 - **Pemilih font** — ubah font artikel di kartu hasil, lalu salin atau ekspor sebagai TXT, PDF, atau DOCX.
 
 ## 5 tips untuk blog bahasa Indonesia yang bagus
@@ -49,7 +49,7 @@ Penlix juga bisa menulis blog dari foto. Unggah satu foto, pilih Blog — prompt
 3. **Memakai prompt yang sama berulang kali:** Prompt yang sama akan memberi artikel yang mirip. Ubah sedikit topik atau nadanya.
 4. **Prompt terlalu panjang:** Dua sampai tiga baris arahan sudah cukup untuk blog. Prompt yang terlalu panjang justru memperburuk hasil.
 
-## FAQ
+## Pertanyaan yang Sering Diajukan
 
 **Apakah tulisan bahasa Indonesianya terdengar natural?**
 Ya. Jika bahasa diatur ke Indonesian, artikel ditulis dalam bahasa Indonesia. Nama atau istilah khusus sebaiknya ditulis dengan benar di prompt.

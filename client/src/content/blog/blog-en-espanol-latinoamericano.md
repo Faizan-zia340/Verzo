@@ -21,7 +21,7 @@ La solución no es escribir el blog en inglés — la solución es empezar con u
 
 **Paso 3: Escribe el tema y la audiencia.** ¿De qué trata? ¿Para quién escribes? Ejemplo: "beneficios de leer todos los días" para "estudiantes universitarios". Mientras más claro sea el tema, mejor será el artículo.
 
-**Paso 4: Genera y lee antes de publicar.** El artículo llega con un paquete SEO (título, descripción y palabras clave) y una puntuación de Reality Check sobre 10. Una generación suele costar 1 crédito, y el registro gratuito incluye 20 créditos gratis.
+**Paso 4: Genera y lee antes de publicar.** El artículo llega con un paquete SEO (título, descripción y palabras clave) y una puntuación de Chequeo de realidad sobre 10. Una generación suele costar 1 crédito, y el registro gratuito incluye 20 créditos gratis.
 
 ## Qué recibes con el artículo
 
@@ -29,10 +29,10 @@ Cada generación de blog te entrega el mismo paquete:
 
 - **El artículo en sí** — introducción con gancho, cuerpo organizado con encabezados y conclusión.
 - **Un paquete SEO** — título, descripción y 5 palabras clave, para que el artículo esté listo para publicar.
-- **Una puntuación de Reality Check** — Humanidad, Impacto y Sin Clichés sobre 10.
+- **Una puntuación de Chequeo de realidad** — Humanidad, Impacto y Sin Clichés sobre 10.
 - **Un selector de fuente** — cambia la fuente del artículo generado en la tarjeta de resultado (Default, Inter, Roboto, Open Sans, Lora, Merriweather), y cópialo o expórtalo como TXT, PDF o DOCX.
 
-Ten en cuenta que el Reality Check es Penlix puntuando su propio borrador sobre 10 — es una autoevaluación, no un segundo revisor — así que toma una puntuación baja como una señal para regenerar o ajustar, no como una garantía.
+Ten en cuenta que el Chequeo de realidad es Penlix puntuando su propio borrador sobre 10 — es una autoevaluación, no un segundo revisor — así que toma una puntuación baja como una señal para regenerar o ajustar, no como una garantía.
 
 ## Cómo elegir un buen tema
 

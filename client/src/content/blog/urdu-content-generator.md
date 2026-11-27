@@ -23,15 +23,15 @@ Aap ki audience tay karti hai ke kaunsi behtar hai. Agar aap ke readers zyada ta
 
 Sach ye hai ke Penlix is waqt **Roman Urdu** mein likhta hai — Karachi aur Lahore dialects ke saath. Urdu script mein seedha generate karna abhi Penlix mein nahi hai. Lekin is ka matlab ye nahi ke Penlix aap ke Urdu content mein madad nahi kar sakta. Tareeqa ye hai:
 
-**Step 1: Roman Urdu mein draft likhwayein.** Penlix ke generator mein language "Roman Urdu (Karachi)" ya "Roman Urdu (Lahore)" chunein, topic likhein aur draft generate karein. Structure, headings aur misaalain is draft mein tayyar ho jayengi.
+**Marhala 1: Roman Urdu mein draft likhwayein.** Penlix ke generator mein language "Roman Urdu (Karachi)" ya "Roman Urdu (Lahore)" chunein, topic likhein aur draft generate karein. Structure, headings aur misaalain is draft mein tayyar ho jayengi.
 
-**Step 2: Draft ko parhein aur theek karein.** AI draft ko apni awaaz mein dhal lein — jo jumla ajeeb lage usay badlein, jo misaal kamzor ho usay mazboot karein.
+**Marhala 2: Draft ko parhein aur theek karein.** AI draft ko apni awaaz mein dhal lein — jo jumla ajeeb lage usay badlein, jo misaal kamzor ho usay mazboot karein.
 
-**Step 3: Urdu script mein convert karein.** Agar Urdu script chahiye, to Roman Urdu draft ko transliteration tool se badlein (misal: Google Input Tools), aur phir khud parh kar ghaltiyan theek karein — machine kabhi kabhi lafz ghalat badal deti hai.
+**Marhala 3: Urdu script mein convert karein.** Agar Urdu script chahiye, to Roman Urdu draft ko transliteration tool se badlein (misal: Google Input Tools), aur phir khud parh kar ghaltiyan theek karein — machine kabhi kabhi lafz ghalat badal deti hai.
 
-**Step 4: Format theek karein.** Urdu script right-to-left (RTL) hoti hai — headings, lists aur paragraphs ka direction theek ho. Website ya blog par Urdu script ke liye Nastaliq jaisi saaf font istemal karein.
+**Marhala 4: Format theek karein.** Urdu script right-to-left (RTL) hoti hai — headings, lists aur paragraphs ka direction theek ho. Website ya blog par Urdu script ke liye Nastaliq jaisi saaf font istemal karein.
 
-## Example 1: Roman Urdu draft (Penlix se)
+## Misaal 1: Roman Urdu draft (Penlix se)
 
 **Topic:** Sehatmand nashta
 
@@ -43,7 +43,7 @@ Sach ye hai ke Penlix is waqt **Roman Urdu** mein likhta hai — Karachi aur Lah
 
 Ye draft theek hai: seedha, friendly, aur agle paragraph ki taraf le jata hai.
 
-## Example 2: Roman Urdu se Urdu script
+## Misaal 2: Roman Urdu se Urdu script
 
 Upar wale draft ko Urdu script mein badalne par ye banta hai:
 
@@ -51,7 +51,7 @@ Upar wale draft ko Urdu script mein badalne par ye banta hai:
 
 Dekh lein ke lafz wohi hain, sirf haroof badle hain. Conversion ke baad hamesha check karein ke koi lafz ghalat to nahi badla — misal: "nashta" kabhi "nashta" ki jagah koi aur lafz ban sakta hai.
 
-## Example 3: SEO package — Urdu blog ke liye
+## Misaal 3: SEO package — Urdu blog ke liye
 
 Har blog ke saath Penlix aik SEO package bhi banata hai. Urdu blog ke liye ye is tarah ho sakta hai:
 
@@ -76,7 +76,7 @@ Roman Urdu keywords par competition kam hai, is liye aik acha blog jaldi rank ka
 - **Misaal dein:** "Sehatmand nashta acha hota hai" kehne se behtar hai aik khaas nashta batana — misal: "anda, paratha aur dahi".
 - **Aik article, aik topic:** Har article ka aik saaf topic ho — zyada topics milayenge to reader bhatak jayega.
 
-## FAQ
+## Aksar Pooche Jane Wale Sawalat
 
 **Kya AI Urdu script mein likh sakta hai?**
 Kuch tools Urdu script mein likh sakte hain, lekin quality mein farq hota hai. Penlix is waqt Roman Urdu mein likhta hai — Urdu script ke liye behtareen tareeqa ye hai ke pehle Roman Urdu draft likhwayein, phir usay transliteration se Urdu script mein badlein aur khud parh kar theek karein.

@@ -79,7 +79,7 @@ Deze follow-up werkt omdat hij drie dingen doet: zachtjes herinneren, de kern ko
 - **Versturen zonder nalezen.** Eén verkeerde naam of datum haalt de geloofwaardigheid van de hele e-mail onderuit.
 - **Iedereen dezelfde e-mail.** De template mag hetzelfde zijn, maar de e-mail moet elke keer nieuw voelen — met de naam, het bedrijf en het probleem van die klant.
 
-## FAQ
+## Veelgestelde vragen
 
 **Wat kost een e-mail?**
 1 credit per generatie. Gratis registratie geeft 20 credits; [abonnementen](/pricing) beginnen bij $4,99 voor 50 credits.

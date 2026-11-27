@@ -20,13 +20,13 @@ Aik aur faida: voice input aap ki chuni hui language ke hisaab se sunta hai. Aga
 
 ## 4 steps: bolna se blog tak
 
-**Step 1: Language chunein.** Generator mein apni language select karein — English, Roman Urdu (Karachi ya Lahore), ya Urdu. Voice input isi language mein sunega.
+**Marhala 1: Language chunein.** Generator mein apni language select karein — English, Roman Urdu (Karachi ya Lahore), ya Urdu. Voice input isi language mein sunega.
 
-**Step 2: Speak dabayein.** Prompt ke paas Speak (mic) ka button hai. Us par click karein — browser aap se microphone ki ijazat maangega, pehli dafa Allow kar dein.
+**Marhala 2: Speak dabayein.** Prompt ke paas Speak (mic) ka button hai. Us par click karein — browser aap se microphone ki ijazat maangega, pehli dafa Allow kar dein.
 
-**Step 3: Bol kar batayein kya likhna hai.** Aaram se, saaf awaaz mein bolein. Misal: "Karachi ki barish par aik blog likhein, tone friendly ho, aur aakhir mein aik sawal ho." Aap ki baat prompt mein likh jayegi. Dobara bolna ho to phir se Speak dabayein — naye lafz purani prompt ke saath jud jayenge.
+**Marhala 3: Bol kar batayein kya likhna hai.** Aaram se, saaf awaaz mein bolein. Misal: "Karachi ki barish par aik blog likhein, tone friendly ho, aur aakhir mein aik sawal ho." Aap ki baat prompt mein likh jayegi. Dobara bolna ho to phir se Speak dabayein — naye lafz purani prompt ke saath jud jayenge.
 
-**Step 4: Generate dabayein.** Prompt check kar lein — koi lafz ghalat suna gaya ho to theek kar lein — phir Generate karein. Aik generation aam tor par 1 credit mein hoti hai, aur free signup ke saath 20 free credits milte hain.
+**Marhala 4: Generate dabayein.** Prompt check kar lein — koi lafz ghalat suna gaya ho to theek kar lein — phir Generate karein. Aik generation aam tor par 1 credit mein hoti hai, aur free signup ke saath 20 free credits milte hain.
 
 ## Bolte waqt 5 tips
 
@@ -58,7 +58,7 @@ Aik aur faida: voice input aap ki chuni hui language ke hisaab se sunta hai. Aga
 
 **Type karna behtar hai jab:** prompt mein koi khaas naam, number ya link ho — ye bol kar aksar ghalat sunai dete hain. Aise lafz type kar lein, baaki bol kar batayein.
 
-## FAQ
+## Aksar Pooche Jane Wale Sawalat
 
 **Kya meri awaaz record hoti hai?**
 Nahi. Browser ki speech recognition aap ki baat ko lafzon mein badal kar prompt mein likhti hai — audio kahin save nahi hota aur kisi server par nahi bheja jata.

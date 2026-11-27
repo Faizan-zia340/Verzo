@@ -15,13 +15,13 @@ Penlix da Social type isse layi ay. Language vich Roman Urdu (Lahore) chuno, top
 
 ## Tareeqa — 4 steps
 
-**Step 1: Language chuno — Roman Urdu (Lahore).** Generator vich language Roman Urdu (Lahore) select karo. Penlix tuhadi chuni hoyi language vich likhega.
+**Marhala 1: Language chuno — Roman Urdu (Lahore).** Generator vich language Roman Urdu (Lahore) select karo. Penlix tuhadi chuni hoyi language vich likhega.
 
-**Step 2: Social type chuno.** Content type vich Social select karo. Is naal blog ya email nahi, social media layi chhota jeha post banega.
+**Marhala 2: Social type chuno.** Content type vich Social select karo. Is naal blog ya email nahi, social media layi chhota jeha post banega.
 
-**Step 3: Topic te andaaz likho.** Prompt vich likho ke kis bare post chahidi ay te kis lehje vich. Misal: "Lahore de food street bare Instagram post likho, mazedaar tone vich, pehli line sawal naal shuru karo, te aakhir vich logan nu comment karan da kaho."
+**Marhala 3: Topic te andaaz likho.** Prompt vich likho ke kis bare post chahidi ay te kis lehje vich. Misal: "Lahore de food street bare Instagram post likho, mazedaar tone vich, pehli line sawal naal shuru karo, te aakhir vich logan nu comment karan da kaho."
 
-**Step 4: Generate dabao.** Aik generation aam tor te 1 credit vich hondi ay, te free signup naal 20 free credits milde ne. Je result pasand na aaye, prompt thora badal ke dobara try karo.
+**Marhala 4: Generate dabao.** Aik generation aam tor te 1 credit vich hondi ay, te free signup naal 20 free credits milde ne. Je result pasand na aaye, prompt thora badal ke dobara try karo.
 
 ## Changi Lahori social post kiven hondi ay
 
@@ -54,7 +54,7 @@ Eh sample ay — asal result tuhade prompt te setting mutabik badal sakda ay.
 3. **Bina parhe post karna:** Draft nu draft samjho. Apne andaaz vich aik do jumle badal lo — post bilkul tuhadi lagan lag payegi.
 4. **Har vaari ohi prompt:** Ohi jumle vaar vaar likhan naal ohi jehiyan posts bandiyan ne. Topic ya tone thora badal ke dekho.
 
-## FAQ
+## Aksar Pooche Jane Wale Sawalat
 
 **Lahori Roman Urdu vich post natural lagdi ay?**
 Ji. Je language Roman Urdu (Lahore) select karo, taan post ohi lehje vich likhi jandi ay. Khaas naam ya jagah prompt vich theek likh deyo.

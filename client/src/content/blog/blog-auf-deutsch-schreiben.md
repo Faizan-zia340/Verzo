@@ -32,7 +32,7 @@ Jede Blog-Generierung liefert dasselbe Paket:
 - **Ein Reality-Check-Ergebnis** — Menschlichkeit, Wirkung und Klischeefreiheit, jeweils von 10.
 - **Eine Schriftart-Auswahl** — ändern Sie die Schriftart des generierten Artikels auf der Ausgabekarte (Default, Inter, Roboto, Open Sans, Lora, Merriweather) und kopieren oder exportieren Sie ihn als TXT, PDF oder DOCX.
 
-Beachten Sie, dass der Reality Check Penlix ist, das seinen eigenen Entwurf von 10 bewertet — es ist eine Selbstbewertung, kein zweiter Prüfer — behandeln Sie eine niedrige Punktzahl also als Hinweis zum erneuten Generieren oder Anpassen, nicht als Garantie.
+Beachten Sie, dass der Realitätscheck Penlix ist, das seinen eigenen Entwurf von 10 bewertet — es ist eine Selbstbewertung, kein zweiter Prüfer — behandeln Sie eine niedrige Punktzahl also als Hinweis zum erneuten Generieren oder Anpassen, nicht als Garantie.
 
 ## Wie man ein gutes Thema wählt
 
