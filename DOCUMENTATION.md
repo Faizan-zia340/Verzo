@@ -1,6 +1,6 @@
 # Penlix — Full Project Documentation
 
-> **Verification note (24 Nov 2026, main @ d9fc369):** the AI provider was corrected from OpenAI to Gemini throughout this file — the app uses Google Gemini (`gemini-2.5-flash-lite`, `@google/generative-ai`, `server/config/gemini.js`); OpenAI is not used anywhere. Local ports were corrected to Vite 5000 / Express 3001. Some older sections (folder tree, API tables) may still lag the code — verify against the code before relying on them.
+> **Verification note (26 Nov 2026, main @ `8c12222`):** the AI provider is Google Gemini (`gemini-2.5-flash-lite`, `@google/generative-ai`, `server/config/gemini.js`); OpenAI is not used anywhere. Local ports are Vite 5000 / Express 3001. Brand is **Penlix** (renamed from Verzo, PR #28); URLs still say `verzo` (`verzo-ecru.vercel.app`, `verzo-backend.onrender.com`) because the `penlix.app` domain has not been bought yet. Free signup grants **20 credits** (`FREE_SIGNUP_CREDITS` in `server/config/pricing.js`); the nightly reset currently sets balances to 10 because Render env `FREE_DAILY_CREDITS` is still 10 — a known mismatch (see README Known issues). Pricing: Starter $4.99→50, Growth $9.99→120, Pro $19.99→300 credits. Stripe checkout is **not live**.
 
 
 ## Table of Contents
@@ -23,8 +23,8 @@
 
 ## Project Overview
 
-An AI-powered content generation SaaS platform. Users register, receive credits, and spend them to generate blog posts, social media captions, emails, ads, and product descriptions using Google Gemini (`gemini-2.5-flash-lite`).
- Payments are handled via Stripe and all data is stored in MongoDB. A RAG (Retrieval-Augmented Generation) system allows the AI to pull accurate local information from the database before generating a response.
+An AI-powered content generation SaaS platform. Users register, receive 20 free credits, and spend 1 credit per generation to create blog posts, social media captions, emails, ads, and product descriptions using Google Gemini (`gemini-2.5-flash-lite`) — in 23 languages, with voice input, image input, a font picker, and an auto-generated SEO package on every generation.
+ Payments are **not** live: the Stripe code exists but the keys are not configured (and Stripe does not onboard Pakistan merchants). All data is stored in MongoDB. A RAG (Retrieval-Augmented Generation) system allows the AI to pull accurate local information from the database before generating a response. A temporary feedback system lets testers report issues, and a community glossary lets users suggest translations for the dictionary.
 
 ---
 
@@ -42,7 +42,7 @@ Express Server — port 3001
     ├── MongoDB Atlas (Mongoose)
     ├── Gemini API (gemini-2.5-flash-lite)
 
-    ├── Stripe API
+    ├── Stripe API (code exists, not live)
     └── Socket.io (real-time generation events)
 ```
 
@@ -68,23 +68,30 @@ penlix/
 
 │
 ├── client/                          # React frontend (Vite)
-│   ├── index.html                   # HTML entry point for Vite
+│   ├── index.html                   # HTML entry point: title, meta, OG/Twitter, canonical, JSON-LD
 │   ├── vite.config.js               # Vite configuration
 │   ├── tailwind.config.js           # Tailwind CSS configuration
 │   ├── postcss.config.js            # PostCSS configuration
 │   └── src/
 │       ├── index.js                 # React app entry point
-│       ├── App.jsx                  # Root component, router, route protection
+│       ├── App.jsx                  # Root component, router, route protection, Footer, FeedbackButton
 │       ├── components/
 │       │   ├── Navbar.jsx           # Top navigation bar
-│       │   ├── Generator.jsx        # Content generation form + output
+│       │   ├── Generator.jsx        # Content generation form + output (voice, image, font picker)
 │       │   ├── CreditsDisplay.jsx   # Shows remaining credits
 │       │   ├── ContentHistory.jsx   # Lists past generated content
 │       │   ├── Pricing.jsx          # Pricing cards component
 │       │   ├── Dashboard.jsx        # Stats and usage chart
 │       │   ├── DashboardChart.jsx   # Dashboard usage chart
+│       │   ├── FeedbackButton.jsx   # Temporary tester feedback (floating button + modal)
+│       │   ├── FontPicker.jsx       # Per-script content font picker
+│       │   ├── Footer.jsx           # Site footer
+│       │   ├── Seo.jsx              # Per-page SEO via react-helmet-async
+│       │   ├── SuggestTranslation.jsx # Glossary translation suggestions on blog posts
 │       │   └── LoadingSpinner.jsx   # Reusable loading indicator
-
+│       ├── content/
+│       │   ├── blog/                # 9 posts as .md + index.js (frontmatter parser)
+│       │   └── glossary.json        # Approved dictionary terms (manual copy-paste)
 │       ├── pages/
 │       │   ├── Home.jsx             # Landing page
 │       │   ├── Login.jsx            # Login form
@@ -92,19 +99,26 @@ penlix/
 │       │   ├── ForgotPassword.jsx   # Request a password-reset link
 │       │   ├── ResetPassword.jsx    # Set a new password from a reset link
 │       │   ├── Dashboard.jsx        # Main dashboard page
-│       │   ├── Admin.jsx            # Admin dashboard
-│       │   ├── Pricing.jsx          # Pricing page
+│       │   ├── Admin.jsx            # Admin dashboard (incl. Feedback list)
+│       │   ├── Pricing.jsx          # Pricing page (packs from GET /api/billing/packages)
 │       │   ├── PDFAnalyzer.jsx      # PDF Deep Analyzer page
-│       │   └── PaymentSuccess.jsx   # Stripe redirect success page
-
+│       │   ├── BlogList.jsx         # Blog index
+│       │   ├── BlogPost.jsx         # Single blog post (font picker, translation suggestions)
+│       │   └── PaymentSuccess.jsx   # Stripe redirect success page (dormant until Stripe is live)
 │       ├── context/
 │       │   ├── AuthContext.js       # Global auth state (user, login, logout)
 │       │   └── CreditContext.js     # Global credit balance state
 │       ├── services/
 │       │   ├── api.js               # Axios instance with interceptors
+│       │   ├── apiUrl.js            # VITE_API_URL helper for non-axios fetch calls
 │       │   └── auth.js              # Auth service helpers
-│       └── styles/
-│           └── index.css            # Tailwind CSS directives
+│       ├── styles/
+│       │   ├── index.css            # Tailwind CSS directives
+│       │   └── tailwind.css
+│       └── utils/
+│           ├── fonts.js             # Per-script font selection (scriptOf/useContentFont)
+│           ├── pageMeta.js          # Temporary title/meta helper (blog pages only)
+│           └── suggestionLanguages.js
 │
 └── server/                          # Express backend (Node.js)
     ├── server.js                    # Main entry point
@@ -113,37 +127,55 @@ penlix/
     ├── config/
     │   ├── database.js              # MongoDB connection via Mongoose
     │   ├── gemini.js                # Gemini API client setup (MODEL='gemini-2.5-flash-lite')
-    │   └── stripe.js                # Stripe API client setup
-
+    │   ├── pricing.js               # Single source of truth: FREE_SIGNUP_CREDITS=20, packs $4.99→50 / $9.99→120 / $19.99→300
+    │   └── stripe.js                # Stripe API client setup (dormant)
     ├── models/
-    │   ├── User.js                  # User accounts and credit balance
+    │   ├── User.js                  # User accounts and credit balance (default 20)
     │   ├── Content.js               # Generated content records
     │   ├── Credit.js                # Credit transaction log
     │   ├── Payment.js               # Stripe payment records
-    │   └── Context.js               # RAG reference data store
-
+    │   ├── Context.js               # RAG reference data store
+    │   ├── Feedback.js              # Tester feedback reports
+    │   └── Suggestion.js            # Glossary translation suggestions
     ├── routes/
     │   ├── auth.js                  # /api/auth/*
-    │   ├── generate.js              # /api/generate/*
+    │   ├── generate.js              # /api/generate/* (/, /stream, /with-image, /tune, /rag, /ping-ai)
     │   ├── user.js                  # /api/user/*
     │   ├── credits.js               # /api/credits/*
     │   ├── payment.js               # /api/payment/*
     │   ├── history.js               # /api/history/*
-    │   └── admin.js                 # /api/admin/* (incl. /contexts)
+    │   ├── admin.js                 # /api/admin/* (incl. /contexts)
+    │   ├── billing.js               # /api/billing/* (/packages, /checkout, /webhook)
+    │   ├── pdf.js                   # /api/pdf/* (/analyze)
+    │   ├── media.js                 # /api/media/* (/upload — Cloudinary)
+    │   ├── glossary.js              # /api/glossary/* (/suggest, /suggestions, approve/reject)
+    │   └── feedback.js              # /api/feedback/* (POST public, GET admin)
     ├── controllers/
     │   ├── authController.js        # Register, login, getMe logic
-    │   ├── generatorController.js   # Standard and RAG content generation
-    │   ├── paymentController.js     # Stripe intents and webhook
+    │   ├── generatorController.js   # Standard, streaming, RAG, image, tune generation
+    │   ├── paymentController.js     # Stripe intents and webhook (dormant)
+    │   ├── pdfController.js         # PDF text extraction + analysis
     │   └── userController.js        # Profile get and update
     ├── middleware/
     │   ├── auth.js                  # JWT verification middleware
-    │   ├── creditCheck.js           # Blocks requests if credits < required
+    │   ├── creditCheck.js           # Balance read (used by /rag)
+    │   ├── reserveCredit.js         # Atomic credit reserve (paid generation routes)
+    │   ├── isAdmin.js               # Admin gate
+    │   ├── userRateLimit.js         # Per-user rate limiter (10/hr on generation)
     │   └── errorHandler.js          # Global Express error handler
     └── utils/
         ├── gemini.js                # getModel, generateText/SEO/tuneText, dual-agent system prompt
-
-        ├── prompts.js               # buildPrompt() for each content type
+        ├── prompts.js               # buildPrompt() for each content type (23 langs)
         ├── validators.js            # Joi validation schemas + validate()
+        ├── qualityCheck.js          # checkQuality, stripAgentLabels
+        ├── imageInput.js            # Image validation + applyImageDefaults (image-only generation)
+        ├── quotaMessages.js         # Penlix-branded quota/busy messages (never "Gemini")
+        ├── feedbackValidation.js    # Pure validator for feedback reports
+        ├── suggestionValidation.js  # Glossary suggestion validation + approve/reject rules
+        ├── mediaStorage.js          # Cloudinary upload/delete
+        ├── twoPass.js               # Two-pass editor (pass 2)
+        ├── corsOrigins.js           # Exact CORS allowlist
+        ├── embeddings.js            # generateEmbedding/cosineSimilarity/findRelevantContexts
         └── jwt.js                   # generateToken() helper
 ```
 
@@ -167,7 +199,7 @@ await mongoose.connect(process.env.MONGODB_URI);
 ```
 
 ### `cors` ^2.8.5
-Cross-Origin Resource Sharing middleware. Allows the React frontend (running on port 5000) to make HTTP requests to the Express backend (port 3001) without browser security blocks. Allowed origins are whitelisted in `server/server.js` from the `CLIENT_URL` env var plus `http://localhost:5173`/`http://localhost:5000` for dev (on main, a `*.vercel.app` / `*.replit.dev` regex also matches — see Known issues in `PROJECT_CONTEXT.md`; PR #8 replaces this with an exact allowlist).
+Cross-Origin Resource Sharing middleware. Allowed origins are an exact allowlist in `server/utils/corsOrigins.js` (the `CLIENT_URL` env var plus `http://localhost:5173`/`http://localhost:5000` for dev and `verzo-git-*` Vercel preview URLs). The old `*.vercel.app` / `*.replit.dev` regex was removed by PR #8.
 ```js
 app.use(cors({ origin: corsOriginCheck, credentials: true }));
 ```
@@ -209,7 +241,7 @@ OpenAI is not used anywhere in this codebase — the unused `openai` package and
 
 
 ### `stripe` ^11.10.0
-Stripe's Node.js SDK. Used to create payment intents (charge users for credit packs) and verify incoming webhook events from Stripe to securely credit user accounts after payment.
+Stripe's Node.js SDK. Used to create payment intents (charge users for credit packs) and verify incoming webhook events from Stripe to securely credit user accounts after payment. **Not live:** the keys are not configured, so no checkout can run.
 ```js
 import Stripe from 'stripe';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
@@ -256,7 +288,7 @@ Watches server files for changes and automatically restarts the Node.js server d
 The core UI library. React lets us build the interface as a tree of reusable components. `react-dom` renders those components into the browser's DOM.
 
 ### `react-router-dom` ^6.10.0
-Client-side routing. Handles navigation between pages (Home, Login, Dashboard, Pricing) without a full page reload. Also used for the `PrivateRoute` guard that redirects unauthenticated users to `/login`.
+Client-side routing. Handles navigation between pages (Home, Login, Dashboard, Pricing, Blog) without a full page reload. Also used for the `PrivateRoute` guard that redirects unauthenticated users to `/login`.
 ```jsx
 <Routes>
   <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
@@ -274,7 +306,7 @@ api.get('/auth/me');
 The browser-side Socket.io library. Connects to the Express Socket.io server to receive real-time events like `generation:start` and `generation:done` while AI content is being generated.
 
 ### `@stripe/react-stripe-js` ^2.1.0 + `@stripe/stripe-js` ^1.46.0
-Stripe's official React library and JS SDK. Used to render the Stripe payment UI (card input) and securely collect payment details without raw card numbers touching our server.
+Stripe's official React library and JS SDK. Used to render the Stripe payment UI (card input) and securely collect payment details without raw card numbers touching our server. Installed but dormant until Stripe is live.
 
 ### `recharts` ^2.5.0
 A charting library built on top of React and D3. Used in the Dashboard component to render a bar chart of recent credit usage over time.
@@ -299,7 +331,7 @@ formatDistanceToNow(new Date(item.createdAt), { addSuffix: true });
 ```
 
 ### `tailwindcss` ^3.2.7 *(dev)*
-A utility-first CSS framework. All styling is done by applying small utility classes directly in JSX rather than writing custom CSS files. Configured via `tailwind.config.js`.
+A utility-first CSS framework. All styling is done by applying small utility classes directly in JSX rather than writing custom CSS files. Configured via `tailwind.config.js`. Dark-mode styling uses `dark:` classes.
 
 ### `vite` ^4.2.0 *(dev)*
 The frontend build tool and development server. Provides instant hot module replacement (HMR), fast builds, and the `/api` proxy to the Express backend.
@@ -309,6 +341,12 @@ Vite plugin that adds React Fast Refresh (hot reload that preserves component st
 
 ### `postcss` + `autoprefixer` *(dev)*
 PostCSS processes Tailwind's CSS directives into real CSS. Autoprefixer automatically adds vendor prefixes (`-webkit-`, `-moz-`) for browser compatibility.
+
+### `react-helmet-async`
+Per-page SEO (`Seo.jsx`): title, meta description, canonical and Open Graph tags. Used by 10 pages (Home, Dashboard, Pricing, Login, Register, ForgotPassword, ResetPassword, Admin, PDFAnalyzer, PaymentSuccess). Blog pages still use the temporary `setPageMeta` helper (`client/src/utils/pageMeta.js`).
+
+### `marked`
+Renders blog Markdown to HTML on the post page. Raw HTML in Markdown is never rendered (a hand-written `<script>` or `<iframe>` in a `.md` file renders as nothing).
 
 ---
 
@@ -322,7 +360,7 @@ Stores account information and credit balance.
 | `name` | String | Display name |
 | `email` | String | Unique login email |
 | `password` | String | bcrypt-hashed password |
-| `credits` | Number | Current credit balance (default: 10) |
+| `credits` | Number | Current credit balance (default: 20 — `FREE_SIGNUP_CREDITS` in `server/config/pricing.js`) |
 | `subscription` | String | `free`, `basic`, or `pro` |
 | `stripeCustomerId` | String | Stripe customer reference |
 | `resetPasswordToken` | String | SHA-256 hash of the password-reset token (never the raw token) |
@@ -341,7 +379,7 @@ Records every piece of AI-generated content.
 | Field | Type | Description |
 |---|---|---|
 | `user` | ObjectId | Reference to the User who generated it |
-| `type` | String | `blog`, `social`, `email`, `ad`, `product` |
+| `type` | String | `blog`, `social`, `email`, `ad`, `product` (+ `cover_letter`, `resume_summary`, `linkedin`) |
 | `prompt` | String | The original user prompt |
 | `output` | String | The AI-generated text |
 | `creditsUsed` | Number | Credits consumed (default: 1) |
@@ -368,26 +406,12 @@ Records Stripe payment attempts.
 | Field | Type | Description |
 |---|---|---|
 | `user` | ObjectId | Reference to the User |
-| `stripePaymentIntentId` | String | Stripe's unique payment ID |
+| `stripePaymentIntentId` | String | Stripe's unique payment ID (unique index — duplicates must be deduped in Atlas first) |
 | `amount` | Number | Amount in cents (e.g., 499 = $4.99) |
 | `currency` | String | Currency code (default: `usd`) |
 | `status` | String | `pending`, `succeeded`, or `failed` |
 | `creditsAdded` | Number | Credits granted after success |
 | `createdAt` | Date | Payment timestamp |
-
----
-
-### `Subscription`
-Tracks active Stripe subscriptions for recurring plans.
-
-| Field | Type | Description |
-|---|---|---|
-| `user` | ObjectId | Reference to the User |
-| `stripeSubscriptionId` | String | Stripe subscription ID |
-| `plan` | String | `basic` or `pro` |
-| `status` | String | `active`, `canceled`, or `past_due` |
-| `currentPeriodEnd` | Date | When the current billing period ends |
-| `createdAt` | Date | Subscription creation date |
 
 ---
 
@@ -399,7 +423,33 @@ Stores reference knowledge used to augment AI prompts before generation.
 | `title` | String | Name of the knowledge entry |
 | `keywords` | [String] | Tags used to match against user topics |
 | `information` | String | The factual content injected into the prompt |
+| `embedding` | [Number] | `gemini-embedding-001` vector (`select: false`) |
 | `createdAt` | Date | Creation timestamp |
+
+---
+
+### `Feedback` *(temporary tester feedback)*
+| Field | Type | Description |
+|---|---|---|
+| `user` | ObjectId | Reference to the User, if logged in (anonymous reports allowed) |
+| `page` | String | Page the report came from (auto-filled) |
+| `category` | String | `bug`, `suggestion`, or `other` |
+| `message` | String | The report text (max 2000 chars) |
+| `name` | String | Optional reporter name |
+| `createdAt` | Date | Report timestamp |
+
+---
+
+### `Suggestion` *(glossary/dictionary)*
+| Field | Type | Description |
+|---|---|---|
+| `user` | ObjectId | Reference to the suggesting User |
+| `word` | String | The word being translated |
+| `language` | String | Target language (one of the 23) |
+| `suggestedTranslation` | String | The suggested translation |
+| `note` | String | Optional note |
+| `status` | String | `pending`, `approved`, or `rejected` |
+| `createdAt` | Date | Suggestion timestamp |
 
 ---
 
@@ -408,8 +458,8 @@ Stores reference knowledge used to augment AI prompts before generation.
 ### Auth — `/api/auth`
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| POST | `/register` | No | Create account, returns JWT |
-| POST | `/login` | No | Login, returns JWT |
+| POST | `/register` | No | Create account (20 free credits), returns JWT in httpOnly cookie |
+| POST | `/login` | No | Login, returns JWT in httpOnly cookie |
 | GET | `/me` | JWT | Returns current user info |
 | POST | `/forgot-password` | No | Request a reset link; always returns the same generic message, whether or not the email is registered |
 | POST | `/reset-password/:token` | No | Set a new password (min. 6 characters) with a valid, unexpired reset token; clears the token on success |
@@ -417,22 +467,33 @@ Stores reference knowledge used to augment AI prompts before generation.
 ### Generate — `/api/generate`
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| POST | `/` | JWT + 1 credit | Standard content generation (requires per-type details, quality-checked, 1 retry) |
-| POST | `/stream` | JWT + 1 credit | Streaming generation (SSE, same validation and quality check) |
-| POST | `/rag` | No | RAG-augmented generation (quality-checked, no credits) |
+| POST | `/` | JWT + 1 credit (atomic reserve) | Standard content generation (requires per-type details, quality-checked, 1 retry) |
+| POST | `/stream` | JWT + 1 credit (atomic reserve) | Streaming generation (SSE, same validation and quality check) |
+| POST | `/with-image` | JWT + 1 credit (atomic reserve) | Image-based generation (multipart, one `image` file JPG/PNG/WebP max 5 MB); prompt and details optional with an image |
+| POST | `/tune` | JWT, free | Tune existing text (shorten / more engaging / professional / reduce hype) |
+| POST | `/rag` | JWT + 1 credit (`creditCheck`) | RAG-augmented generation (quality-checked) |
+| GET | `/ping-ai` | JWT | Diagnostic: verifies the AI key works without consuming credits |
 
 ### History — `/api/history`
 | Method | Path | Auth | Description |
 |---|---|---|---|
 | GET | `/` | JWT | Paginated content history |
 | DELETE | `/:id` | JWT | Delete one history item |
+| PATCH | `/:id/images` | JWT | Swap one embedded blog image for another candidate (no credit) |
 
 ### Credits — `/api/credits`
 | Method | Path | Auth | Description |
 |---|---|---|---|
 | GET | `/` | JWT | Credit balance + transaction log |
 
-### Payment — `/api/payment`
+### Billing — `/api/billing`
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| GET | `/packages` | No | Credit packs from the single source of truth (`server/config/pricing.js`) |
+| POST | `/checkout` | JWT | Create Stripe checkout (dormant until Stripe keys are set) |
+| POST | `/webhook` | No (Stripe sig) | Handle Stripe webhook events (idempotent) |
+
+### Payment — `/api/payment` (legacy Stripe intent flow; dormant)
 | Method | Path | Auth | Description |
 |---|---|---|---|
 | POST | `/create-intent` | JWT | Create Stripe payment intent |
@@ -456,20 +517,33 @@ All routes require JWT + admin (`protect`, `isAdmin`).
 | DELETE | `/users/:id` | Admin | Delete a user and their Content + Credit records |
 | POST | `/grant-credits` | Admin | Grant credits by email |
 | GET/POST/DELETE | `/contexts` | Admin | Manage RAG context documents |
+| GET | `/feedback` | Admin | List tester feedback reports (newest first, capped at 100) |
 
 Delete safeguards: an admin cannot delete their own account (403) and no admin account can be deleted (403); a missing user returns 404. The admin panel (User Management) shows a Delete button next to Edit Credits for regular users only — it is disabled on admin rows and on the signed-in admin's own row, asks for confirmation with the user's email, and removes the user from the list on success.
 
-### Context — `/api/admin/contexts` (admin only)
+### PDF — `/api/pdf`
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| POST | `/` | Admin | Insert new RAG reference document |
-| GET | `/` | Admin | List all stored context documents |
-| DELETE | `/:id` | Admin | Delete a context document |
+| POST | `/analyze` | JWT | Upload a PDF (max 10 MB), get study notes, chapter summaries, and a test bank |
 
-> The old public `/api/context` routes were removed (security fix H2):
-> they let anyone read all RAG contexts and inject their own. No
-> frontend code called them — the admin panel already used
-> `/api/admin/contexts`.
+### Media — `/api/media`
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| POST | `/upload` | JWT | Upload one image or audio file (max 5 MB, Cloudinary); storage only, no credit charged |
+
+### Glossary — `/api/glossary`
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| POST | `/suggest` | JWT | Suggest a translation for a word (free; one pending suggestion per user per word+language) |
+| GET | `/suggestions` | Admin | List suggestions (pending first) |
+| POST | `/suggestions/:id/approve` | Admin | Approve a suggestion |
+| POST | `/suggestions/:id/reject` | Admin | Reject a suggestion |
+
+### Feedback — `/api/feedback`
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| POST | `/` | No (optional auth) | Submit a feedback report (page, category, message; anonymous allowed; 10/hour per IP) |
+| GET | `/` | Admin | List feedback reports (newest first, capped at 100) |
 
 ---
 
@@ -477,7 +551,7 @@ Delete safeguards: an admin cannot delete their own account (403) and no admin a
 
 ### `authController.js`
 Handles user registration and login.
-- **`register`** — validates uniqueness, creates User, returns JWT + user object
+- **`register`** — validates uniqueness, creates User (20 free credits via the model default), returns JWT + user object
 - **`login`** — compares password with bcrypt hash, returns JWT + user object
 - **`getMe`** — returns the currently authenticated user's data from `req.user`
 - **`forgotPassword`** — generates a secure random reset token, stores only its SHA-256 hash with a 1-hour expiry, and emails a `/reset-password/:token` link via Resend when `RESEND_API_KEY` and `EMAIL_FROM` are set; otherwise no email is sent and the response stays generic
@@ -487,28 +561,35 @@ Frontend pages: `/forgot-password` (request a link), `/reset-password/:token` (s
 
 ### `generatorController.js`
 Handles all AI content generation.
-- **`generate`** — standard flow: emits Socket.io event, calls Gemini via `generateText()`, saves Content record, deducts 1 credit, emits done event
-
-- **`generateAIContent`** — RAG flow: searches Context collection by keywords, builds augmented prompt if a match is found, calls `gemini-2.5-flash-lite`, returns `{ response, contextUsed, contextTitle }`
+- **`generate`** — standard flow: emits Socket.io event, calls Gemini via `generateText()`, saves Content record, deducts 1 credit (atomic reserve), emits done event
+- **`streamGenerate`** — same as `generate`, streamed over SSE
+- **`generateFromImage`** — image flow: the image is sent to Gemini as inline image data for that one generation only and is never stored; prompt/details default when missing (`applyImageDefaults`)
+- **`tuneContent`** — free text tuning, no credit
+- **`generateAIContent`** — RAG flow: searches Context collection (embedding-first, keyword fallback), builds augmented prompt if a match is found, calls `gemini-2.5-flash-lite`, returns `{ response, contextUsed, contextTitle }`
 
 - **Quality check (all generation routes)** — after the AI returns, `checkQuality()` (see `utils/qualityCheck.js`) checks the output for placeholders, banned phrases, filler openers, missing required details and length. A failed check regenerates once with the issues as feedback; if it still fails, the best attempt is returned with a `qualityReport { passed, issues, retried }` instead of failing silently. Only 1 credit is deducted per generation regardless of retries, and only the final output is saved.
 
 ### Content quality checks
-- **Required fields** — `generateSchema` (in `utils/validators.js`) requires extra details per content type: blog/social need topic and audience; email needs company, role, location, sender name and an apply link or contact; ad needs product, audience and CTA; product needs product and audience. Missing fields are blocked with a 400 naming them — no AI call is made and no credit is deducted. The Generator form shows these fields dynamically with inline errors.
+- **Required fields** — `generateSchema` (in `utils/validators.js`) requires extra details per content type: blog/social need topic and audience; email needs company, role, location, sender name and an apply link or contact; ad needs product, audience and CTA; product needs product and audience. Missing fields are blocked with a 400 naming them — no AI call is made and no credit is deducted. The Generator form shows these fields dynamically with inline errors. **Exception:** when an image is attached, prompt and details are optional (`applyImageDefaults` in `utils/imageInput.js`).
 - **Prompt rules** — `buildPrompt()` adds strict rules to every prompt: never use placeholders (`[Your Name]`, `[Company]`, `{{name}}`, `<insert>`), use only the details provided, never invent facts/links/salaries/deadlines, omit a line instead of making it up, and avoid filler openers and generic buzzwords.
-- **Post-generation check** — `utils/qualityCheck.js` exports `checkQuality(text, { type, purpose, input, length })` returning `{ passed, issues[] }`, plus `generateWithQualityCheck()` / `retryGeneration()` used by the controller. The banned-phrase list is a separate editable array in that file. Per-purpose checks: Google search ad headline ≤ 30 / description ≤ 90 chars, X post under 280 chars, email subject + greeting + sign-off when the purpose requires them, and a repetition check that flags 3+ consecutive sentences starting the same way.
+- **Post-generation check** — `utils/qualityCheck.js` exports `checkQuality(text, { type, purpose, input, length })` returning `{ passed, issues[] }`, plus `generateWithQualityCheck()` / `retryGeneration()` used by the controller. The banned-phrase list is a separate editable array in that file. Per-purpose checks: Google search ad headline ≤ 30 / description ≤ 90 chars, X post under 280 chars, email subject + greeting + sign-off when the purpose requires them, and a repetition check that flags 3+ consecutive sentences starting the same way. `stripAgentLabels` removes leaked `Agent 1/2` role labels from saved output.
 
 ### Purpose templates & two-pass generation
 - **Purpose sub-types** — `server/config/contentTypes.js` defines 26 purposes across the 5 content types (email: cold outreach, follow-up, job posting, complaint, apology, payment reminder, newsletter, announcement, thank-you, meeting request; blog: how-to, listicle, opinion, case study, SEO article; social: LinkedIn, X/Twitter, Instagram caption, Facebook, WhatsApp broadcast; ad: Google search, Facebook/Instagram, product launch; product: e-commerce, app store, feature announcement). Each purpose has required fields, a structure outline, a default tone, a length range and 2 human-written example snippets used as few-shot guidance. The Generator shows a Purpose dropdown after Type; `validators.js` enforces the purpose's required fields (400 on missing fields, no AI call, no credit), falling back to per-type fields when no purpose is sent.
+- **Email subtypes** — `subtype` on type `email`: general, cold_outreach, follow_up, newsletter, welcome, apology, job_application, thank_you, meeting_request — each with its own structure. Social `subtype` captions returns 3 caption options.
 - **Human-style prompting** — `buildPrompt()` injects the purpose structure and examples, plus tone (friendly, formal, persuasive, urgent, empathetic), reading level (simple, standard, professional) and an optional writing sample (max 1500 chars; the model matches its voice, never copies its content). Style rules: vary sentence length, concrete details only, active voice, no stacked adjectives, no generic openers/closers, no closing paragraph that repeats the body.
 - **Two-pass generation** — pass 1 drafts, pass 2 (`buildEditorPrompt()` in `utils/prompts.js`, run by `utils/twoPass.js`) edits only: removes robotic phrasing, repeated sentence patterns and filler while preserving every fact. Skipped for outputs under 80 words; disable with `TWO_PASS_ENABLED=false` (default true). Streaming streams pass 1 live, then replaces the text with the edited version in the `done` event — the editor needs the whole draft first, and the frontend already replaces output on `done`, so no UI change was needed. `checkQuality` runs after pass 2. Still exactly 1 credit per generation.
-- **Tests** — `server/tests/purposeTemplates.test.js` (Node built-in test runner, `npm test` in `server/`): purpose config shape, purpose-aware validation, prompt injection, per-purpose quality checks, two-pass skip/edit/fallback.
+- **Tests** — `server/tests/` (Node built-in test runner, `npm test` in `server/`): purpose config shape, purpose-aware validation, prompt injection, per-purpose quality checks, two-pass skip/edit/fallback, quota, image input, feedback validation, billing integrity.
 
 ### `paymentController.js`
-Handles Stripe payment processing.
+Handles Stripe payment processing. **Dormant until Stripe keys are set.**
 - **`createPaymentIntent`** — maps a `packageId` to a credit pack, creates Stripe PaymentIntent, saves pending Payment record
-- **`webhook`** — receives Stripe events, verifies signature, adds credits to user on `payment_intent.succeeded`
+- **`webhook`** — receives Stripe events, verifies signature, adds credits to user on `payment_intent.succeeded` (idempotent)
 - **`getPaymentHistory`** — returns all Payment records for the authenticated user
+
+### `pdfController.js`
+Handles the PDF Deep Analyzer.
+- **`analyzePDF`** — extracts text with `pdf-parse` v2 (rejects scanned/empty PDFs with 422), chunks large docs, builds study notes / chapter summaries / a 10-question test bank via Gemini, returns the analysis
 
 ### `userController.js`
 Handles user profile management.
@@ -522,9 +603,17 @@ Handles user profile management.
 ### `auth.js` — JWT Protect
 Reads the JWT from the `token` httpOnly cookie (`req.cookies.token`), verifies it with `jsonwebtoken`, loads the user from MongoDB, and attaches them to `req.user`. Returns 401 if missing or invalid.
 
-
 ### `creditCheck.js` — Credit Guard
-Checks that `req.user.credits` is at least the required amount (default: 1). Returns 402 Payment Required if the user is out of credits. Applied before any generation route.
+Checks that `req.user.credits` is at least the required amount (default: 1). Returns 402 Payment Required if the user is out of credits. Used by `/rag` (a read-only balance check).
+
+### `reserveCredit.js` — Atomic Credit Reserve
+Replaces `creditCheck` on paid generation routes: atomically reserves 1 credit before generation and settles it after, so two concurrent requests cannot both pass with 1 credit. (Fixes the old credit-check race.)
+
+### `userRateLimit.js` — Per-User Rate Limiter
+Per-user limiter (10 requests/hour on generation routes; 20/hour on media upload). The global limiter is 150 requests/15 min per IP.
+
+### `isAdmin.js` — Admin Gate
+Requires `req.user.isAdmin`; returns 403 otherwise.
 
 ### `errorHandler.js` — Global Error Handler
 Catches any error passed via `next(err)` from any route or controller. Returns a consistent `{ message }` JSON response with the appropriate HTTP status code. Prevents unhandled errors from crashing the server.
@@ -540,14 +629,37 @@ Exports a single `generateToken(id)` function that signs a JWT with the user's M
 Defines Joi validation schemas for registration, login, and content generation requests. Exports a `validate(schema)` middleware factory that checks `req.body` and returns a 400 error with the first validation failure message if invalid. `generateSchema` also enforces per-type required detail fields (`REQUIRED_FIELDS` / `missingRequiredFields()` in the same file) and names any missing fields in the 400 message.
 
 ### `utils/prompts.js`
-Exports `buildPrompt({ type, prompt, tone, length })`. Constructs a tailored natural-language instruction for each of the 5 content types (blog, social, email, ad, product) with tone and word count guidance. Every prompt also carries strict output-quality rules (no placeholders, use only provided details, never invent facts/links/salaries/deadlines, no filler openers or buzzwords) and a `details` block with the user's per-type fields.
+Exports `buildPrompt({ type, prompt, tone, length, language, details, purpose, ... })`. Constructs a tailored natural-language instruction for each of the 5 content types (blog, social, email, ad, product) with tone and word count guidance. Every prompt carries a language anchor at the TOP (from `LANGUAGE_MAP`, 23 languages) plus strict output-quality rules (no placeholders, use only provided details, never invent facts/links/salaries/deadlines, no filler openers or buzzwords) and a `details` block with the user's per-type fields.
 
 ### `utils/qualityCheck.js`
-Exports `checkQuality(text, { type, input, length })` returning `{ passed, issues[] }` — placeholder detection, a separate editable `BANNED_PHRASES` array, rhetorical-question opener detection, email apply-link/sender-name presence, and a length check (more than 30% off the requested range). Also exports `generateWithQualityCheck()` and `retryGeneration()`, which regenerate once with the issues as feedback and return the best attempt with a `qualityReport { passed, issues, retried }`.
+Exports `checkQuality(text, { type, input, length })` returning `{ passed, issues[] }` — placeholder detection, a separate editable `BANNED_PHRASES` array, rhetorical-question opener detection, email apply-link/sender-name presence, and a length check (more than 30% off the requested range). Also exports `generateWithQualityCheck()` and `retryGeneration()`, which regenerate once with the issues as feedback and return the best attempt with a `qualityReport { passed, issues, retried }`. Also exports `stripAgentLabels()`.
 
 ### `utils/gemini.js`
 Exports `getModel`, `withSystem`, `generateText` / `generateSEO` / `tuneText`. Calls `buildPrompt`, sends the result to `gemini-2.5-flash-lite` via the Gemini SDK, and returns the generated text string. Holds the dual-agent system prompt (Expert Copywriter + Brutal AI Reviewer "REALITY CHECK").
 
+### `utils/imageInput.js`
+Image validation (`ALLOWED_IMAGE_MIMES`, `MAX_IMAGE_BYTES` 5 MB, `validateImageFile`) plus `applyImageDefaults(body)` — the pure helper that makes prompt/details optional for image-only generation (type-aware default prompt, neutral default details).
+
+### `utils/quotaMessages.js`
+Penlix-branded quota/busy messages (`penlixUnavailableMessage`, `mapProviderError`) — provider failures (429/503) are mapped to "Penlix is busy" wording; the provider name never reaches the user.
+
+### `utils/mediaStorage.js`
+Cloudinary upload/delete for images and audio (`uploadImage`, `uploadAudio`, `deleteMedia`, `MAX_UPLOAD_BYTES` 5 MB).
+
+### `utils/feedbackValidation.js`
+Pure validator for feedback reports (page, category, message max 2000 chars).
+
+### `utils/suggestionValidation.js`
+Glossary suggestion validation, approve/reject rules, and `glossarySnippet` (the approved term's JSON shape for `glossary.json`).
+
+### `utils/twoPass.js`
+Runs the pass-2 editor prompt and returns the edited draft (skips short outputs).
+
+### `utils/corsOrigins.js`
+The exact CORS allowlist (CLIENT_URL + localhost dev origins + `verzo-git-*` preview URLs).
+
+### `utils/embeddings.js`
+`generateEmbedding` / `cosineSimilarity` / `findRelevantContexts` for semantic RAG (`gemini-embedding-001`).
 
 ---
 
@@ -580,11 +692,12 @@ RAG (Retrieval-Augmented Generation) prevents the AI from hallucinating facts by
 **How it works:**
 
 ```
-1. Client sends: { userPrompt: "What's your refund policy?", topicKeywords: ["refund"] }
+1. Client sends: POST /api/generate/rag { prompt, ... } (JWT + 1 credit)
         │
         ▼
-2. Server searches MongoDB:
-   Context.findOne({ keywords: { $in: ["refund"] } })
+2. Server searches MongoDB for relevant Context documents:
+   embedding cosine similarity first (threshold 0.65, top-3),
+   keyword fallback (Context.findOne({ keywords: { $in: [...] } }))
         │
         ├── Match found →
         │     Build augmented prompt:
@@ -617,7 +730,7 @@ POST /api/admin/contexts
 
 ## Environment Variables
 
-All stored in `server/.env`.
+All stored in `server/.env` (Render dashboard for production; never in the repo).
 
 | Variable | Required | Description |
 |---|---|---|
@@ -627,13 +740,17 @@ All stored in `server/.env`.
 | `PORT` | No | Express server port (default: `3001`) |
 | `CLIENT_URL` | No | Frontend origin for CORS (default: `http://localhost:5000`) |
 | `GEMINI_API_KEY` | For generation | Your Gemini API key (Google AI Studio) |
-| `FREE_DAILY_CREDITS` | No | Free credits granted per day (default: `10`) |
+| `FREE_DAILY_CREDITS` | No | Credits the nightly reset sets each user to (Render env is currently `10`; remove it or set `20` to match the signup grant — see README Known issues) |
 | `UNSPLASH_ACCESS_KEY` | For blog images | Unsplash access key for stock photos in generated blogs |
-
-| `STRIPE_SECRET_KEY` | For payments | Stripe secret key (`sk_test_...` or `sk_live_...`) |
-| `STRIPE_WEBHOOK_SECRET` | For payments | Stripe webhook signing secret (`whsec_...`) |
+| `CLOUDINARY_CLOUD_NAME` | For media upload | Cloudinary cloud name |
+| `CLOUDINARY_API_KEY` | For media upload | Cloudinary API key |
+| `CLOUDINARY_API_SECRET` | For media upload | Cloudinary API secret |
+| `STRIPE_SECRET_KEY` | For payments | Stripe secret key (`sk_test_...` or `sk_live_...`) — not set; billing dormant |
+| `STRIPE_WEBHOOK_SECRET` | For payments | Stripe webhook signing secret (`whsec_...`) — not set |
 | `RESEND_API_KEY` | For password reset emails | Resend API key, set in the hosting dashboard only (no value in code or docs) |
 | `EMAIL_FROM` | For password reset emails | Verified sender address for reset emails; without these two variables, no reset email is sent |
+
+Note: `FREE_SIGNUP_CREDITS` (20) is **code**, not an env var — it lives in `server/config/pricing.js`, the single source of truth for pricing.
 
 ---
 
@@ -645,7 +762,7 @@ Browser → POST /api/auth/register
 → Joi validates body
 → Check email uniqueness in MongoDB
 → bcrypt hashes password
-→ User saved to MongoDB (10 free credits)
+→ User saved to MongoDB (20 free credits via the model default)
 → JWT generated and set in an httpOnly cookie by the server
 
 → AuthContext sets user state
@@ -668,15 +785,15 @@ Browser (Login page) -> "Forgot password?" -> /forgot-password
 
 ### Content Generation
 ```
-Browser (Dashboard) → POST /api/generate
+Browser (Dashboard) → POST /api/generate (or /stream, or /with-image)
 → auth middleware verifies JWT → loads user
-→ creditCheck confirms credits ≥ 1
-→ Joi validates { type, prompt, tone, length }
+→ reserveCredit atomically reserves 1 credit
+→ Joi validates { type, prompt, tone, length } (+ per-type details; optional with an image)
 → buildPrompt() creates instruction string
 → Gemini gemini-2.5-flash-lite generates text
 
 → Content saved to MongoDB
-→ User credits decremented in MongoDB
+→ Credit reserve settles (1 credit spent) in MongoDB
 → Credit transaction logged in MongoDB
 → Socket.io emits generation:done to browser
 → Response returned to client
@@ -685,22 +802,20 @@ Browser (Dashboard) → POST /api/generate
 
 ### RAG Generation
 ```
-Client → POST /api/generate/rag { userPrompt, topicKeywords }
-→ MongoDB: Context.findOne({ keywords: { $in: topicKeywords } })
+Client → POST /api/generate/rag { prompt, ... } (JWT + 1 credit)
+→ MongoDB: embedding similarity first, keyword fallback
 → If found: inject context into prompt with strict instructions
-→ If not found: use userPrompt directly
+→ If not found: use prompt as-is
 → Gemini gemini-2.5-flash-lite generates response
 → Return { response, contextUsed, contextTitle }
 ```
 
 ### Credit Purchase
 ```
-Browser → POST /api/payment/create-intent { packageId }
-→ Stripe creates PaymentIntent (client_secret returned)
-→ Browser collects card via Stripe Elements (card never touches our server)
-→ Stripe processes payment
-→ Stripe sends webhook → POST /api/payment/webhook
-→ Server verifies Stripe signature
+Browser → GET /api/billing/packages (packs from pricing.js)
+→ Stripe checkout (dormant until keys are set — no payment can be taken yet)
+→ Stripe sends webhook → POST /api/billing/webhook (or /api/payment/webhook)
+→ Server verifies Stripe signature (idempotent)
 → User credits incremented in MongoDB
 → Payment record updated to "succeeded"
 → Credit transaction logged
@@ -716,7 +831,9 @@ Browser → POST /api/payment/create-intent { packageId }
 - **Image input:** `POST /api/generate/with-image` (multipart/form-data,
   one `image` file, JPG/PNG/WebP, max 5 MB, 1 credit). The image is sent to
   Gemini as inline image data for that one generation only and is never
-  stored in MongoDB. Same fields/validation as `/stream`.
+  stored in MongoDB. Same fields/validation as `/stream`. **Image-only:**
+  prompt and details are optional with an image (`applyImageDefaults`) —
+  upload a photo, pick Blog, Generate, and it writes about the photo.
 - **Cross-language accuracy:** every language has an explicit instruction
   (`LANGUAGE_MAP`), plus a language anchor at the TOP of every prompt, so
   output stays in the selected language even when the prompt is written in
@@ -733,3 +850,15 @@ Browser → POST /api/payment/create-intent { packageId }
   embedded and all 6 are offered in the picker. `PATCH /api/history/:id/images`
   `{ slot, optionIndex }` swaps one embedded image for another candidate
   (no credits used).
+- **Font picker:** the output card and blog posts offer per-script fonts
+  (`client/src/components/FontPicker.jsx`, `client/src/utils/fonts.js`) —
+  Latin fonts plus Noto Nastaliq for Urdu script.
+- **Feedback system (temporary):** floating Feedback button on every page
+  (`client/src/components/FeedbackButton.jsx`); `POST /api/feedback`
+  (public, anonymous allowed) and `GET /api/feedback` (admin-only); the
+  admin panel lists reports with page, category, message and time.
+- **Glossary / dictionary:** users suggest translations
+  (`POST /api/glossary/suggest`); admin approves/rejects
+  (`/api/glossary/suggestions/:id/approve|reject`); approved terms go into
+  `client/src/content/glossary.json` by manual copy-paste (automatic
+  approved→glossary.json is not built yet).
