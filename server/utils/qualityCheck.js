@@ -16,6 +16,108 @@ export const BANNED_PHRASES = [
   'cutting-edge',
 ];
 
+// AI tells (Unslop-style): patterns that make generated text read as
+// AI-written. Kept separate from BANNED_PHRASES — these use thresholds
+// and patterns, not exact-phrase bans — and none of them overlap the
+// banned list, so one tell is never reported twice.
+const EMOJI_RE = /[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
+const CLICKBAIT_PHRASES = [
+  "you won't believe",
+  'you wont believe',
+  "you'll never guess",
+  'mind-blowing',
+  'mind blowing',
+  'this one trick',
+  'what happens next will',
+  'will shock you',
+  'doctors hate',
+];
+const CLICHE_OPENERS = [
+  'in the digital age',
+  "in today's world",
+  'in an era where',
+  'in a world where',
+  'in the modern world',
+  "in today's digital world",
+  'in an ever-evolving',
+  'in the ever-evolving',
+];
+// Overused AI-cliché words. Flagged only when used excessively (3+ hits
+// across the list), so a single legitimate use never trips the check.
+const CLICHE_WORDS = [
+  'tapestry', 'landscape', 'moreover', 'furthermore', 'additionally',
+  'crucial', 'pivotal', 'underscore', 'embark', 'testament', 'realm',
+];
+const CLICHE_WORDS_RE = new RegExp(`\\b(${CLICHE_WORDS.join('|')})\\b`, 'gi');
+// Common acronyms that are legitimately all-caps — excluded from the
+// shouty-caps count so a tech article mentioning HTML or CSS is not flagged.
+const CAPS_ALLOWLIST = new Set([
+  'HTML', 'CSS', 'JSON', 'HTTP', 'HTTPS', 'NASA', 'UNESCO', 'UNICEF',
+  'NATO', 'FIFA', 'UEFA', 'ASEAN', 'OPEC',
+]);
+
+/**
+ * Detect AI tells in generated text: emoji in headings/labels, shouty or
+ * clickbait phrasing, cliché openers, overused AI-cliché words, em-dash
+ * overuse. Pure function — returns an array of issue strings (empty when
+ * clean). `type` is the content type; emoji are normal in social posts,
+ * so the emoji-heading check is skipped for them.
+ */
+export const checkAiTells = (body, { type } = {}) => {
+  const issues = [];
+  const text = String(body || '');
+  const lower = text.toLowerCase();
+
+  // (a) Emoji in headings / bold labels. Social posts use emoji freely,
+  // so this only runs for blog / email / ad / product.
+  if (type !== 'social') {
+    const badLines = text.split('\n').filter((line) => {
+      const t = line.trim();
+      const isHeading = /^#{1,6}\s/.test(t);
+      const isLabel = /^\s*([-*•]\s*)?\*\*[^*]+:\*\*/.test(line);
+      return (isHeading || isLabel) && EMOJI_RE.test(line);
+    });
+    if (badLines.length) {
+      const preview = badLines[0].trim().slice(0, 60);
+      issues.push(`AI tell: emoji in a heading/label ("${preview}"). Remove emoji from headings — use plain text.`);
+    }
+  }
+
+  // (b) Shouty all-caps words (4+ letters, 3 or more of them) and
+  // clickbait phrases.
+  const capsWords = (text.match(/\b[A-Z]{4,}\b/g) || []).filter((w) => !CAPS_ALLOWLIST.has(w));
+  if (capsWords.length >= 3) {
+    const shown = [...new Set(capsWords)].slice(0, 3).join(', ');
+    issues.push(`AI tell: shouty all-caps words (${shown}). Use normal sentence case.`);
+  }
+  const clickbait = CLICKBAIT_PHRASES.filter((p) => lower.includes(p));
+  if (clickbait.length) {
+    issues.push(`AI tell: clickbait phrasing ("${clickbait[0]}"). Rewrite it plainly — no hype.`);
+  }
+
+  // (c) Cliché openers.
+  const openers = CLICHE_OPENERS.filter((p) => lower.includes(p));
+  if (openers.length) {
+    issues.push(`AI tell: cliché opener ("${openers[0]}"). Start with a concrete statement instead.`);
+  }
+
+  // (d) Overused AI-cliché words — flagged only at 3+ hits across the list.
+  const wordHits = (text.match(CLICHE_WORDS_RE) || []).map((w) => w.toLowerCase());
+  if (wordHits.length >= 3) {
+    const shown = [...new Set(wordHits)].slice(0, 3).join(', ');
+    issues.push(`AI tell: overused AI-cliché words (${shown}, ${wordHits.length} times). Use plainer words.`);
+  }
+
+  // (e) Em-dash overuse — 4+ dashes and more than one per 100 words.
+  const dashCount = (text.match(/—/g) || []).length;
+  const wordCount = text.split(/\s+/).filter(Boolean).length;
+  if (dashCount >= 4 && dashCount > wordCount / 100) {
+    issues.push(`AI tell: ${dashCount} em-dashes — heavy em-dash use reads as AI-written. Use commas or periods instead.`);
+  }
+
+  return issues;
+};
+
 // Google search ad character limits (headline 30, description 90).
 export const GOOGLE_AD_LIMITS = { headline: 30, description: 90 };
 // X / Twitter post character limit.
@@ -280,6 +382,12 @@ export const checkQuality = (text, { type, purpose = '', input = {}, length = 'm
       issues.push(`Contains a ${figure} that was not provided in the input. Remove it or use only figures from the input.`);
     }
   }
+
+  // 9. AI tells — patterns that make generated text read as AI-written
+  // (Unslop-style: emoji in headings, shouty/clickbait phrasing, cliché
+  // openers, overused AI-cliché words, em-dash overuse). Folded into the
+  // normal issues list, so the retry prompt fixes them at no extra credit.
+  issues.push(...checkAiTells(body, { type }));
 
   return { passed: issues.length === 0, issues };
 };
