@@ -9,6 +9,16 @@ const userSchema = new mongoose.Schema({
   credits: { type: Number, default: FREE_SIGNUP_CREDITS },
   subscription: { type: String, enum: ['free', 'basic', 'pro'], default: 'free' },
   lastFreeCreditResetAt: { type: Date },
+  // Daily upload counters (UTC day key 'YYYY-MM-DD'). Free users get
+  // 10 image / 5 PDF uploads per day; paid (basic/pro) get 50 / 20 —
+  // see server/utils/uploadLimits.js. Counts reset when the stored day
+  // rolls over; accounts created before this field existed start empty
+  // and are repaired on their first upload of the day.
+  uploadCounts: {
+    day: { type: String, default: '' },
+    images: { type: Number, default: 0 },
+    pdfs: { type: Number, default: 0 },
+  },
   stripeCustomerId: { type: String },
   isAdmin: { type: Boolean, default: false },
   // Email verification: a new account starts UNVERIFIED (registration sets

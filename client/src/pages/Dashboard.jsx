@@ -6,7 +6,7 @@ import DashboardStats from '../components/Dashboard.jsx';
 import Generator from '../components/Generator.jsx';
 import ContentHistory from '../components/ContentHistory.jsx';
 import { Link } from 'react-router-dom';
-import { FiZap, FiClock, FiFileText, FiEdit3, FiMail } from 'react-icons/fi';
+import { FiZap, FiClock, FiFileText, FiEdit3, FiMail, FiDownload } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import api from '../services/api.js';
 import Seo from '../components/Seo.jsx';
@@ -24,6 +24,7 @@ export default function Dashboard() {
   const [tab, setTab] = useState('generate');
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => { fetchCredits(); }, [fetchCredits]);
 
@@ -39,6 +40,41 @@ export default function Dashboard() {
       toast.error(err.response?.data?.message || 'Could not send the verification email. Please try again.');
     } finally {
       setResending(false);
+    }
+  };
+
+  // Download everything Penlix stores about you as one JSON file.
+  // The server answers with a blob; on error (e.g. the 5/hour limit) the
+  // error body is also a blob, so read its text before showing the message.
+  const handleDownloadData = async () => {
+    setDownloading(true);
+    try {
+      const res = await api.get('/user/data-export', { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/json' }));
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `penlix-data-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      toast.success('Your data has been downloaded.');
+    } catch (err) {
+      let message = 'Could not download your data. Please try again.';
+      const data = err.response?.data;
+      if (data instanceof Blob) {
+        try {
+          const parsed = JSON.parse(await data.text());
+          if (parsed?.message) message = parsed.message;
+        } catch {
+          // Keep the generic message when the error body is not JSON.
+        }
+      } else if (data?.message) {
+        message = data.message;
+      }
+      toast.error(message);
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -146,6 +182,27 @@ export default function Dashboard() {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.15 }}>
           {tab === 'generate' ? <Generator /> : <ContentHistory />}
         </motion.div>
+
+        {/* Your data — download everything Penlix stores about you. */}
+        <div className="mt-8 bg-white dark:bg-ink-card border border-gray-200 dark:border-slate-800 rounded-2xl p-5 flex items-center justify-between gap-4 flex-wrap">
+          <div>
+            <h2 className="text-sm font-bold text-gray-900 dark:text-white">Your data</h2>
+            <p className="text-xs text-gray-500 dark:text-slate-400 mt-1 max-w-md leading-relaxed">
+              Download everything Penlix stores about you — your profile, generations, uploads, feedback and
+              glossary suggestions — as one JSON file. See the{' '}
+              <Link to="/privacy" className="text-indigo-600 dark:text-ink-link underline">Privacy Policy</Link>{' '}
+              for details.
+            </p>
+          </div>
+          <button
+            onClick={handleDownloadData}
+            disabled={downloading}
+            className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-2 flex-shrink-0"
+          >
+            <FiDownload size={14} />
+            {downloading ? 'Preparing…' : 'Download my data'}
+          </button>
+        </div>
       </div>
     </div>
   );

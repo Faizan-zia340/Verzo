@@ -362,6 +362,7 @@ Stores account information and credit balance.
 | `password` | String | bcrypt-hashed password |
 | `credits` | Number | Current credit balance (default: 20 — `FREE_SIGNUP_CREDITS` in `server/config/pricing.js`) |
 | `subscription` | String | `free`, `basic`, or `pro` |
+| `uploadCounts` | Object | Daily upload counters: `day` (UTC `YYYY-MM-DD`), `images`, `pdfs` — see `server/utils/uploadLimits.js` |
 | `stripeCustomerId` | String | Stripe customer reference |
 | `resetPasswordToken` | String | SHA-256 hash of the password-reset token (never the raw token) |
 | `resetPasswordExpires` | Date | Reset-token expiry, about 1 hour after issue |
@@ -505,6 +506,7 @@ Stores reference knowledge used to augment AI prompts before generation.
 |---|---|---|---|
 | GET | `/profile` | JWT | Get user profile |
 | PUT | `/profile` | JWT | Update name or email |
+| GET | `/data-export` | JWT | Download your own data (profile, generations, uploads, feedback, glossary suggestions) as JSON; 5/hour per user |
 
 ### Admin — `/api/admin`
 All routes require JWT + admin (`protect`, `isAdmin`).
@@ -524,12 +526,12 @@ Delete safeguards: an admin cannot delete their own account (403) and no admin a
 ### PDF — `/api/pdf`
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| POST | `/analyze` | JWT | Upload a PDF (max 10 MB), get study notes, chapter summaries, and a test bank |
+| POST | `/analyze` | JWT | Upload a PDF (max 10 MB), get study notes, chapter summaries, and a test bank; counts toward the daily PDF upload limit (free 5/day, paid 20/day) |
 
 ### Media — `/api/media`
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| POST | `/upload` | JWT | Upload one image or audio file (max 5 MB, Cloudinary); storage only, no credit charged |
+| POST | `/upload` | JWT | Upload one image or audio file (max 5 MB, Cloudinary); storage only, no credit charged; counts toward the daily image upload limit (free 10/day, paid 50/day) |
 
 ### Glossary — `/api/glossary`
 | Method | Path | Auth | Description |
@@ -611,6 +613,15 @@ Replaces `creditCheck` on paid generation routes: atomically reserves 1 credit b
 
 ### `userRateLimit.js` — Per-User Rate Limiter
 Per-user limiter (10 requests/hour on generation routes; 20/hour on media upload). The global limiter is 150 requests/15 min per IP.
+
+### `uploadLimit.js` — Daily Upload-Count Limit
+Per-user DAILY upload-count limit, on top of the file-size caps and the 1-credit-per-generation cost (see `utils/uploadLimits.js` for the numbers: free 10 images / 5 PDFs per day, paid basic/pro 50 images / 20 PDFs per day). It runs after multer, so a file rejected by validation (wrong type, too large) never counts, and before `reserveCredit`, so an over-limit upload never reserves a credit. Images sent with a generation (`/generate/with-image`) and files stored through `/api/media/upload` (images and audio share the image bucket) count toward the image limit; `/api/pdf/analyze` counts toward the PDF limit. Counters live on the user document (`uploadCounts.day/images/pdfs`) and roll over each UTC day. An over-limit upload gets a 429 with a Penlix-branded message (never a provider name) and a `retryAfter` in seconds until UTC midnight. A file that passes validation counts even if the generation behind it later fails, because the file was received and processed.
+
+### Data export — `GET /api/user/data-export`
+A signed-in user can download everything Penlix stores about them as one JSON file (button on the Dashboard, "Download my data"). The payload (`utils/dataExport.js`) contains the profile, generation history, upload records (Cloudinary URLs only, not the files), feedback submissions and glossary suggestions, plus counts. Field lists are allowlists: password hashes, tokens and other users' data can never appear. Rate-limited to 5 downloads/hour per user.
+
+### Privacy Policy page — `/privacy`
+Public page (`client/src/pages/Privacy.jsx`, linked from the Footer) that states what Penlix collects, how it is used, the services involved (MongoDB Atlas, Render, Vercel, Resend, Cloudinary, Google Gemini), cookies (one httpOnly sign-in cookie), advertising (Google AdSense), retention, and user rights (download data from the Dashboard; request account deletion via the Feedback button).
 
 ### `isAdmin.js` — Admin Gate
 Requires `req.user.isAdmin`; returns 403 otherwise.
