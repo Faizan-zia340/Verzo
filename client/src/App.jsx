@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthProvider, useAuth } from './context/AuthContext.js';
@@ -7,20 +8,24 @@ import Navbar from './components/Navbar.jsx';
 import Footer from './components/Footer.jsx';
 import FeedbackButton from './components/FeedbackButton.jsx';
 import Home from './pages/Home.jsx';
-import Login from './pages/Login.jsx';
-import Register from './pages/Register.jsx';
-import ForgotPassword from './pages/ForgotPassword.jsx';
-import ResetPassword from './pages/ResetPassword.jsx';
-import VerifyEmail from './pages/VerifyEmail.jsx';
-import Dashboard from './pages/Dashboard.jsx';
-import Pricing from './pages/Pricing.jsx';
-import PaymentSuccess from './pages/PaymentSuccess.jsx';
-import Admin from './pages/Admin.jsx';
-import PDFAnalyzer from './pages/PDFAnalyzer.jsx';
-import Privacy from './pages/Privacy.jsx';
-import BlogList from './pages/BlogList.jsx';
-import BlogPost from './pages/BlogPost.jsx';
-import NotFound from './pages/NotFound.jsx';
+// Route-level code splitting: Home stays eager (it is the landing page),
+// every other page loads on demand so the first visit only downloads the
+// code it needs. Before this, all 15 pages shipped in one ~1.2 MB bundle
+// and the site felt slow to load, especially on phones.
+const Login = lazy(() => import('./pages/Login.jsx'));
+const Register = lazy(() => import('./pages/Register.jsx'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword.jsx'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword.jsx'));
+const VerifyEmail = lazy(() => import('./pages/VerifyEmail.jsx'));
+const Dashboard = lazy(() => import('./pages/Dashboard.jsx'));
+const Pricing = lazy(() => import('./pages/Pricing.jsx'));
+const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess.jsx'));
+const Admin = lazy(() => import('./pages/Admin.jsx'));
+const PDFAnalyzer = lazy(() => import('./pages/PDFAnalyzer.jsx'));
+const Privacy = lazy(() => import('./pages/Privacy.jsx'));
+const BlogList = lazy(() => import('./pages/BlogList.jsx'));
+const BlogPost = lazy(() => import('./pages/BlogPost.jsx'));
+const NotFound = lazy(() => import('./pages/NotFound.jsx'));
 
 const pageVariants = {
   initial: { opacity: 0, y: 10 },
@@ -35,6 +40,23 @@ function PageWrapper({ children }) {
     </motion.div>
   );
 }
+
+// Shown while a lazy page chunk downloads (first visit to that page).
+// Same teak dots as the auth spinner, so the wait looks intentional.
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center">
+    <div className="flex gap-1.5">
+      {[0, 1, 2].map((i) => (
+        <motion.div
+          key={i}
+          className="w-2 h-2 rounded-full bg-teak-500"
+          animate={{ y: [0, -7, 0], opacity: [0.4, 1, 0.4] }}
+          transition={{ duration: 0.65, repeat: Infinity, delay: i * 0.13, ease: 'easeInOut' }}
+        />
+      ))}
+    </div>
+  </div>
+);
 
 const AuthSpinner = () => (
   <div className="min-h-screen flex items-center justify-center">
@@ -69,23 +91,25 @@ function AnimatedRoutes() {
   const location = useLocation();
   return (
     <AnimatePresence mode="wait" initial={false}>
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
-        <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
-        <Route path="/register" element={<PageWrapper><Register /></PageWrapper>} />
-        <Route path="/forgot-password" element={<PageWrapper><ForgotPassword /></PageWrapper>} />
-        <Route path="/reset-password/:token" element={<PageWrapper><ResetPassword /></PageWrapper>} />
-        <Route path="/verify-email/:token" element={<PageWrapper><VerifyEmail /></PageWrapper>} />
-        <Route path="/pricing" element={<PageWrapper><Pricing /></PageWrapper>} />
-        <Route path="/privacy" element={<PageWrapper><Privacy /></PageWrapper>} />
-        <Route path="/blog" element={<PageWrapper><BlogList /></PageWrapper>} />
-        <Route path="/blog/:slug" element={<PageWrapper><BlogPost /></PageWrapper>} />
-        <Route path="/payment-success" element={<PrivateRoute><PageWrapper><PaymentSuccess /></PageWrapper></PrivateRoute>} />
-        <Route path="/dashboard" element={<PrivateRoute><PageWrapper><Dashboard /></PageWrapper></PrivateRoute>} />
-        <Route path="/pdf" element={<PrivateRoute><PageWrapper><PDFAnalyzer /></PageWrapper></PrivateRoute>} />
-        <Route path="/admin" element={<AdminRoute><PageWrapper><Admin /></PageWrapper></AdminRoute>} />
-        <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
-      </Routes>
+      <Suspense fallback={<PageLoader />}>
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
+          <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
+          <Route path="/register" element={<PageWrapper><Register /></PageWrapper>} />
+          <Route path="/forgot-password" element={<PageWrapper><ForgotPassword /></PageWrapper>} />
+          <Route path="/reset-password/:token" element={<PageWrapper><ResetPassword /></PageWrapper>} />
+          <Route path="/verify-email/:token" element={<PageWrapper><VerifyEmail /></PageWrapper>} />
+          <Route path="/pricing" element={<PageWrapper><Pricing /></PageWrapper>} />
+          <Route path="/privacy" element={<PageWrapper><Privacy /></PageWrapper>} />
+          <Route path="/blog" element={<PageWrapper><BlogList /></PageWrapper>} />
+          <Route path="/blog/:slug" element={<PageWrapper><BlogPost /></PageWrapper>} />
+          <Route path="/payment-success" element={<PrivateRoute><PageWrapper><PaymentSuccess /></PageWrapper></PrivateRoute>} />
+          <Route path="/dashboard" element={<PrivateRoute><PageWrapper><Dashboard /></PageWrapper></PrivateRoute>} />
+          <Route path="/pdf" element={<PrivateRoute><PageWrapper><PDFAnalyzer /></PageWrapper></PrivateRoute>} />
+          <Route path="/admin" element={<AdminRoute><PageWrapper><Admin /></PageWrapper></AdminRoute>} />
+          <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
+        </Routes>
+      </Suspense>
     </AnimatePresence>
   );
 }
