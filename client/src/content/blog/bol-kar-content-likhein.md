@@ -26,7 +26,7 @@ Aik aur faida: voice input aap ki chuni hui language ke hisaab se sunta hai. Aga
 
 **Step 3: Bol kar batayein kya likhna hai.** Aaram se, saaf awaaz mein bolein. Misal: "Karachi ki barish par aik blog likhein, tone friendly ho, aur aakhir mein aik sawal ho." Aap ki baat prompt mein likh jayegi. Dobara bolna ho to phir se Speak dabayein — naye lafz purani prompt ke saath jud jayenge.
 
-**Step 4: Generate dabayein.** Prompt check kar lein — koi lafz ghalat suna gaya ho to theek kar lein — phir Generate karein. Aik generation aam tor par 1 credit mein hoti hai, aur free signup ke saath 10 free credits milte hain.
+**Step 4: Generate dabayein.** Prompt check kar lein — koi lafz ghalat suna gaya ho to theek kar lein — phir Generate karein. Aik generation aam tor par 1 credit mein hoti hai, aur free signup ke saath 20 free credits milte hain.
 
 ## Bolte waqt 5 tips
 

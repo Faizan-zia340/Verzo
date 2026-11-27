@@ -22,7 +22,7 @@ const FEATURES = [
   { icon: FiImage, title: 'Inline Blog Images', desc: 'Real Unsplash photos downloaded, analyzed by Penlix Vision, and embedded at the perfect spots in your blog.', color: 'text-rose-600', bg: 'bg-rose-50', border: 'border-rose-100' },
   { icon: FiDownload, title: 'One-Click Export', desc: 'Download your content as PDF, DOCX or TXT — or copy it to the clipboard — with one click.', color: 'text-teal-600', bg: 'bg-teal-50', border: 'border-teal-100' },
   { icon: FiShare2, title: 'Social Share', desc: 'Share directly to LinkedIn or Twitter/X without copying and pasting anything. One button.', color: 'text-pink-600', bg: 'bg-pink-50', border: 'border-pink-100' },
-  { icon: FiStar, title: 'Reality Check Scoring', desc: 'A second AI reviewer scores every output out of 10 on human-ness, punchiness and clichés — so you see what to trust before you publish.', color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-100' },
+  { icon: FiStar, title: 'Reality Check Scoring', desc: 'Reality Check scores every output out of 10 on human-ness, punchiness and clichés — so you see what to trust before you publish.', color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-100' },
 ];
 
 const STATS = [
