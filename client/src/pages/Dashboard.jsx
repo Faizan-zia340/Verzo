@@ -84,10 +84,10 @@ export default function Dashboard() {
 
       {/* ── Welcome banner ─────────────────────────────────── */}
       <div className="bg-gradient-to-r from-teak-600 via-teak-600 to-teak-700">
-        <div className="max-w-5xl mx-auto px-4 py-6 flex items-center justify-between flex-wrap gap-4">
+        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between flex-wrap gap-3">
           <motion.div initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}>
             <p className="text-teak-100 text-sm font-medium">{greet()}</p>
-            <h1 className="text-2xl font-black text-white tracking-tight">{user?.name}</h1>
+            <h1 className="text-xl font-black text-white tracking-tight">{user?.name}</h1>
           </motion.div>
           <motion.div initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}
             className="flex items-center gap-3">

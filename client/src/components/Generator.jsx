@@ -895,7 +895,7 @@ export default function Generator() {
             <textarea
               name="writingSample" value={form.writingSample || ''} onChange={handleChange} rows={2} maxLength={1500}
               placeholder="Paste a paragraph you wrote, in your own voice..."
-              className="w-full border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teak-500 focus:border-teak-500 resize-none placeholder-gray-400 dark:placeholder-slate-500"
+              className="w-full border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-slate-100 bg-white dark:bg-ink-card focus:outline-none focus:ring-2 focus:ring-teak-500 focus:border-teak-500 resize-none placeholder-gray-400 dark:placeholder-slate-500"
             />
             <div className="text-xs text-gray-400 dark:text-slate-500 mt-1">{(form.writingSample || '').length} / 1500 characters</div>
           </div>
@@ -951,7 +951,7 @@ export default function Generator() {
             <textarea
               name="prompt" value={form.prompt} onChange={handleChange} rows={4} required={!imageFile}
               placeholder="Describe what you want to generate, or pick a quick template above... (or tap Speak and say it — with a photo attached, you can leave this blank)"
-              className="w-full border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2.5 text-sm text-gray-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-teak-500 focus:border-teak-500 resize-none placeholder-gray-400 dark:placeholder-slate-500"
+              className="w-full border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2.5 text-sm text-gray-800 dark:text-slate-100 bg-white dark:bg-ink-card focus:outline-none focus:ring-2 focus:ring-teak-500 focus:border-teak-500 resize-none placeholder-gray-400 dark:placeholder-slate-500"
             />
            <div className="flex items-center justify-between mt-1.5 text-xs text-gray-400 dark:text-slate-500">
              <span>{form.prompt.length.toLocaleString()} characters</span>

@@ -2,6 +2,19 @@ import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { FiActivity } from 'react-icons/fi';
 
+// Tooltip that follows the theme: the default Recharts tooltip is a
+// white box, and the hover cursor highlight was a pale #f3f4f6 fill —
+// in dark mode both showed up as big white rectangles over the chart.
+function ChartTooltip({ active, payload, label }) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="bg-white dark:bg-ink-card border border-gray-100 dark:border-slate-700 rounded-xl px-3 py-2 text-xs shadow-lg">
+      <p className="font-bold text-gray-900 dark:text-white">{label}</p>
+      <p className="text-gray-500 dark:text-slate-400">used: {payload[0].value}</p>
+    </div>
+  );
+}
+
 export default function DashboardChart({ data }) {
   return (
     <motion.div
@@ -20,8 +33,8 @@ export default function DashboardChart({ data }) {
           <XAxis dataKey="label" tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} />
           <YAxis tick={{ fontSize: 10, fill: '#9ca3af' }} axisLine={false} tickLine={false} width={24} />
           <Tooltip
-            cursor={{ fill: '#f3f4f6', radius: 6 }}
-            contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 2px 10px rgba(0,0,0,0.08)', fontSize: 12 }}
+            content={<ChartTooltip />}
+            cursor={{ fill: 'rgba(139,111,71,0.12)', radius: 6 }}
           />
           <Bar dataKey="used" radius={[6, 6, 0, 0]}>
             {data.map((_, i) => (
