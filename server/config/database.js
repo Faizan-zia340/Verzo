@@ -11,6 +11,11 @@ let isRetrying = false;
 const connectDB = async (attempt = 1) => {
   try {
     await mongoose.connect(process.env.MONGODB_URI, {
+      // The database name is set here, not in the URI: without it
+      // Mongoose silently defaults to the `test` database, which is
+      // how all live data ended up in `test` instead of
+      // `ai-content-generator` (2026-11-27).
+      dbName: 'ai-content-generator',
       serverSelectionTimeoutMS: 10000,
       socketTimeoutMS: 45000,
       connectTimeoutMS: 10000,
