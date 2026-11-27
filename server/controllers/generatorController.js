@@ -10,7 +10,6 @@ import Content from '../models/Content.js';
 import Credit from '../models/Credit.js';
 import Context from '../models/Context.js';
 import { findRelevantContexts } from '../utils/embeddings.js';
-import { io } from '../utils/socket.js';
 import logger from '../utils/logger.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { refundCredit } from '../utils/credits.js';
@@ -283,7 +282,6 @@ export const streamGenerate = asyncHandler(async (req, res) => {
         Credit.create({ user: userId, amount: -1, type: 'usage', description: `Generated ${type} content` }),
       ]);
 
-      io.to(userId.toString()).emit('generation:done', { content });
       sendEvent({ done: true, seoData, images, imageOptions, contentWithImages: finalOutput, realityCheck, contentId: content._id, qualityReport });
     } catch (err) {
       logger.error({ err: err.message }, 'Content save error');
@@ -313,7 +311,6 @@ export const generate = asyncHandler(async (req, res) => {
     const { type, prompt, tone, length, language = 'english_us', format = 'paragraphs', purpose = '', readingLevel = 'standard', writingSample = '', subtype: rawSubtype, ...details } = req.body;
     const subtype = normalizeSubtype(type, rawSubtype);
 
-    io.to(userId.toString()).emit('generation:start');
 
     // Two-pass + quality-checked generation: retries once if the first draft
     // fails the check. Only the final text is saved and only 1 credit deducted.
@@ -352,7 +349,6 @@ export const generate = asyncHandler(async (req, res) => {
       Credit.create({ user: userId, amount: -1, type: 'usage', description: `Generated ${type} content` }),
     ]);
 
-    io.to(userId.toString()).emit('generation:done', { content });
     res.status(200).json({ content, realityCheck, qualityReport });
   } catch (err) {
     // Generation or save failed: give the reserved credit back.
@@ -399,7 +395,6 @@ export const generateFromImage = asyncHandler(async (req, res) => {
 
   try {
     checkKey();
-    io.to(userId.toString()).emit('generation:start');
 
     const imagePart = { data: req.file.buffer.toString('base64'), mimeType: req.file.mimetype };
     const fullPrompt = buildPrompt({ type, prompt, tone, length, language, format, subtype, details });
@@ -431,7 +426,6 @@ export const generateFromImage = asyncHandler(async (req, res) => {
       Credit.create({ user: userId, amount: -1, type: 'usage', description: `Generated ${type} content (with image)` }),
     ]);
 
-    io.to(userId.toString()).emit('generation:done', { content });
     res.status(200).json({ content, realityCheck, qualityReport });
   } catch (err) {
     // Generation or save failed: give the reserved credit back.
@@ -440,78 +434,101 @@ export const generateFromImage = asyncHandler(async (req, res) => {
   }
 });
 
-// ── Tune existing content (no credit deduction) ──────────────────
+// ── Tune existing content (1 credit) ────────────────────────────
+// Input is validated by tuneSchema in the route (text capped at 5000
+// characters, action from a fixed list) BEFORE the credit is reserved, so
+// a bad request never costs a credit. The credit was reserved by the
+// middleware before this handler ran; a generation failure below must
+// give it back.
 export const tuneContent = asyncHandler(async (req, res) => {
-  checkKey();
-  const { text, action } = req.body;
-  if (!text || !action) return res.status(400).json({ message: 'text and action are required' });
-  const validActions = ['shorten', 'engaging', 'professional', 'reduce_hype'];
-  if (!validActions.includes(action)) return res.status(400).json({ message: 'Invalid action' });
+  const userId = req.user._id;
+  try {
+    checkKey();
+    const { text, action } = req.body;
+    const raw = await tuneText(text, action);
+    const { cleanContent, realityCheck } = parseRealityCheck(stripAgentLabels(raw));
 
-  const raw = await tuneText(text, action);
-  const { cleanContent, realityCheck } = parseRealityCheck(stripAgentLabels(raw));
-  res.status(200).json({ output: cleanContent, realityCheck });
+    // NOTE: no $inc here — the credit was reserved by the middleware.
+    // The ledger entry records the spend.
+    await Credit.create({ user: userId, amount: -1, type: 'usage', description: `Tuned content (${action})` });
+
+    res.status(200).json({ output: cleanContent, realityCheck });
+  } catch (err) {
+    // Tuning failed: give the reserved credit back.
+    if (req.creditReserved) await refundCredit(userId, req.creditReserved);
+    throw err;
+  }
 });
 
 // ── RAG-augmented generation ─────────────────────────────────────
+// The credit was reserved atomically by the middleware before this handler
+// ran (reserveCredit), so two concurrent requests can never both pass on
+// the same last credit. Any failure exit below must give it back.
 export const generateAIContent = asyncHandler(async (req, res) => {
-  checkKey();
-  const { userPrompt, topicKeywords = [] } = req.body;
-  if (!userPrompt) return res.status(400).json({ message: 'userPrompt is required' });
+  try {
+    checkKey();
+    const { userPrompt, topicKeywords = [] } = req.body;
+    if (!userPrompt) {
+      // Bad request, no generation ran: give the reserved credit back.
+      if (req.creditReserved) await refundCredit(req.user._id, req.creditReserved);
+      return res.status(400).json({ message: 'userPrompt is required' });
+    }
 
-  let matchedContexts = [];
-  let retrievalMethod = 'none';
+    let matchedContexts = [];
+    let retrievalMethod = 'none';
 
-  const allContexts = await Context.find().select('+embedding');
-  if (allContexts.length) {
-    const { matches, usedEmbeddings } = await findRelevantContexts(userPrompt, allContexts, 3);
-    if (usedEmbeddings && matches.length) {
-      matchedContexts = matches;
-      retrievalMethod = 'embedding';
-    } else if (topicKeywords.length) {
-      const keywordMatch = await Context.findOne({ keywords: { $in: topicKeywords } });
-      if (keywordMatch) {
-        matchedContexts = [keywordMatch];
-        retrievalMethod = 'keyword';
+    const allContexts = await Context.find().select('+embedding');
+    if (allContexts.length) {
+      const { matches, usedEmbeddings } = await findRelevantContexts(userPrompt, allContexts, 3);
+      if (usedEmbeddings && matches.length) {
+        matchedContexts = matches;
+        retrievalMethod = 'embedding';
+      } else if (topicKeywords.length) {
+        const keywordMatch = await Context.findOne({ keywords: { $in: topicKeywords } });
+        if (keywordMatch) {
+          matchedContexts = [keywordMatch];
+          retrievalMethod = 'keyword';
+        }
       }
     }
+
+    const contextBlock = matchedContexts.length
+      ? matchedContexts.map((c) => `[${c.title}]\n${c.information}`).join('\n\n')
+      : null;
+
+    const finalPrompt = contextBlock
+      ? `Context Information:\n${contextBlock}\n\nStrict Instructions: Use the above Context Information to answer accurately. Do not fabricate facts.\n\nUser Prompt: ${userPrompt}`
+      : userPrompt;
+
+    // Quality-checked generation: retries once if the first draft fails the
+    // check. The RAG route saves nothing, so the retry only costs one extra
+    // AI call. (Two-pass is not applied here — RAG answers are grounded in
+    // retrieved context, not purpose templates.)
+    const { text: raw, qualityReport } = await generateWithQualityCheck(generateText, {
+      prompt: finalPrompt,
+      type: 'general',
+      input: {},
+      length: 'medium',
+    });
+    const { cleanContent, realityCheck } = parseRealityCheck(stripAgentLabels(raw));
+
+    // NOTE: no $inc here — the credit was reserved by the middleware.
+    // The ledger entry records the spend.
+    await Credit.create({ user: req.user._id, amount: -1, type: 'usage', description: 'Generated RAG content' });
+
+    res.status(200).json({
+      response: cleanContent,
+      realityCheck,
+      contextUsed: matchedContexts.length > 0,
+      contextTitles: matchedContexts.map((c) => c.title),
+      retrievalMethod,
+      qualityReport,
+    });
+  } catch (err) {
+    // Generation failed: give the reserved credit back.
+    if (req.creditReserved) await refundCredit(req.user._id, req.creditReserved);
+    throw err;
   }
-
-  const contextBlock = matchedContexts.length
-    ? matchedContexts.map((c) => `[${c.title}]\n${c.information}`).join('\n\n')
-    : null;
-
-  const finalPrompt = contextBlock
-    ? `Context Information:\n${contextBlock}\n\nStrict Instructions: Use the above Context Information to answer accurately. Do not fabricate facts.\n\nUser Prompt: ${userPrompt}`
-    : userPrompt;
-
-  // Quality-checked generation: retries once if the first draft fails the
-  // check. The RAG route saves nothing, so the retry only costs one extra
-  // AI call. (Two-pass is not applied here — RAG answers are grounded in
-  // retrieved context, not purpose templates.)
-  const { text: raw, qualityReport } = await generateWithQualityCheck(generateText, {
-    prompt: finalPrompt,
-    type: 'general',
-    input: {},
-    length: 'medium',
-  });
-  const { cleanContent, realityCheck } = parseRealityCheck(stripAgentLabels(raw));
-
-  // SECURITY (H1): the RAG route now charges 1 credit like the other
-  // generate endpoints (it was previously free and unauthenticated).
-  await Promise.all([
-    User.findByIdAndUpdate(req.user._id, { $inc: { credits: -1 } }),
-    Credit.create({ user: req.user._id, amount: -1, type: 'usage', description: 'Generated RAG content' }),
-  ]);
-
-  res.status(200).json({
-    response: cleanContent,
-    realityCheck,
-    contextUsed: matchedContexts.length > 0,
-    contextTitles: matchedContexts.map((c) => c.title),
-    retrievalMethod,
-    qualityReport,
-  });
 });
 
 export const regenerateContent = asyncHandler(async (req, res) => {
@@ -545,7 +562,6 @@ export const regenerateContent = asyncHandler(async (req, res) => {
       description: `Regenerated ${existing.type} content`,
     });
 
-    io.to(req.user._id.toString()).emit('generation:done', { content });
     res.status(200).json({ content, realityCheck, qualityReport });
   } catch (err) {
     // Regeneration failed: give the reserved credit back.

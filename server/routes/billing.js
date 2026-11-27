@@ -6,7 +6,7 @@ import Credit from '../models/Credit.js';
 import Payment from '../models/Payment.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import logger from '../utils/logger.js';
-import { CREDIT_PACKAGES, FREE_SIGNUP_CREDITS } from '../config/pricing.js';
+import { CREDIT_PACKAGES, FREE_SIGNUP_CREDITS, SUBSCRIPTION_FOR_PACKAGE } from '../config/pricing.js';
 import { claimCheckoutSession } from '../utils/webhookIdempotency.js';
 
 const router = Router();
@@ -57,7 +57,7 @@ router.post('/webhook', asyncHandler(async (req, res) => {
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
-    const { userId, credits } = session.metadata || {};
+    const { userId, credits, planId } = session.metadata || {};
     const amount = parseInt(credits, 10);
     if (!userId || !Number.isFinite(amount) || amount <= 0) {
       logger.warn({ session: session.id }, 'checkout.session.completed without usable metadata; skipping credit');
@@ -79,8 +79,16 @@ router.post('/webhook', asyncHandler(async (req, res) => {
     );
     if (!claimed) return res.status(200).json({ received: true }); // duplicate delivery
 
+    // A purchase moves the buyer off the `free` tier (see
+    // SUBSCRIPTION_FOR_PACKAGE). Without this the buyer stays `free` and
+    // the daily reset would treat them as a free user. Unknown plan ids
+    // leave the tier untouched — the credits still land.
+    const tier = SUBSCRIPTION_FOR_PACKAGE[planId];
+    const userUpdate = { $inc: { credits: amount } };
+    if (tier) userUpdate.$set = { subscription: tier };
+
     await Promise.all([
-      User.findByIdAndUpdate(userId, { $inc: { credits: amount } }),
+      User.findByIdAndUpdate(userId, userUpdate),
       Credit.create({
         user: userId,
         amount,

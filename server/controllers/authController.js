@@ -1,8 +1,10 @@
 import crypto from 'crypto';
 import User from '../models/User.js';
+import { FREE_SIGNUP_CREDITS } from '../config/pricing.js';
 import { generateToken, cookieOptions } from '../utils/jwt.js';
 import asyncHandler from '../utils/asyncHandler.js';
-import { sendPasswordResetEmail } from '../utils/sendEmail.js';
+import { sendPasswordResetEmail, sendVerificationEmail } from '../utils/sendEmail.js';
+import { createVerificationToken, applyVerificationGrant } from '../utils/emailVerification.js';
 
 const formatUser = (user) => ({
   id: user._id,
@@ -11,17 +13,53 @@ const formatUser = (user) => ({
   credits: user.credits,
   subscription: user.subscription,
   isAdmin: user.isAdmin === true,
+  // Accounts created before verification existed have no such field; a
+  // missing value reads as verified so the 19 existing accounts are
+  // unaffected. Only an explicit `false` (a new unverified registration)
+  // reports as unverified.
+  isEmailVerified: user.isEmailVerified !== false,
 });
+
+// Issues a fresh email-verification token for the user (only the SHA-256
+// hash is stored, never the raw token — same pattern as forgot-password).
+// Returns the raw token for the email link.
+const issueVerificationToken = (user) => {
+  const { rawToken, tokenHash, expiresAt } = createVerificationToken();
+  user.emailVerificationToken = tokenHash;
+  user.emailVerificationExpires = expiresAt;
+  return rawToken;
+};
+
+// The verification link must NEVER be built from the request Origin —
+// same rule as the reset link (see forgotPassword). Use only the trusted
+// CLIENT_URL (falling back to the known production frontend).
+const clientBaseUrl = () => (process.env.CLIENT_URL || 'https://verzo-ecru.vercel.app').replace(/\/$/, '');
 
 export const register = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
   if (await User.findOne({ email })) {
     return res.status(400).json({ message: 'Email already in use' });
   }
-  const user = await User.create({ name, email, password });
+  // A new account starts with 0 credits and unverified email. The 20 free
+  // signup credits are granted only when the verify link is clicked — an
+  // unverified account cannot generate (the credit reservation returns 402),
+  // and the daily reset never tops up unverified accounts either.
+  const user = await User.create({ name, email, password, credits: 0, isEmailVerified: false });
+  const rawToken = issueVerificationToken(user);
+  await user.save();
+  const base = clientBaseUrl();
+  if (base) {
+    await sendVerificationEmail({
+      to: user.email,
+      verifyUrl: `${base}/verify-email/${rawToken}`,
+    });
+  }
   const token = generateToken(user._id);
   res.cookie('token', token, cookieOptions());
-  res.status(201).json({ user: formatUser(user) });
+  res.status(201).json({
+    user: formatUser(user),
+    message: 'Account created. Please check your email to verify your address and get your 20 free credits.',
+  });
 });
 
 export const login = asyncHandler(async (req, res) => {
@@ -90,4 +128,49 @@ export const resetPassword = asyncHandler(async (req, res) => {
   user.resetPasswordExpires = undefined;
   await user.save();
   res.status(200).json({ message: 'Password reset successfully. Please sign in.' });
+});
+
+// GET /api/auth/verify-email/:token — clicked from the verification email.
+// Grants the 20 signup credits, but only once and only to an account that
+// has not verified yet: the credit grant is a top-up to the free allowance
+// (never a reduction), so an account that already holds 20 or more gains
+// nothing by verifying again, and the cleared token cannot be reused.
+export const verifyEmail = asyncHandler(async (req, res) => {
+  const tokenHash = crypto.createHash('sha256').update(req.params.token || '').digest('hex');
+  const user = await User.findOne({
+    emailVerificationToken: tokenHash,
+    emailVerificationExpires: { $gt: new Date() },
+  });
+  if (!user) {
+    return res.status(400).json({ message: 'Invalid or expired verification link' });
+  }
+  if (user.isEmailVerified !== false) {
+    return res.status(200).json({ user: formatUser(user), message: 'Email already verified.' });
+  }
+  applyVerificationGrant(user);
+  await user.save();
+  res.status(200).json({
+    user: formatUser(user),
+    message: `Email verified. Your ${FREE_SIGNUP_CREDITS} free credits are ready.`,
+  });
+});
+
+// POST /api/auth/resend-verification — logged-in user, still unverified.
+// Issues a fresh token (the old one stops working) and re-sends the email.
+// Already-verified accounts get a plain message and no email.
+export const resendVerificationEmail = asyncHandler(async (req, res) => {
+  const user = req.user;
+  if (user.isEmailVerified !== false) {
+    return res.status(200).json({ message: 'Email already verified.' });
+  }
+  const rawToken = issueVerificationToken(user);
+  await user.save();
+  const base = clientBaseUrl();
+  if (base) {
+    await sendVerificationEmail({
+      to: user.email,
+      verifyUrl: `${base}/verify-email/${rawToken}`,
+    });
+  }
+  res.status(200).json({ message: 'Verification email sent. Please check your inbox.' });
 });

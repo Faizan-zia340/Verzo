@@ -4,7 +4,7 @@ import User from '../models/User.js';
 import Credit from '../models/Credit.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import logger from '../utils/logger.js';
-import { CREDIT_PACKAGES } from '../config/pricing.js';
+import { CREDIT_PACKAGES, SUBSCRIPTION_FOR_PACKAGE } from '../config/pricing.js';
 import { claimPaymentIntent } from '../utils/webhookIdempotency.js';
 
 export const createPaymentIntent = asyncHandler(async (req, res) => {
@@ -37,7 +37,7 @@ export const webhook = asyncHandler(async (req, res) => {
 
   if (event.type === 'payment_intent.succeeded') {
     const pi = event.data.object;
-    const { userId, credits } = pi.metadata || {};
+    const { userId, credits, packageId } = pi.metadata || {};
     const amount = parseInt(credits, 10);
     if (!userId || !Number.isFinite(amount) || amount <= 0) {
       logger.warn({ pi: pi.id }, 'payment_intent.succeeded without usable metadata; skipping credit');
@@ -67,8 +67,15 @@ export const webhook = asyncHandler(async (req, res) => {
       }
     }
 
+    // A purchase moves the buyer off the `free` tier (see
+    // SUBSCRIPTION_FOR_PACKAGE). Unknown package ids leave the tier
+    // untouched — the credits still land.
+    const tier = SUBSCRIPTION_FOR_PACKAGE[packageId];
+    const userUpdate = { $inc: { credits: amount } };
+    if (tier) userUpdate.$set = { subscription: tier };
+
     await Promise.all([
-      User.findByIdAndUpdate(userId, { $inc: { credits: amount } }),
+      User.findByIdAndUpdate(userId, userUpdate),
       Credit.create({ user: userId, amount, type: 'purchase', description: 'Credit purchase' }),
     ]);
   }

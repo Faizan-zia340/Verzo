@@ -1,9 +1,18 @@
 import Joi from 'joi';
 import { getPurpose } from '../config/contentTypes.js';
+import { isDisposableEmail } from './disposableDomains.js';
 
 export const registerSchema = Joi.object({
   name: Joi.string().min(2).max(50).required(),
-  email: Joi.string().email().required(),
+  // Disposable / temporary addresses are rejected: they exist to farm the
+  // free signup credits. The blocklist is a static curated set
+  // (server/utils/disposableDomains.js) — no external call at registration.
+  email: Joi.string().email().required().custom((value, helpers) => {
+    if (isDisposableEmail(value)) {
+      return helpers.message('Please use a permanent email address');
+    }
+    return value;
+  }),
   password: Joi.string().min(6).required(),
 });
 
@@ -19,6 +28,17 @@ export const forgotPasswordSchema = Joi.object({
 export const resetPasswordSchema = Joi.object({
   // Same password rule as registration: at least 6 characters.
   password: Joi.string().min(6).required(),
+});
+
+// Tune an existing piece of content. Text is capped at 5000 characters —
+// without a limit the endpoint was a free, unbounded rewrite service.
+// The schema runs in the route BEFORE the credit is reserved, so a bad
+// request never costs a credit.
+export const MAX_TUNE_TEXT_LENGTH = 5000;
+
+export const tuneSchema = Joi.object({
+  text: Joi.string().min(1).max(MAX_TUNE_TEXT_LENGTH).required(),
+  action: Joi.string().valid('shorten', 'engaging', 'professional', 'reduce_hype').required(),
 });
 
 // Required detail fields per content type. A field with `alt` is satisfied

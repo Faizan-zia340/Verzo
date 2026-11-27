@@ -3,34 +3,18 @@ import mongoose from 'mongoose';
 import User from '../models/User.js';
 import logger from '../utils/logger.js';
 import { FREE_SIGNUP_CREDITS } from '../config/pricing.js';
+import { createCreditResetter } from '../utils/creditReset.js';
 
 const FREE_DAILY_CREDITS = Number(process.env.FREE_DAILY_CREDITS || FREE_SIGNUP_CREDITS);
 
+const { resetDailyFreeCredits: resetTopUp } = createCreditResetter(User, FREE_DAILY_CREDITS);
+
 export const resetDailyFreeCredits = async () => {
-  const now = new Date();
-  const startOfToday = new Date(now);
-  startOfToday.setUTCHours(0, 0, 0, 0);
-
-  const result = await User.updateMany(
-    {
-      subscription: 'free',
-      $or: [
-        { lastFreeCreditResetAt: { $exists: false } },
-        { lastFreeCreditResetAt: { $lt: startOfToday } },
-      ],
-    },
-    {
-      $set: {
-        credits: FREE_DAILY_CREDITS,
-        lastFreeCreditResetAt: now,
-      },
-    }
-  );
-
-  if (result.modifiedCount) {
-    logger.info({ usersReset: result.modifiedCount, credits: FREE_DAILY_CREDITS }, 'Daily free credits reset');
+  const modifiedCount = await resetTopUp();
+  if (modifiedCount) {
+    logger.info({ usersReset: modifiedCount, credits: FREE_DAILY_CREDITS }, 'Daily free credits reset');
   }
-  return result.modifiedCount;
+  return modifiedCount;
 };
 
 export const scheduleDailyFreeCreditReset = () => {

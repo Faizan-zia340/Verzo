@@ -1,8 +1,10 @@
 import { PDFParse } from 'pdf-parse';
 import { getModel, withSystem, geminiError } from '../utils/gemini.js';
 import { buildPDFPrompt } from '../utils/prompts.js';
+import Credit from '../models/Credit.js';
 import logger from '../utils/logger.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import { refundCredit } from '../utils/credits.js';
 
 const CHUNK_SIZE = 6000;
 
@@ -29,8 +31,25 @@ const chunkText = (text) => {
   return chunks.filter(Boolean);
 };
 
+// POST /api/pdf/analyze — 1 credit per analysis (reserved by the
+// middleware before this handler runs). A multi-chunk PDF costs up to 5
+// AI calls, so it is charged like a generation, not given away free.
+// Any failure exit below must give the credit back (refundOnce guards
+// double refunds) — same rule as the generate routes.
 export const analyzePDF = asyncHandler(async (req, res) => {
-  if (!req.file) return res.status(400).json({ message: 'No PDF file uploaded.' });
+  const userId = req.user._id;
+  let refunded = false;
+  const refundOnce = async () => {
+    if (req.creditReserved && !refunded) {
+      refunded = true;
+      await refundCredit(userId, req.creditReserved);
+    }
+  };
+
+  if (!req.file) {
+    await refundOnce();
+    return res.status(400).json({ message: 'No PDF file uploaded.' });
+  }
 
   let rawText = '';
   let numPages = 0;
@@ -41,12 +60,14 @@ export const analyzePDF = asyncHandler(async (req, res) => {
     numPages = extracted.numPages;
   } catch (parseErr) {
     logger.error({ err: parseErr.message }, 'PDF parse error');
+    await refundOnce();
     return res.status(422).json({ message: 'Could not read this PDF. Make sure it is a text-based (not scanned) PDF.' });
   }
 
   logger.info(`PDF extracted ${rawText.length} chars, ${numPages} pages from ${req.file.originalname}`);
 
   if (!rawText || rawText.length < 50) {
+    await refundOnce();
     return res.status(422).json({ message: 'PDF appears empty or unreadable. Try a text-based PDF.' });
   }
 
@@ -74,10 +95,16 @@ export const analyzePDF = asyncHandler(async (req, res) => {
       analysisText = result.response.text();
     }
   } catch (err) {
+    // Generation failed: give the reserved credit back, then map the error.
+    await refundOnce();
     geminiError(err);
   }
 
   logger.debug(`PDF analysis response (first 300 chars): ${analysisText.slice(0, 300)}`);
+
+  // NOTE: no $inc here — the credit was reserved by the middleware.
+  // The ledger entry records the spend.
+  await Credit.create({ user: userId, amount: -1, type: 'usage', description: 'Analyzed PDF' });
 
   res.status(200).json({
     pages: numPages,

@@ -6,7 +6,9 @@ import DashboardStats from '../components/Dashboard.jsx';
 import Generator from '../components/Generator.jsx';
 import ContentHistory from '../components/ContentHistory.jsx';
 import { Link } from 'react-router-dom';
-import { FiZap, FiClock, FiFileText, FiEdit3 } from 'react-icons/fi';
+import { FiZap, FiClock, FiFileText, FiEdit3, FiMail } from 'react-icons/fi';
+import toast from 'react-hot-toast';
+import api from '../services/api.js';
 import Seo from '../components/Seo.jsx';
 
 const greet = () => {
@@ -20,10 +22,25 @@ export default function Dashboard() {
   const { user } = useAuth();
   const { fetchCredits, credits, loading: creditsLoading } = useCredits();
   const [tab, setTab] = useState('generate');
+  const [resending, setResending] = useState(false);
+  const [resent, setResent] = useState(false);
 
   useEffect(() => { fetchCredits(); }, [fetchCredits]);
 
   const dashboardLoading = creditsLoading;
+
+  const handleResendVerification = async () => {
+    setResending(true);
+    try {
+      const { data } = await api.post('/auth/resend-verification');
+      toast.success(data?.message || 'Verification email sent.');
+      setResent(true);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Could not send the verification email. Please try again.');
+    } finally {
+      setResending(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50/80 dark:bg-ink-page">
@@ -52,6 +69,29 @@ export default function Dashboard() {
 
       {/* ── Content ─────────────────────────────────────────── */}
       <div className="max-w-5xl mx-auto px-4 py-7">
+
+        {/* Email verification — only new unverified accounts see this.
+            Existing accounts are treated as verified, so they never see it. */}
+        {user?.isEmailVerified === false && (
+          <div className="bg-amber-50 dark:bg-ink-raised border border-amber-200 dark:border-amber-900/50 rounded-2xl px-5 py-4 mb-6 flex items-center justify-between gap-4 flex-wrap">
+            <div className="flex items-start gap-3">
+              <FiMail size={16} className="text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-bold text-amber-800 dark:text-amber-200">Verify your email to get your 20 free credits</p>
+                <p className="text-xs text-amber-700 dark:text-amber-300 mt-0.5">
+                  We sent a verification link to {user.email}. Your credits arrive as soon as you click it.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={handleResendVerification}
+              disabled={resending || resent}
+              className="bg-amber-600 hover:bg-amber-700 disabled:opacity-60 text-white text-sm font-bold px-4 py-2 rounded-xl transition flex-shrink-0"
+            >
+              {resent ? 'Email sent — check your inbox' : resending ? 'Sending…' : 'Resend email'}
+            </button>
+          </div>
+        )}
 
         {/* Stats */}
         {dashboardLoading ? (

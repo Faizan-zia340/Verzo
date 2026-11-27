@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { generateSchema, missingRequiredFields, ALLOWED_SUBTYPES } from '../utils/validators.js';
+import { generateSchema, registerSchema, tuneSchema, missingRequiredFields, ALLOWED_SUBTYPES } from '../utils/validators.js';
 
 const valid = (overrides = {}) => ({
   type: 'blog',
@@ -89,5 +89,63 @@ describe('ALLOWED_SUBTYPES', () => {
 
   it('lists the social styles', () => {
     assert.deepEqual(ALLOWED_SUBTYPES.social, ['post', 'captions']);
+  });
+});
+
+describe('registerSchema — disposable email blocklist', () => {
+  const valid = (overrides = {}) => ({
+    name: 'Faizan', email: 'faizan@gmail.com', password: 'secret123', ...overrides,
+  });
+
+  it('accepts a normal permanent email (gmail)', () => {
+    const { error } = registerSchema.validate(valid());
+    assert.equal(error, undefined);
+  });
+
+  it('rejects a disposable domain (mailinator)', () => {
+    const { error } = registerSchema.validate(valid({ email: 'user@mailinator.com' }));
+    assert.ok(error);
+    assert.match(error.message, /permanent email/i);
+  });
+
+  it('rejects other disposable providers (yopmail, guerrillamail, temp-mail)', () => {
+    for (const email of ['a@yopmail.com', 'a@guerrillamail.com', 'a@temp-mail.org', 'a@10minutemail.com']) {
+      const { error } = registerSchema.validate(valid({ email }));
+      assert.ok(error, email);
+      assert.match(error.message, /permanent email/i);
+    }
+  });
+
+  it('still rejects a malformed email', () => {
+    const { error } = registerSchema.validate(valid({ email: 'not-an-email' }));
+    assert.ok(error);
+  });
+});
+
+describe('tuneSchema — 5000 char cap + fixed actions', () => {
+  it('accepts a short text with a valid action', () => {
+    const { error } = tuneSchema.validate({ text: 'Make this better.', action: 'engaging' });
+    assert.equal(error, undefined);
+  });
+
+  it('accepts exactly 5000 characters', () => {
+    const { error } = tuneSchema.validate({ text: 'x'.repeat(5000), action: 'shorten' });
+    assert.equal(error, undefined);
+  });
+
+  it('rejects text over 5000 characters', () => {
+    const { error } = tuneSchema.validate({ text: 'x'.repeat(5001), action: 'shorten' });
+    assert.ok(error);
+    assert.match(error.message, /5000/);
+  });
+
+  it('rejects an unknown action', () => {
+    const { error } = tuneSchema.validate({ text: 'Hello.', action: 'rewrite' });
+    assert.ok(error);
+  });
+
+  it('rejects a missing text', () => {
+    const { error } = tuneSchema.validate({ action: 'shorten' });
+    assert.ok(error);
   });
 });
