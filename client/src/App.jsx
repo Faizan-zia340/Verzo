@@ -17,6 +17,7 @@ import Pricing from './pages/Pricing.jsx';
 import PaymentSuccess from './pages/PaymentSuccess.jsx';
 import Admin from './pages/Admin.jsx';
 import PDFAnalyzer from './pages/PDFAnalyzer.jsx';
+import Privacy from './pages/Privacy.jsx';
 import BlogList from './pages/BlogList.jsx';
 import BlogPost from './pages/BlogPost.jsx';
 import NotFound from './pages/NotFound.jsx';
@@ -76,6 +77,7 @@ function AnimatedRoutes() {
         <Route path="/reset-password/:token" element={<PageWrapper><ResetPassword /></PageWrapper>} />
         <Route path="/verify-email/:token" element={<PageWrapper><VerifyEmail /></PageWrapper>} />
         <Route path="/pricing" element={<PageWrapper><Pricing /></PageWrapper>} />
+        <Route path="/privacy" element={<PageWrapper><Privacy /></PageWrapper>} />
         <Route path="/blog" element={<PageWrapper><BlogList /></PageWrapper>} />
         <Route path="/blog/:slug" element={<PageWrapper><BlogPost /></PageWrapper>} />
         <Route path="/payment-success" element={<PageWrapper><PaymentSuccess /></PageWrapper>} />

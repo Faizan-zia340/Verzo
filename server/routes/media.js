@@ -2,6 +2,7 @@ import { Router } from 'express';
 import multer from 'multer';
 import protect from '../middleware/auth.js';
 import userRateLimit from '../middleware/userRateLimit.js';
+import uploadLimit from '../middleware/uploadLimit.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import Content from '../models/Content.js';
 import {
@@ -35,13 +36,16 @@ const handleUploadError = (err, _req, res, next) => {
 };
 
 // Uploads are storage, not generation: no credit is charged here.
-// Abuse is bounded by auth + 20 uploads/hour per user + the 5 MB cap.
+// Abuse is bounded by auth + 20 uploads/hour per user + the 5 MB cap +
+// the daily upload-count limit (uploadLimit, after multer so rejected
+// files never count).
 router.post(
   '/upload',
   protect,
   userRateLimit(20, 'Media upload'),
   upload.single('file'),
   handleUploadError,
+  uploadLimit('image'),
   asyncHandler(async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ message: 'Attach one image or audio file (max 5 MB).' });

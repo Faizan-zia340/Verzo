@@ -13,6 +13,7 @@ const columns = [
     heading: 'Resources',
     links: [
       { to: '/blog', label: 'Blog' },
+      { to: '/privacy', label: 'Privacy Policy' },
       { to: '/', label: 'Home' },
     ],
   },
