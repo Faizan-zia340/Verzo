@@ -21,7 +21,7 @@ Die Lösung ist nicht, den Blog auf Englisch zu schreiben — die Lösung ist, m
 
 **Schritt 3: Geben Sie Thema und Zielgruppe ein.** Worum geht es? Für wen schreiben Sie? Beispiel: „Vorteile des täglichen Lesens" für „Studierende". Je klarer das Thema, desto besser der Artikel.
 
-**Schritt 4: Generieren Sie und lesen Sie vor dem Veröffentlichen.** Der Artikel kommt mit einem SEO-Paket (Titel, Beschreibung und Keywords) und einem Reality-Check-Ergebnis von 10. Eine Generierung kostet in der Regel 1 Credit, und die kostenlose Anmeldung umfasst 10 kostenlose Credits.
+**Schritt 4: Generieren Sie und lesen Sie vor dem Veröffentlichen.** Der Artikel kommt mit einem SEO-Paket (Titel, Beschreibung und Keywords) und einem Reality-Check-Ergebnis von 10. Eine Generierung kostet in der Regel 1 Credit, und die kostenlose Anmeldung umfasst 20 kostenlose Credits.
 
 ## Was Sie mit dem Artikel erhalten
 
@@ -63,7 +63,7 @@ Ja. Laden Sie ein Foto hoch, wählen Sie Blog, und Sie können den Prompt komple
 Ja. Wählen Sie German als Sprache, und der Artikel wird auf Deutsch verfasst.
 
 **Was kostet ein Artikel?**
-In der Regel 1 Credit pro Generierung. Die kostenlose Anmeldung umfasst 10 Credits; die [Preise](/pricing) beginnen bei 4,99 $ für 50 Credits.
+In der Regel 1 Credit pro Generierung. Die kostenlose Anmeldung umfasst 20 Credits; die [Preise](/pricing) beginnen bei 4,99 $ für 50 Credits.
 
 **Kann ich den Stil ändern?**
 Ja. Schreiben Sie den Stil in den Prompt — „formeller Stil" oder „einfacher Stil für Anfänger" — und der Artikel folgt ihm.

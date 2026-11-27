@@ -23,7 +23,7 @@ Con Penlix, il processo cambia. Descrivi l'argomento in italiano e la Penlix scr
 
 **Passo 4: Genera e rifinisci.** Leggi la bozza e, se serve, chiedi di accorciarla, renderla più semplice o cambiare il tono. La rifinitura non costa crediti extra.
 
-Ogni generazione costa 1 credito. La registrazione gratuita include 10 crediti.
+Ogni generazione costa 1 credito. La registrazione gratuita include 20 crediti.
 
 ## Cosa arriva con l'articolo
 
@@ -54,7 +54,7 @@ Se hai una foto ma non le parole, usa la generazione da immagine: carica una fot
 ## FAQ
 
 **Quanto costa un articolo?**
-1 credito per generazione. La registrazione gratuita include 10 crediti; i [piani](/pricing) partono da $4,99 per 50 crediti.
+1 credito per generazione. La registrazione gratuita include 20 crediti; i [piani](/pricing) partono da $4,99 per 50 crediti.
 
 **Penlix scrive davvero in italiano corretto?**
 Sì. Seleziona la lingua Italiano nel generatore. Penlix scrive in 23 lingue in totale, tra cui inglese, spagnolo e francese.

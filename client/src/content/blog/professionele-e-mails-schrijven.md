@@ -39,7 +39,7 @@ Kies het juiste subtype en de e-mail krijgt meteen de juiste toon en opbouw.
 
 **Stap 4: Lees hem één keer door voor je verstuurt.** Controleer altijd namen, data en bedragen zelf. Die drie dingen maken of breken een e-mail.
 
-Elke generatie kost 1 credit. Gratis registratie geeft 10 credits.
+Elke generatie kost 1 credit. Gratis registratie geeft 20 credits.
 
 ## Voorbeeld: follow-up e-mail
 
@@ -82,7 +82,7 @@ Deze follow-up werkt omdat hij drie dingen doet: zachtjes herinneren, de kern ko
 ## FAQ
 
 **Wat kost een e-mail?**
-1 credit per generatie. Gratis registratie geeft 10 credits; [abonnementen](/pricing) beginnen bij $4,99 voor 50 credits.
+1 credit per generatie. Gratis registratie geeft 20 credits; [abonnementen](/pricing) beginnen bij $4,99 voor 50 credits.
 
 **Schrijft Penlix ook in het Nederlands?**
 Ja. Kies Nederlands als taal in de generator. Penlix schrijft in 23 talen, waaronder Engels, Duits en Frans.

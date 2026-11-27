@@ -21,7 +21,7 @@ La solución no es escribir el blog en inglés — la solución es empezar con u
 
 **Paso 3: Escribe el tema y la audiencia.** ¿De qué trata? ¿Para quién escribes? Ejemplo: "beneficios de leer todos los días" para "estudiantes universitarios". Mientras más claro sea el tema, mejor será el artículo.
 
-**Paso 4: Genera y lee antes de publicar.** El artículo llega con un paquete SEO (título, descripción y palabras clave) y una puntuación de Reality Check sobre 10. Una generación suele costar 1 crédito, y el registro gratuito incluye 10 créditos gratis.
+**Paso 4: Genera y lee antes de publicar.** El artículo llega con un paquete SEO (título, descripción y palabras clave) y una puntuación de Reality Check sobre 10. Una generación suele costar 1 crédito, y el registro gratuito incluye 20 créditos gratis.
 
 ## Qué recibes con el artículo
 
@@ -59,7 +59,7 @@ Sí. Sube una foto, elige Blog y puedes dejar el prompt completamente vacío —
 Sí. Elige Spanish (Latin America) como idioma y el artículo saldrá en español latinoamericano.
 
 **¿Cuánto cuesta un artículo?**
-Normalmente 1 crédito por generación. El registro gratuito incluye 10 créditos; los [precios](/pricing) empiezan en $4.99 por 50 créditos.
+Normalmente 1 crédito por generación. El registro gratuito incluye 20 créditos; los [precios](/pricing) empiezan en $4.99 por 50 créditos.
 
 **¿Puedo cambiar el estilo?**
 Sí. Escribe el estilo en el prompt — "estilo formal" o "estilo sencillo para principiantes" — y el artículo lo seguirá.

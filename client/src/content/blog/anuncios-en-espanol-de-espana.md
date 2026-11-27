@@ -21,7 +21,7 @@ Con Penlix eliges el tipo de contenido "Anuncio" y el idioma "Español (España)
 
 **Paso 3: Escribe el producto, la oferta y la audiencia.** ¿Qué vendes? ¿Cuál es la oferta? ¿Para quién? Ejemplo: "zapatillas de running con un 20% de descuento" para "jóvenes de 20 a 35 años". Añade el precio, el enlace y la fecha límite si la hay.
 
-**Paso 4: Genera y elige el mejor.** Prueba varias generaciones y quédate con la que más te guste — un anuncio corto merece un segundo intento. Una generación suele costar 1 crédito, y el registro gratuito incluye 10 créditos gratis.
+**Paso 4: Genera y elige el mejor.** Prueba varias generaciones y quédate con la que más te guste — un anuncio corto merece un segundo intento. Una generación suele costar 1 crédito, y el registro gratuito incluye 20 créditos gratis.
 
 ## Qué hace que un anuncio funcione
 
@@ -71,7 +71,7 @@ Sí. Sube una foto del producto, elige Ad y puedes dejar el prompt vacío — Pe
 Sí. Elige Spanish (Spain) como idioma y el texto saldrá en español peninsular.
 
 **¿Cuánto cuesta un anuncio?**
-Normalmente 1 crédito por generación. El registro gratuito incluye 10 créditos; los [precios](/pricing) empiezan en $4.99 por 50 créditos.
+Normalmente 1 crédito por generación. El registro gratuito incluye 20 créditos; los [precios](/pricing) empiezan en $4.99 por 50 créditos.
 
 **¿Puedo pedir anuncios cortos?**
 Sí. Escribe en el prompt: "anuncio corto, dos frases" o "tono divertido" — y la generación lo seguirá.

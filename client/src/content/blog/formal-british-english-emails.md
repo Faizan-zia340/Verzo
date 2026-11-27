@@ -37,7 +37,7 @@ Choosing the wrong subtype changes the tone completely — an apology written li
 
 **Step 3: Give the details.** Who you are writing to, what it is about, and what you want. Write names, companies, dates and links exactly as they should appear — Penlix writes only what you tell it, and it will not invent a correct name or number from a guess.
 
-**Step 4: Generate, then read it before sending.** The email comes with a subject line. Read it once yourself before sending: are the names right? Are the dates right? Is the tone right for this person? A generation usually costs 1 credit, and free signup includes 10 free credits.
+**Step 4: Generate, then read it before sending.** The email comes with a subject line. Read it once yourself before sending: are the names right? Are the dates right? Is the tone right for this person? A generation usually costs 1 credit, and free signup includes 20 free credits.
 
 ## British conventions worth knowing
 
@@ -84,7 +84,7 @@ What works here: the subject line states the purpose, the greeting is formal, th
 Yes — choose English (UK) as the language and the output uses British spelling and conventions.
 
 **How much does an email cost?**
-Usually 1 credit per generation. Free signup includes 10 credits; [pricing](/pricing) starts at $4.99 for 50 credits.
+Usually 1 credit per generation. Free signup includes 20 credits; [pricing](/pricing) starts at $4.99 for 50 credits.
 
 **Can I change the tone?**
 Yes. Say it in the prompt — "formal tone" or "polite but firm" — and the subtype structure will carry it.

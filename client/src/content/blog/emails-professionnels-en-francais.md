@@ -37,7 +37,7 @@ Choisir le mauvais sous-type change complètement le ton — des excuses rédig�
 
 **Étape 3 : Donnez les détails.** À qui écrivez-vous, de quoi s'agit-il, et que voulez-vous ? Écrivez les noms, les entreprises, les dates et les liens exactement comme ils doivent apparaître — Penlix n'écrit que ce que vous lui dites, et il n'inventera pas un nom ou un numéro correct à partir d'une supposition.
 
-**Étape 4 : Générez, puis relisez avant d'envoyer.** L'e-mail arrive avec une ligne d'objet. Relisez-le une fois avant de l'envoyer : les noms sont-ils corrects ? Les dates sont-elles correctes ? Le ton convient-il à cette personne ? Une génération coûte généralement 1 crédit, et l'inscription gratuite inclut 10 crédits gratuits.
+**Étape 4 : Générez, puis relisez avant d'envoyer.** L'e-mail arrive avec une ligne d'objet. Relisez-le une fois avant de l'envoyer : les noms sont-ils corrects ? Les dates sont-elles correctes ? Le ton convient-il à cette personne ? Une génération coûte généralement 1 crédit, et l'inscription gratuite inclut 20 crédits gratuits.
 
 ## Les conventions françaises à connaître
 
@@ -84,7 +84,7 @@ Ce qui fonctionne ici : l'objet annonce le but, l'appel est formel, la demande e
 Oui — choisissez le français comme langue et le résultat sera rédigé en français.
 
 **Combien coûte un e-mail ?**
-Généralement 1 crédit par génération. L'inscription gratuite inclut 10 crédits ; les [tarifs](/pricing) commencent à 4,99 $ pour 50 crédits.
+Généralement 1 crédit par génération. L'inscription gratuite inclut 20 crédits ; les [tarifs](/pricing) commencent à 4,99 $ pour 50 crédits.
 
 **Puis-je changer le ton ?**
 Oui. Dites-le dans le prompt — « ton formel » ou « ton poli mais ferme » — et la structure du sous-type le portera.

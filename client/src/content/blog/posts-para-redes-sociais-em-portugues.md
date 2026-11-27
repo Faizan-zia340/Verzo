@@ -23,7 +23,7 @@ No Instagram e no Facebook, a foto chama a atenção — mas é a legenda que fa
 
 **Passo 4: Gere e ajuste.** A Penlix gera a legenda com hashtags. Se quiser, peça para encurtar, deixar mais divertida ou trocar a chamada para ação — sem gastar crédito extra pelo ajuste.
 
-Cada geração custa 1 crédito. O cadastro gratuito inclui 10 créditos.
+Cada geração custa 1 crédito. O cadastro gratuito inclui 20 créditos.
 
 ## O que faz uma boa legenda em português
 
@@ -60,7 +60,7 @@ Perceba a estrutura: gancho, informação, pergunta e uma recompensa por comenta
 ## FAQ
 
 **Quantos créditos custa uma legenda?**
-1 crédito por geração. O cadastro gratuito inclui 10 créditos; os [planos](/pricing) começam em $4,99 por 50 créditos.
+1 crédito por geração. O cadastro gratuito inclui 20 créditos; os [planos](/pricing) começam em $4,99 por 50 créditos.
 
 **A Penlix escreve em português brasileiro?**
 Sim. Selecione o idioma Português (Brasil) no gerador. A Penlix também escreve em outros 22 idiomas, incluindo inglês, espanhol e francês.
