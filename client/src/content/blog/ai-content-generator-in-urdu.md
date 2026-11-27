@@ -3,7 +3,7 @@ title: AI Content Generator in Urdu: A Practical Guide
 description: اردو میں AI سے مواد کیسے لکھیں؟ پینلکس رومن اردو لکھتا ہے — اردو اسکرپٹ کا درست طریقہ، اصلی مثالیں اور عام غلطیاں۔
 slug: ai-content-generator-in-urdu
 date: 2026-11-25
-keyword: ai content generator in urdu
+keyword: AI content generator in urdu
 language: urdu
 ---
 

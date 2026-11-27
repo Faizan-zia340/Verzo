@@ -3,7 +3,7 @@ title: Does AI-Generated Content Hurt SEO? (What Google Actually Says)
 description: Does AI content hurt SEO? Google's own guidance says no — if it's helpful. Here's what Google actually says, plus a safe AI workflow.
 slug: does-ai-generated-content-hurt-seo
 date: 2026-11-25
-keyword: ai generated content seo
+keyword: AI generated content SEO
 language: english
 ---
 
