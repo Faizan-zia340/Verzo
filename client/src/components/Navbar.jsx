@@ -41,7 +41,7 @@ export default function Navbar() {
 
           <Link to="/" className="flex items-center gap-2.5 group">
             <img src="/brand/penlix-mark.svg" alt="Penlix" className="h-8 w-auto dark:hidden" />
-            <img src="/brand/penlix-icon.svg" alt="Penlix" className="h-8 w-8 hidden dark:block rounded-lg" />
+            <img src="/brand/penlix-mark-white.svg" alt="Penlix" className="h-8 w-auto hidden dark:block" />
             <span className="font-black text-gray-900 dark:text-white text-xl tracking-tight">Penlix</span>
           </Link>
 
@@ -116,7 +116,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100 dark:border-gray-800">
           <div className="flex items-center gap-2">
             <img src="/brand/penlix-mark.svg" alt="Penlix" className="h-7 w-auto dark:hidden" />
-            <img src="/brand/penlix-icon.svg" alt="Penlix" className="h-7 w-7 hidden dark:block rounded-lg" />
+            <img src="/brand/penlix-mark-white.svg" alt="Penlix" className="h-7 w-auto hidden dark:block" />
             <span className="font-black text-gray-900 dark:text-white text-lg tracking-tight">Penlix</span>
           </div>
           <button onClick={() => setMenuOpen(false)} aria-label="Close menu"
