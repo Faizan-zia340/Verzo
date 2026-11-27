@@ -49,7 +49,7 @@ export default function PaymentSuccess() {
 
   const copy = {
     verifying: {
-      icon: <span className="animate-spin h-14 w-14 border-4 border-indigo-200 border-t-indigo-600 rounded-full mx-auto mb-4 block" />,
+      icon: <span className="animate-spin h-14 w-14 border-4 border-teak-200 border-t-teak-600 rounded-full mx-auto mb-4 block" />,
       title: 'Verifying your payment…',
       text: 'Please wait while we confirm your payment with Stripe.',
     },
@@ -84,7 +84,7 @@ export default function PaymentSuccess() {
         {copy.icon}
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{copy.title}</h2>
         <p className="text-gray-500 dark:text-slate-400 mb-6">{copy.text}</p>
-        <Link to="/dashboard" className="bg-indigo-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition inline-block">Go to Dashboard</Link>
+        <Link to="/dashboard" className="bg-teak-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-teak-700 transition inline-block">Go to Dashboard</Link>
         {state === 'failed' && (
           <div className="mt-3">
             <Link to="/pricing" className="text-sm text-indigo-600 dark:text-ink-link font-medium hover:underline">Back to Pricing</Link>

@@ -36,7 +36,7 @@ export default function VerifyEmail() {
       <div className="w-full max-w-[360px] text-center">
         {status === 'verifying' && (
           <>
-            <span className="inline-block animate-spin h-8 w-8 border-2 border-indigo-500 border-t-transparent rounded-full mb-6" />
+            <span className="inline-block animate-spin h-8 w-8 border-2 border-teak-500 border-t-transparent rounded-full mb-6" />
             <h1 className="text-2xl font-black text-gray-950 dark:text-white tracking-tight">Verifying your email…</h1>
             <p className="text-gray-500 dark:text-slate-400 text-sm mt-2">This only takes a moment.</p>
           </>
@@ -51,7 +51,7 @@ export default function VerifyEmail() {
             <p className="text-gray-500 dark:text-slate-400 text-sm mt-2 leading-relaxed">{message}</p>
             <Link
               to="/dashboard"
-              className="mt-8 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-xl font-bold transition text-sm shadow-lg shadow-indigo-200 flex items-center justify-center gap-2"
+              className="mt-8 w-full bg-teak-600 hover:bg-teak-700 text-white py-3.5 rounded-xl font-bold transition text-sm shadow-lg shadow-teak-200 flex items-center justify-center gap-2"
             >
               <FiZap size={14} /> Start generating
             </Link>
@@ -70,7 +70,7 @@ export default function VerifyEmail() {
             </p>
             <Link
               to="/login"
-              className="mt-8 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-xl font-bold transition text-sm shadow-lg shadow-indigo-200 flex items-center justify-center gap-2"
+              className="mt-8 w-full bg-teak-600 hover:bg-teak-700 text-white py-3.5 rounded-xl font-bold transition text-sm shadow-lg shadow-teak-200 flex items-center justify-center gap-2"
             >
               Back to sign in
             </Link>

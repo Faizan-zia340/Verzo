@@ -38,27 +38,27 @@ export default function Register() {
     }
   };
 
-  const inputClass = 'w-full bg-gray-50 dark:bg-ink-page border border-gray-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white dark:focus:bg-ink-raised transition placeholder-gray-400 dark:placeholder-slate-500';
+  const inputClass = 'w-full bg-gray-50 dark:bg-ink-page border border-gray-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teak-500 focus:border-teak-500 focus:bg-white dark:focus:bg-ink-raised transition placeholder-gray-400 dark:placeholder-slate-500';
 
   return (
     <div className="min-h-screen flex">
       <Seo title="Create Your Penlix Account — Free Credits" description="Create a free Penlix account and start generating AI content in 23 languages. No credit card required." path="/register" noindex />
 
       {/* ── Left: Feature panel ──────────────────────────────── */}
-      <div className="hidden lg:flex w-[44%] bg-gradient-to-br from-gray-950 via-indigo-950 to-gray-900 flex-col justify-between p-12 flex-shrink-0">
+      <div className="hidden lg:flex w-[44%] bg-gradient-to-br from-gray-950 via-teak-950 to-gray-900 flex-col justify-between p-12 flex-shrink-0">
         <Link to="/" className="flex items-center gap-2.5">
           <img src="/brand/penlix-mark-white.svg" alt="Penlix" className="h-9 w-auto" />
           <span className="text-white font-black text-2xl tracking-tight">Penlix</span>
         </Link>
 
         <div>
-          <div className="inline-flex items-center gap-2 bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-xs font-bold px-4 py-1.5 rounded-full mb-6">
+          <div className="inline-flex items-center gap-2 bg-teak-500/20 border border-teak-400/30 text-teak-300 text-xs font-bold px-4 py-1.5 rounded-full mb-6">
             <FiZap size={11} /> 20 free credits — no credit card
           </div>
           <h2 className="text-4xl font-black text-white leading-tight mb-4 tracking-tight">
             Your AI content<br />studio awaits.
           </h2>
-          <p className="text-indigo-300 text-sm mb-8 leading-relaxed">
+          <p className="text-teak-300 text-sm mb-8 leading-relaxed">
             Create an account in 30 seconds and start generating content that your audience actually reads.
           </p>
           <div className="space-y-3">
@@ -122,7 +122,7 @@ export default function Register() {
             </div>
 
             <button type="submit" disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-xl font-bold transition disabled:opacity-60 text-sm shadow-lg shadow-indigo-200 mt-2 flex items-center justify-center gap-2">
+              className="w-full bg-teak-600 hover:bg-teak-700 text-white py-3.5 rounded-xl font-bold transition disabled:opacity-60 text-sm shadow-lg shadow-teak-200 mt-2 flex items-center justify-center gap-2">
               {loading ? (
                 <><span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" /> Creating account...</>
               ) : (

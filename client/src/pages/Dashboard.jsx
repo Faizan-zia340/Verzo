@@ -83,10 +83,10 @@ export default function Dashboard() {
       <Seo title="Penlix Dashboard — Your Content" description="Your Penlix dashboard — generate content, track credits and view your history." path="/dashboard" noindex />
 
       {/* ── Welcome banner ─────────────────────────────────── */}
-      <div className="bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600">
+      <div className="bg-gradient-to-r from-teak-600 via-teak-600 to-teak-700">
         <div className="max-w-5xl mx-auto px-4 py-6 flex items-center justify-between flex-wrap gap-4">
           <motion.div initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}>
-            <p className="text-indigo-200 text-sm font-medium">{greet()}</p>
+            <p className="text-teak-100 text-sm font-medium">{greet()}</p>
             <h1 className="text-2xl font-black text-white tracking-tight">{user?.name}</h1>
           </motion.div>
           <motion.div initial={{ opacity: 0, x: 16 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.4 }}
@@ -169,7 +169,7 @@ export default function Dashboard() {
               onClick={() => setTab(key)}
               className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
                 tab === key
-                  ? 'bg-indigo-600 text-white shadow-sm'
+                  ? 'bg-teak-600 text-white shadow-sm'
                   : 'text-gray-500 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-100 hover:bg-gray-50 dark:hover:bg-ink-raised'
               }`}
             >
@@ -197,7 +197,7 @@ export default function Dashboard() {
           <button
             onClick={handleDownloadData}
             disabled={downloading}
-            className="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-2 flex-shrink-0"
+            className="bg-teak-600 hover:bg-teak-700 disabled:opacity-60 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-2 flex-shrink-0"
           >
             <FiDownload size={14} />
             {downloading ? 'Preparing…' : 'Download my data'}

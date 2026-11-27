@@ -42,14 +42,14 @@ export default function Login() {
 
   const isDbError = DB_ERROR_KEYWORDS.some((k) => error.toLowerCase().includes(k));
 
-  const inputClass = 'w-full bg-gray-50 dark:bg-ink-page border border-gray-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white dark:focus:bg-ink-raised transition placeholder-gray-400 dark:placeholder-slate-500';
+  const inputClass = 'w-full bg-gray-50 dark:bg-ink-page border border-gray-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teak-500 focus:border-teak-500 focus:bg-white dark:focus:bg-ink-raised transition placeholder-gray-400 dark:placeholder-slate-500';
 
   return (
     <div className="min-h-screen flex">
       <Seo title="Log in to Penlix — AI Content Generator" description="Log in to Penlix to generate blogs, emails, social posts and ads in 23 languages." path="/login" noindex />
 
       {/* ── Left: Feature panel ──────────────────────────────── */}
-      <div className="hidden lg:flex w-[44%] bg-gradient-to-br from-gray-950 via-indigo-950 to-gray-900 flex-col justify-between p-12 flex-shrink-0">
+      <div className="hidden lg:flex w-[44%] bg-gradient-to-br from-gray-950 via-teak-950 to-gray-900 flex-col justify-between p-12 flex-shrink-0">
         <Link to="/" className="flex items-center gap-2.5">
           <img src="/brand/penlix-mark-white.svg" alt="Penlix" className="h-9 w-auto" />
           <span className="text-white font-black text-2xl tracking-tight">Penlix</span>
@@ -59,14 +59,14 @@ export default function Login() {
           <h2 className="text-4xl font-black text-white leading-tight mb-4 tracking-tight">
             Write content<br />that sounds human.
           </h2>
-          <p className="text-indigo-300 text-sm mb-8 leading-relaxed">
+          <p className="text-teak-300 text-sm mb-8 leading-relaxed">
             The AI platform that writes with precision, sells with psychology, and thinks like your best copywriter.
           </p>
           <div className="space-y-3">
             {FEATURES.map((f) => (
               <div key={f} className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center flex-shrink-0">
-                  <FiCheck size={10} className="text-indigo-400" />
+                <div className="w-5 h-5 rounded-full bg-teak-500/20 border border-teak-400/30 flex items-center justify-center flex-shrink-0">
+                  <FiCheck size={10} className="text-teak-400" />
                 </div>
                 <span className="text-gray-300 text-sm">{f}</span>
               </div>
@@ -80,7 +80,7 @@ export default function Login() {
             generates is checked to sound human — that is the whole point.
           </p>
           <div className="flex items-center gap-2.5 mt-4">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white text-xs font-bold">F</div>
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teak-500 to-teak-600 flex items-center justify-center text-white text-xs font-bold">F</div>
             <div>
               <p className="text-white text-xs font-semibold">M. Faizan</p>
               <p className="text-gray-400 dark:text-slate-500 text-xs">Founder, Penlix</p>
@@ -145,7 +145,7 @@ export default function Login() {
             </div>
 
             <button type="submit" disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-xl font-bold transition disabled:opacity-60 text-sm shadow-lg shadow-indigo-200 mt-2">
+              className="w-full bg-teak-600 hover:bg-teak-700 text-white py-3.5 rounded-xl font-bold transition disabled:opacity-60 text-sm shadow-lg shadow-teak-200 mt-2">
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
                   <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />

@@ -88,11 +88,11 @@ export default function Pricing() {
     : [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white dark:from-ink-page dark:to-ink-card">
+    <div className="min-h-screen bg-gradient-to-br from-teak-50 to-white dark:from-ink-page dark:to-ink-card">
       <Seo title="Penlix Pricing — Buy Credits, No Subscription" description="Buy Penlix credits once and use them whenever. Simple, transparent pricing with no subscriptions and no surprises." path="/pricing" />
       <div className="max-w-5xl mx-auto px-4 py-16">
         <div className="text-center mb-14">
-          <span className="inline-block bg-indigo-100 dark:bg-ink-raised text-indigo-700 dark:text-ink-link text-sm font-semibold px-4 py-1.5 rounded-full mb-4">
+          <span className="inline-block bg-teak-100 dark:bg-ink-raised text-teak-700 dark:text-teak-400 text-sm font-semibold px-4 py-1.5 rounded-full mb-4">
             Pricing
           </span>
           <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white mb-3">
@@ -116,7 +116,7 @@ export default function Pricing() {
             <div>
               <button
                 onClick={loadPlans}
-                className="py-2.5 px-6 rounded-xl font-semibold text-sm bg-indigo-600 text-white hover:bg-indigo-700 transition"
+                className="py-2.5 px-6 rounded-xl font-semibold text-sm bg-teak-600 text-white hover:bg-teak-700 transition"
               >
                 Retry
               </button>
@@ -128,10 +128,10 @@ export default function Pricing() {
               <div
                 key={plan.id}
                 className={`relative rounded-2xl border p-8 flex flex-col bg-white dark:bg-ink-card shadow-sm transition hover:shadow-md
-                  ${plan.popular ? 'border-indigo-500 ring-2 ring-indigo-500' : 'border-gray-200 dark:border-slate-800'}`}
+                  ${plan.popular ? 'border-teak-500 ring-2 ring-teak-500' : 'border-gray-200 dark:border-slate-800'}`}
               >
                 {plan.popular && (
-                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-xs font-bold px-4 py-1 rounded-full shadow">
+                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-teak-600 text-white text-xs font-bold px-4 py-1 rounded-full shadow">
                     Most Popular
                   </span>
                 )}
@@ -143,8 +143,8 @@ export default function Pricing() {
                     {!plan.free && <span className="text-gray-400 dark:text-slate-500 text-sm mb-1">one-time</span>}
                   </div>
                   <div className="flex items-center gap-1.5 mt-2">
-                    <FiZap className="text-indigo-500 dark:text-ink-link" size={14} />
-                    <span className="text-sm font-semibold text-indigo-600 dark:text-ink-link">{plan.credits} credits</span>
+                    <FiZap className="text-teak-600 dark:text-teak-400" size={14} />
+                    <span className="text-sm font-semibold text-teak-600 dark:text-teak-400">{plan.credits} credits</span>
                   </div>
                 </div>
 
@@ -162,10 +162,10 @@ export default function Pricing() {
                   disabled={loadingPlan === plan.id}
                   className={`w-full py-3 rounded-xl font-semibold text-sm transition disabled:opacity-60 flex items-center justify-center gap-2
                     ${plan.popular
-                      ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md'
+                      ? 'bg-teak-600 text-white hover:bg-teak-700 shadow-md'
                       : plan.free
                         ? 'border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-ink-raised'
-                        : 'bg-violet-600 text-white hover:bg-violet-700'
+                        : 'bg-teak-600 text-white hover:bg-teak-700'
                     }`}
                 >
                   {loadingPlan === plan.id ? <LoadingSpinner size="sm" /> : plan.cta}

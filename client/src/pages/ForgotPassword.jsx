@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import { FiAlertCircle, FiArrowLeft, FiMail } from 'react-icons/fi';
 import Seo from '../components/Seo.jsx';
 
-const inputClass = 'w-full bg-gray-50 dark:bg-ink-page border border-gray-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white dark:focus:bg-ink-raised transition placeholder-gray-400 dark:placeholder-slate-500';
+const inputClass = 'w-full bg-gray-50 dark:bg-ink-page border border-gray-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teak-500 focus:border-teak-500 focus:bg-white dark:focus:bg-ink-raised transition placeholder-gray-400 dark:placeholder-slate-500';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -47,7 +47,7 @@ export default function ForgotPassword() {
         )}
 
         {sent ? (
-          <div className="bg-indigo-50 dark:bg-ink-raised border border-indigo-100 text-indigo-800 dark:text-ink-link text-sm px-4 py-3.5 rounded-xl mb-5">
+          <div className="bg-teak-50 dark:bg-ink-raised border border-teak-100 text-teak-800 dark:text-teak-400 text-sm px-4 py-3.5 rounded-xl mb-5">
             If an account exists with that email, a password reset link has been sent. Please check your inbox (and spam folder) — the link expires in 1 hour.
           </div>
         ) : (
@@ -67,7 +67,7 @@ export default function ForgotPassword() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-xl font-bold transition disabled:opacity-60 text-sm shadow-lg shadow-indigo-200 mt-2 flex items-center justify-center gap-2"
+              className="w-full bg-teak-600 hover:bg-teak-700 text-white py-3.5 rounded-xl font-bold transition disabled:opacity-60 text-sm shadow-lg shadow-teak-200 mt-2 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />

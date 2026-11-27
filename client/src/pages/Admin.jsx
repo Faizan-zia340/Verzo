@@ -47,8 +47,8 @@ function EditModal({ user, onClose, onSave }) {
           <p className="font-semibold text-gray-900 dark:text-white text-sm">{user.name}</p>
           <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">{user.email}</p>
           <div className="flex items-center gap-1.5 mt-2">
-            <FiZap size={11} className="text-indigo-500 dark:text-ink-link" />
-            <span className="text-xs text-indigo-600 dark:text-ink-link font-bold">{user.credits} credits currently</span>
+            <FiZap size={11} className="text-teak-600 dark:text-teak-400" />
+            <span className="text-xs text-teak-600 dark:text-teak-400 font-bold">{user.credits} credits currently</span>
           </div>
         </div>
         <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">
@@ -57,13 +57,13 @@ function EditModal({ user, onClose, onSave }) {
         <input
           type="number" value={adjustment} onChange={(e) => setAdjustment(e.target.value)}
           placeholder="e.g. 50 or -10" autoFocus
-          className="w-full border border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-ink-page rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-ink-raised transition mb-3"
+          className="w-full border border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-ink-page rounded-xl px-4 py-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teak-500 focus:bg-white dark:focus:bg-ink-raised transition mb-3"
         />
         {error && <p className="text-red-500 text-xs mb-3 bg-red-50 dark:bg-ink-raised px-3 py-2 rounded-lg border border-red-100">{error}</p>}
         <div className="flex gap-2.5">
           <button onClick={onClose} className="flex-1 border border-gray-200 dark:border-slate-800 text-gray-600 dark:text-slate-400 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50 dark:hover:bg-ink-raised transition">Cancel</button>
           <button onClick={handleSave} disabled={loading}
-            className="flex-1 bg-indigo-600 text-white py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700 transition disabled:opacity-60 flex items-center justify-center gap-1.5 shadow-sm">
+            className="flex-1 bg-teak-600 text-white py-2.5 rounded-xl text-sm font-bold hover:bg-teak-700 transition disabled:opacity-60 flex items-center justify-center gap-1.5 shadow-sm">
             {loading ? <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" /> : <><FiCheck size={13} /> Save</>}
           </button>
         </div>
@@ -137,7 +137,7 @@ function Overview({ stats, loadingStats }) {
   }, []);
 
   const TYPE_COLORS = {
-    blog: 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30',
+    blog: 'bg-teak-500/20 text-teak-300 border border-teak-500/30',
     social: 'bg-violet-500/20 text-violet-300 border border-violet-500/30',
     email: 'bg-blue-500/20 text-blue-300 border border-blue-500/30',
     ad: 'bg-rose-500/20 text-rose-300 border border-rose-500/30',
@@ -146,8 +146,8 @@ function Overview({ stats, loadingStats }) {
 
   const STAT_CARDS = [
     { label: 'Total Users', value: stats?.userCount ?? 0, icon: <FiUsers size={18} className="text-blue-300" />, gradient: 'bg-gradient-to-br from-blue-600 to-blue-700', iconBg: 'bg-blue-500/20' },
-    { label: 'Total Credits', value: stats?.totalCredits ?? 0, icon: <FiZap size={18} className="text-indigo-200" />, gradient: 'bg-gradient-to-br from-indigo-600 to-indigo-700', iconBg: 'bg-indigo-500/20' },
-    { label: 'Total Generations', value: stats?.totalGenerations ?? 0, icon: <FiBarChart2 size={18} className="text-violet-200" />, gradient: 'bg-gradient-to-br from-violet-600 to-violet-700', iconBg: 'bg-violet-500/20' },
+    { label: 'Total Credits', value: stats?.totalCredits ?? 0, icon: <FiZap size={18} className="text-teak-100" />, gradient: 'bg-gradient-to-br from-teak-600 to-teak-700', iconBg: 'bg-teak-500/20' },
+    { label: 'Total Generations', value: stats?.totalGenerations ?? 0, icon: <FiBarChart2 size={18} className="text-violet-200" />, gradient: 'bg-gradient-to-br from-teak-600 to-teak-700', iconBg: 'bg-violet-500/20' },
     { label: 'RAG Contexts', value: stats?.contextCount ?? 0, icon: <FiDatabase size={18} className="text-emerald-200" />, gradient: 'bg-gradient-to-br from-emerald-600 to-teal-600', iconBg: 'bg-emerald-500/20' },
   ];
 
@@ -241,9 +241,9 @@ function GrantCreditsForm() {
   };
 
   return (
-    <div className="bg-gradient-to-br from-indigo-50 to-violet-50 border border-indigo-100 rounded-2xl p-6">
+    <div className="bg-gradient-to-br from-teak-50 to-teak-100 border border-teak-100 rounded-2xl p-6">
       <div className="flex items-center gap-3 mb-5">
-        <div className="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center shadow-sm">
+        <div className="w-9 h-9 bg-teak-600 rounded-xl flex items-center justify-center shadow-sm">
           <FiMail size={15} className="text-white" />
         </div>
         <div>
@@ -255,15 +255,15 @@ function GrantCreditsForm() {
         <input
           type="email" value={email} onChange={(e) => setEmail(e.target.value)}
           placeholder="user@example.com" required
-          className="flex-1 min-w-0 border border-indigo-200 bg-white dark:bg-ink-card rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400 dark:placeholder-slate-500 shadow-sm"
+          className="flex-1 min-w-0 border border-teak-200 bg-white dark:bg-ink-card rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teak-500 placeholder-gray-400 dark:placeholder-slate-500 shadow-sm"
         />
         <input
           type="number" value={credits} onChange={(e) => setCredits(e.target.value)}
           placeholder="Amount (e.g. 100)" required
-          className="w-44 border border-indigo-200 bg-white dark:bg-ink-card rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-gray-400 dark:placeholder-slate-500 shadow-sm"
+          className="w-44 border border-teak-200 bg-white dark:bg-ink-card rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teak-500 placeholder-gray-400 dark:placeholder-slate-500 shadow-sm"
         />
         <button type="submit" disabled={loading}
-          className="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-indigo-700 transition disabled:opacity-60 flex items-center gap-2 shadow-sm">
+          className="bg-teak-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-teak-700 transition disabled:opacity-60 flex items-center gap-2 shadow-sm">
           {loading ? <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" /> : <><FiZap size={13} /> Grant</>}
         </button>
       </form>
@@ -329,7 +329,7 @@ function UserManagement() {
         <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500" size={15} />
         <input
           type="text" placeholder="Search by name or email..." value={search} onChange={(e) => setSearch(e.target.value)}
-          className="w-full border border-gray-200 dark:border-slate-800 bg-white dark:bg-ink-card text-gray-800 dark:text-slate-100 text-sm rounded-xl pl-11 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm placeholder-gray-400 dark:placeholder-slate-500"
+          className="w-full border border-gray-200 dark:border-slate-800 bg-white dark:bg-ink-card text-gray-800 dark:text-slate-100 text-sm rounded-xl pl-11 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-teak-500 shadow-sm placeholder-gray-400 dark:placeholder-slate-500"
         />
         {search && (
           <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-400 dark:text-slate-500 font-medium">
@@ -341,7 +341,7 @@ function UserManagement() {
       <div className="bg-white dark:bg-ink-card border border-gray-100 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
         {loading ? (
           <div className="py-20 flex flex-col items-center gap-3">
-            <span className="animate-spin h-7 w-7 border-2 border-indigo-500 border-t-transparent rounded-full" />
+            <span className="animate-spin h-7 w-7 border-2 border-teak-500 border-t-transparent rounded-full" />
             <p className="text-sm text-gray-400 dark:text-slate-500">Loading users...</p>
           </div>
         ) : (
@@ -359,7 +359,7 @@ function UserManagement() {
                   <tr key={u._id} className="hover:bg-gray-50/80 dark:hover:bg-ink-raised/80 transition">
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-100 to-violet-100 flex items-center justify-center text-indigo-700 dark:text-ink-link text-xs font-black flex-shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teak-100 to-teak-200 flex items-center justify-center text-teak-700 text-xs font-black flex-shrink-0">
                           {u.name?.charAt(0)?.toUpperCase()}
                         </div>
                         <div>
@@ -369,7 +369,7 @@ function UserManagement() {
                       </div>
                     </td>
                     <td className="px-5 py-4">
-                      <span className="inline-flex items-center gap-1.5 bg-indigo-50 dark:bg-ink-raised border border-indigo-100 text-indigo-700 dark:text-ink-link text-xs font-bold px-3 py-1.5 rounded-lg">
+                      <span className="inline-flex items-center gap-1.5 bg-teak-50 dark:bg-ink-raised border border-teak-100 text-teak-700 dark:text-teak-400 text-xs font-bold px-3 py-1.5 rounded-lg">
                         <FiZap size={10} /> {u.credits}
                       </span>
                     </td>
@@ -385,7 +385,7 @@ function UserManagement() {
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-2">
                         <button onClick={() => setEditTarget(u)}
-                          className="flex items-center gap-1.5 text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg font-semibold transition shadow-sm">
+                          className="flex items-center gap-1.5 text-xs bg-teak-600 hover:bg-teak-700 text-white px-3 py-1.5 rounded-lg font-semibold transition shadow-sm">
                           <FiEdit2 size={11} /> Edit Credits
                         </button>
                         {u.isAdmin || String(u._id) === String(currentUser?._id) ? (
@@ -465,7 +465,7 @@ function SystemSettings() {
     } catch { toast.error('Delete failed.'); }
   };
 
-  const inputClass = 'w-full border border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-ink-page text-gray-900 dark:text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-ink-raised transition placeholder-gray-400 dark:placeholder-slate-500';
+  const inputClass = 'w-full border border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-ink-page text-gray-900 dark:text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-teak-500 focus:bg-white dark:focus:bg-ink-raised transition placeholder-gray-400 dark:placeholder-slate-500';
 
   return (
     <div className="space-y-6">
@@ -476,8 +476,8 @@ function SystemSettings() {
 
       <div className="bg-white dark:bg-ink-card border border-gray-100 dark:border-slate-800 rounded-2xl shadow-sm p-6">
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-9 h-9 bg-indigo-100 dark:bg-ink-raised rounded-xl flex items-center justify-center">
-            <FiPlus size={16} className="text-indigo-600 dark:text-ink-link" />
+          <div className="w-9 h-9 bg-teak-100 dark:bg-ink-raised rounded-xl flex items-center justify-center">
+            <FiPlus size={16} className="text-teak-600 dark:text-teak-400" />
           </div>
           <div>
             <h3 className="text-sm font-bold text-gray-900 dark:text-white">Add Context Document</h3>
@@ -506,7 +506,7 @@ function SystemSettings() {
               className={`${inputClass} resize-none`} />
           </div>
           <button type="submit" disabled={saving}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-6 py-3 rounded-xl font-bold transition disabled:opacity-60 flex items-center gap-2 shadow-sm">
+            className="bg-teak-600 hover:bg-teak-700 text-white text-sm px-6 py-3 rounded-xl font-bold transition disabled:opacity-60 flex items-center gap-2 shadow-sm">
             {saving ? <span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" /> : <FiPlus size={14} />}
             Save Context Document
           </button>
@@ -516,14 +516,14 @@ function SystemSettings() {
       <div className="bg-white dark:bg-ink-card border border-gray-100 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <FiDatabase size={14} className="text-indigo-500 dark:text-ink-link" />
+            <FiDatabase size={14} className="text-teak-600 dark:text-teak-400" />
             <h3 className="font-bold text-gray-900 dark:text-white text-sm">Saved Context Documents</h3>
           </div>
           <span className="text-xs text-gray-400 dark:text-slate-500 bg-gray-100 dark:bg-ink-raised px-2.5 py-1 rounded-full font-medium">{contexts.length} total</span>
         </div>
         {loading ? (
           <div className="py-16 flex flex-col items-center gap-3">
-            <span className="animate-spin h-6 w-6 border-2 border-indigo-500 border-t-transparent rounded-full" />
+            <span className="animate-spin h-6 w-6 border-2 border-teak-500 border-t-transparent rounded-full" />
             <p className="text-sm text-gray-400 dark:text-slate-500">Loading...</p>
           </div>
         ) : !contexts.length ? (
@@ -540,7 +540,7 @@ function SystemSettings() {
                     <p className="font-bold text-gray-900 dark:text-white text-sm">{ctx.title}</p>
                     <div className="flex flex-wrap gap-1.5 mt-2">
                       {ctx.keywords?.map((kw, i) => (
-                        <span key={i} className="bg-indigo-100 dark:bg-ink-raised text-indigo-700 dark:text-ink-link border border-indigo-200 text-xs px-2.5 py-0.5 rounded-full font-medium">{kw}</span>
+                        <span key={i} className="bg-teak-100 dark:bg-ink-raised text-teak-700 dark:text-teak-400 border border-teak-200 text-xs px-2.5 py-0.5 rounded-full font-medium">{kw}</span>
                       ))}
                     </div>
                     <p className="text-xs text-gray-500 dark:text-slate-400 mt-2 line-clamp-2 leading-relaxed">{ctx.information}</p>
@@ -619,7 +619,7 @@ function TranslationSuggestions() {
         {['pending', 'approved', 'rejected'].map((s) => (
           <button key={s} onClick={() => setStatus(s)}
             className={`px-4 py-2 rounded-xl text-sm font-medium capitalize transition ${
-              status === s ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white dark:bg-ink-card text-gray-600 dark:text-slate-400 border border-gray-200 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-ink-raised'
+              status === s ? 'bg-teak-600 text-white shadow-sm' : 'bg-white dark:bg-ink-card text-gray-600 dark:text-slate-400 border border-gray-200 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-ink-raised'
             }`}>
             {s}
           </button>
@@ -631,7 +631,7 @@ function TranslationSuggestions() {
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-bold text-gray-900 dark:text-white text-sm">Copy into glossary.json (under terms)</h3>
             <button onClick={copySnippet}
-              className="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg font-semibold transition">
+              className="text-xs bg-teak-600 hover:bg-teak-700 text-white px-3 py-1.5 rounded-lg font-semibold transition">
               Copy snippet
             </button>
           </div>
@@ -643,14 +643,14 @@ function TranslationSuggestions() {
       <div className="bg-white dark:bg-ink-card border border-gray-100 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <FiGlobe size={14} className="text-indigo-500 dark:text-ink-link" />
+            <FiGlobe size={14} className="text-teak-600 dark:text-teak-400" />
             <h3 className="font-bold text-gray-900 dark:text-white text-sm capitalize">{status} suggestions</h3>
           </div>
           <span className="text-xs text-gray-400 dark:text-slate-500 bg-gray-100 dark:bg-ink-raised px-2.5 py-1 rounded-full font-medium">{suggestions.length} total</span>
         </div>
         {loading ? (
           <div className="py-16 flex flex-col items-center gap-3">
-            <span className="animate-spin h-6 w-6 border-2 border-indigo-500 border-t-transparent rounded-full" />
+            <span className="animate-spin h-6 w-6 border-2 border-teak-500 border-t-transparent rounded-full" />
             <p className="text-sm text-gray-400 dark:text-slate-500">Loading...</p>
           </div>
         ) : !suggestions.length ? (
@@ -666,7 +666,7 @@ function TranslationSuggestions() {
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-gray-900 dark:text-white text-sm">
                       {s.word} <span className="text-gray-400 dark:text-slate-500 font-medium">→</span>{' '}
-                      <span className="text-indigo-700 dark:text-ink-link">{s.suggestedTranslation}</span>{' '}
+                      <span className="text-teak-700 dark:text-teak-400">{s.suggestedTranslation}</span>{' '}
                       <span className="text-xs font-medium text-gray-500 dark:text-slate-400">({s.language})</span>
                     </p>
                     {s.note && <p className="text-xs text-gray-500 dark:text-slate-400 mt-1 leading-relaxed">{s.note}</p>}
@@ -719,7 +719,7 @@ function FeedbackList() {
 
   const categoryBadge = (category) => ({
     Bug: 'bg-red-100 dark:bg-ink-raised text-red-700 dark:text-red-300 border-red-200 dark:border-red-900',
-    Suggestion: 'bg-indigo-100 dark:bg-ink-raised text-indigo-700 dark:text-ink-link border-indigo-200',
+    Suggestion: 'bg-teak-100 dark:bg-ink-raised text-teak-700 dark:text-teak-400 border-teak-200',
     Other: 'bg-gray-100 dark:bg-ink-raised text-gray-600 dark:text-slate-400 border-gray-200 dark:border-slate-800',
   }[category] || 'bg-gray-100 dark:bg-ink-raised text-gray-600 dark:text-slate-400 border-gray-200 dark:border-slate-800');
 
@@ -733,14 +733,14 @@ function FeedbackList() {
       <div className="bg-white dark:bg-ink-card border border-gray-100 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <FiMessageSquare size={14} className="text-indigo-500 dark:text-ink-link" />
+            <FiMessageSquare size={14} className="text-teak-600 dark:text-teak-400" />
             <h3 className="font-bold text-gray-900 dark:text-white text-sm">All feedback</h3>
           </div>
           <span className="text-xs text-gray-400 dark:text-slate-500 bg-gray-100 dark:bg-ink-raised px-2.5 py-1 rounded-full font-medium">{items.length} total</span>
         </div>
         {loading ? (
           <div className="py-16 flex flex-col items-center gap-3">
-            <span className="animate-spin h-6 w-6 border-2 border-indigo-500 border-t-transparent rounded-full" />
+            <span className="animate-spin h-6 w-6 border-2 border-teak-500 border-t-transparent rounded-full" />
             <p className="text-sm text-gray-400 dark:text-slate-500">Loading...</p>
           </div>
         ) : !items.length ? (
@@ -800,7 +800,7 @@ export default function Admin() {
 
   if (authLoading) return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-      <span className="animate-spin h-8 w-8 border-2 border-indigo-500 border-t-transparent rounded-full" />
+      <span className="animate-spin h-8 w-8 border-2 border-teak-500 border-t-transparent rounded-full" />
     </div>
   );
   if (!user?.isAdmin) return <Navigate to="/dashboard" replace />;
@@ -818,7 +818,7 @@ export default function Admin() {
       <aside className={`fixed md:static inset-y-0 left-0 z-50 md:z-auto w-64 max-w-[70vw] bg-gray-900 flex flex-col py-6 px-3 flex-shrink-0 shadow-xl overflow-y-auto transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} ${sidebarCollapsed ? 'md:hidden' : ''}`}>
         <div className="flex items-center justify-between px-3 mb-8">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-9 h-9 bg-gradient-to-br from-teak-500 to-teak-700 rounded-xl flex items-center justify-center shadow-lg">
               <FiEdit3 size={15} className="text-white" />
             </div>
             <div>
@@ -838,7 +838,7 @@ export default function Admin() {
             <button key={key} onClick={() => { setSection(key); setSidebarOpen(false); }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition ${
                 section === key
-                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/30'
+                  ? 'bg-teak-600 text-white shadow-sm shadow-teak-500/30'
                   : 'text-gray-400 hover:text-white hover:bg-white/8'
               }`}>
               <Icon size={15} /> {label}

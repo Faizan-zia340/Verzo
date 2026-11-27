@@ -55,7 +55,7 @@ export default function BlogPost() {
           </p>
           <Link
             to="/blog"
-            className="inline-flex items-center gap-2 bg-indigo-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition"
+            className="inline-flex items-center gap-2 bg-teak-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-teak-700 transition"
           >
             <FiArrowLeft size={14} /> Back to all posts
           </Link>
@@ -78,7 +78,7 @@ export default function BlogPost() {
         </div>
 
         <div dir={dir} style={{ fontFamily: stack, lineHeight }}>
-          <span className="inline-block bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 text-xs font-semibold px-2.5 py-1 rounded-full mb-4">
+          <span className="inline-block bg-teak-50 dark:bg-teak-950 text-teak-700 dark:text-teak-300 text-xs font-semibold px-2.5 py-1 rounded-full mb-4">
             {post.keyword}
           </span>
           <h1 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white tracking-tight leading-tight mb-4">
@@ -96,21 +96,21 @@ export default function BlogPost() {
 
         <SuggestTranslation postLanguage={post.language} />
 
-        <div className="mt-14 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-2xl p-8 text-center">
+        <div className="mt-14 bg-gradient-to-br from-teak-600 to-teak-700 rounded-2xl p-8 text-center">
           <h2 className="text-2xl font-black text-white mb-2">Try it yourself — free</h2>
-          <p className="text-indigo-100 mb-6">
+          <p className="text-teak-100 mb-6">
             Write your first blog, email or ad with Penlix. Free signup includes 20 credits — no card required.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               to="/register"
-              className="inline-flex items-center gap-2 bg-white dark:bg-ink-card text-indigo-700 dark:text-ink-link px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-indigo-50 dark:hover:bg-ink-raised transition"
+              className="inline-flex items-center gap-2 bg-white dark:bg-ink-card text-teak-700 dark:text-teak-400 px-5 py-2.5 rounded-lg text-sm font-bold hover:bg-teak-50 dark:hover:bg-ink-raised transition"
             >
               Get started free <FiArrowRight size={14} />
             </Link>
             <Link
               to="/pricing"
-              className="inline-flex items-center gap-2 border border-indigo-300 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-white/10 transition"
+              className="inline-flex items-center gap-2 border border-teak-300 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-white/10 transition"
             >
               See pricing
             </Link>
@@ -125,7 +125,7 @@ export default function BlogPost() {
                 <Link
                   key={r.slug}
                   to={`/blog/${r.slug}`}
-                  className="block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 hover:border-indigo-300 dark:hover:border-indigo-500 transition"
+                  className="block bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 hover:border-teak-300 dark:hover:border-teak-500 transition"
                 >
                   <span className="block text-xs font-semibold text-indigo-600 dark:text-indigo-400 mb-1.5">{r.keyword}</span>
                   <span className="block text-sm font-bold text-gray-900 dark:text-white leading-snug">{r.title}</span>

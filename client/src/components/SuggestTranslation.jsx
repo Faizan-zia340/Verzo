@@ -9,7 +9,7 @@ import { SUGGESTION_LANGUAGES } from '../utils/suggestionLanguages.js';
 // "Suggest a better translation" — lives on blog posts. A suggestion is
 // free, costs no credit, and goes to the admin review queue; it only
 // reaches the glossary after an admin approves it.
-const inputClass = 'w-full border border-gray-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-slate-100 bg-white dark:bg-ink-raised focus:outline-none focus:ring-2 focus:ring-indigo-500';
+const inputClass = 'w-full border border-gray-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-slate-100 bg-white dark:bg-ink-raised focus:outline-none focus:ring-2 focus:ring-teak-500';
 
 export default function SuggestTranslation({ postLanguage }) {
   const { user } = useAuth();
@@ -100,7 +100,7 @@ export default function SuggestTranslation({ postLanguage }) {
         <button
           type="submit"
           disabled={saving}
-          className="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition disabled:opacity-50"
+          className="inline-flex items-center gap-2 bg-teak-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-teak-700 transition disabled:opacity-50"
         >
           <FiSend size={14} /> {saving ? 'Sending…' : 'Send suggestion'}
         </button>

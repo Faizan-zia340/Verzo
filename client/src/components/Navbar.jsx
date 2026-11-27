@@ -76,10 +76,10 @@ export default function Navbar() {
                     <FiShield size={13} /> Admin
                   </Link>
                 )}
-                <div className="flex items-center gap-1.5 bg-indigo-50 border border-indigo-100 text-indigo-700 px-3 py-1.5 rounded-lg mx-1">
-                  <FiZap size={11} className="text-indigo-500" />
+                <div className="flex items-center gap-1.5 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-900 text-amber-800 dark:text-amber-300 px-3 py-1.5 rounded-lg mx-1">
+                  <FiZap size={11} className="text-amber-600" />
                   <span className="text-sm font-bold">{credits ?? user.credits}</span>
-                  <span className="text-xs text-indigo-400 font-medium">credits</span>
+                  <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">credits</span>
                 </div>
                 <button
                   onClick={handleLogout}
@@ -93,7 +93,7 @@ export default function Navbar() {
                 <Link to="/login" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition">
                   Sign in
                 </Link>
-                <Link to="/register" className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition shadow-sm ml-1">
+                <Link to="/register" className="bg-teak-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-teak-700 transition shadow-sm ml-1">
                   Get started free
                 </Link>
               </>
@@ -153,10 +153,10 @@ export default function Navbar() {
                   <FiShield size={14} /> Admin
                 </Link>
               )}
-              <div className="flex items-center gap-1.5 bg-indigo-50 dark:bg-indigo-950 border border-indigo-100 dark:border-indigo-900 text-indigo-700 dark:text-indigo-300 px-3 py-2 rounded-lg">
-                <FiZap size={12} className="text-indigo-500" />
+              <div className="flex items-center gap-1.5 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-900 text-amber-800 dark:text-amber-300 px-3 py-2 rounded-lg">
+                <FiZap size={12} className="text-amber-600" />
                 <span className="text-sm font-bold">{credits ?? user.credits}</span>
-                <span className="text-xs text-indigo-400 font-medium">credits</span>
+                <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">credits</span>
               </div>
               <button
                 onClick={handleLogout}
@@ -170,7 +170,7 @@ export default function Navbar() {
               <Link to="/login" className="block text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white text-sm font-medium px-3 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition">
                 Sign in
               </Link>
-              <Link to="/register" className="block bg-indigo-600 text-white px-3 py-2.5 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition shadow-sm text-center">
+              <Link to="/register" className="block bg-teak-600 text-white px-3 py-2.5 rounded-lg text-sm font-semibold hover:bg-teak-700 transition shadow-sm text-center">
                 Get started free
               </Link>
             </>
