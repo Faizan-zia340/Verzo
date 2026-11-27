@@ -9,6 +9,7 @@ import {
   FiShield, FiUsers, FiZap, FiDatabase, FiEdit2, FiX, FiCheck,
   FiSearch, FiTrash2, FiPlus, FiBarChart2, FiSettings, FiArrowLeft,
   FiActivity, FiMail, FiGlobe, FiEdit3, FiMessageSquare, FiMenu,
+  FiChevronsLeft, FiChevronsRight,
 } from 'react-icons/fi';
 import Seo from '../components/Seo.jsx';
 
@@ -787,6 +788,7 @@ export default function Admin() {
   const { user, loading: authLoading } = useAuth();
   const [section, setSection] = useState('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [stats, setStats] = useState(null);
   const [loadingStats, setLoadingStats] = useState(true);
 
@@ -812,7 +814,7 @@ export default function Admin() {
       {sidebarOpen && (
         <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={() => setSidebarOpen(false)} aria-hidden="true" />
       )}
-      <aside className={`fixed md:static inset-y-0 left-0 z-50 md:z-auto w-64 bg-gray-900 flex flex-col py-6 px-3 flex-shrink-0 shadow-xl overflow-y-auto transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+      <aside className={`fixed md:static inset-y-0 left-0 z-50 md:z-auto w-64 bg-gray-900 flex flex-col py-6 px-3 flex-shrink-0 shadow-xl overflow-y-auto transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} ${sidebarCollapsed ? 'md:hidden' : ''}`}>
         <div className="flex items-center justify-between px-3 mb-8">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center shadow-lg">
@@ -863,6 +865,12 @@ export default function Admin() {
             <button onClick={() => setSidebarOpen(true)} aria-label="Open menu"
               className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-ink-raised transition flex-shrink-0">
               <FiMenu size={18} />
+            </button>
+            {/* Desktop: collapse / expand the sidebar so it can be closed when not needed. */}
+            <button onClick={() => setSidebarCollapsed((value) => !value)}
+              aria-label={sidebarCollapsed ? 'Show sidebar' : 'Hide sidebar'}
+              className="hidden md:flex w-9 h-9 items-center justify-center rounded-lg text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-ink-raised transition flex-shrink-0">
+              {sidebarCollapsed ? <FiChevronsRight size={18} /> : <FiChevronsLeft size={18} />}
             </button>
             <div className="min-w-0">
               <h1 className="font-black text-gray-900 dark:text-white text-lg truncate">{NAV.find((n) => n.key === section)?.label}</h1>
