@@ -56,9 +56,35 @@
   ]
 }
 </script>
+    <style>
+      /* First-paint splash: shown before the JS bundle loads, so a reload
+         never shows a blank white page. The theme class is applied by the
+         inline script below (same saved-theme rule as src/index.js), so
+         dark-mode users get the dark page colour immediately, no white flash. */
+      html, body { margin: 0; padding: 0; }
+      body { background: #ffffff; }
+      html.dark body { background: #020617; }
+      #penlix-splash { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+      #penlix-splash .mark { width: 56px; height: 56px; border-radius: 16px; background: #4f46e5; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; }
+      #penlix-splash .name { font-size: 20px; font-weight: 700; color: #111827; letter-spacing: 0.01em; }
+      html.dark #penlix-splash .name { color: #ffffff; }
+      #penlix-splash .dots { display: flex; gap: 6px; }
+      #penlix-splash .dots span { width: 8px; height: 8px; border-radius: 50%; background: #6366f1; animation: penlix-pulse 0.9s ease-in-out infinite; }
+      #penlix-splash .dots span:nth-child(2) { animation-delay: 0.15s; }
+      #penlix-splash .dots span:nth-child(3) { animation-delay: 0.3s; }
+      @keyframes penlix-pulse { 0%, 100% { opacity: 0.35; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-4px); } }
+    </style>
+    <script>
+      // Apply the saved theme BEFORE the bundle loads (mirrors src/index.js).
+      try {
+        var savedTheme = localStorage.getItem('penlix-theme');
+        var prefersDark = savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.classList.toggle('dark', prefersDark);
+      } catch (e) { /* private mode / no storage: stay on the light default */ }
+    </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"><div id="penlix-splash"><div class="mark">P</div><div class="name">Penlix</div><div class="dots"><span></span><span></span><span></span></div></div></div>
     <script type="module" src="/src/index.js"></script>
   </body>
 </html>

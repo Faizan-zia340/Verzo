@@ -15,7 +15,7 @@ const imageSchema = new mongoose.Schema({
 
 const contentSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
-  type: { type: String, required: true, enum: ['blog', 'social', 'email', 'ad', 'product', 'cover_letter', 'resume_summary', 'linkedin'] },
+  type: { type: String, required: true, enum: ['blog', 'social', 'email', 'ad', 'product', 'cover_letter', 'resume_summary', 'linkedin', 'rag'] },
   // Email category / social style used for this generation ('' = default).
   subtype: { type: String, default: '' },
   prompt: { type: String, required: true },

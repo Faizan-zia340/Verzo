@@ -80,7 +80,7 @@ function AnimatedRoutes() {
         <Route path="/privacy" element={<PageWrapper><Privacy /></PageWrapper>} />
         <Route path="/blog" element={<PageWrapper><BlogList /></PageWrapper>} />
         <Route path="/blog/:slug" element={<PageWrapper><BlogPost /></PageWrapper>} />
-        <Route path="/payment-success" element={<PageWrapper><PaymentSuccess /></PageWrapper>} />
+        <Route path="/payment-success" element={<PrivateRoute><PageWrapper><PaymentSuccess /></PageWrapper></PrivateRoute>} />
         <Route path="/dashboard" element={<PrivateRoute><PageWrapper><Dashboard /></PageWrapper></PrivateRoute>} />
         <Route path="/pdf" element={<PrivateRoute><PageWrapper><PDFAnalyzer /></PageWrapper></PrivateRoute>} />
         <Route path="/admin" element={<AdminRoute><PageWrapper><Admin /></PageWrapper></AdminRoute>} />
