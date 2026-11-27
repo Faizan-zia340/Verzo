@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.js';
 import { useCredits } from '../context/CreditContext.js';
-import { FiLogOut, FiGrid, FiShield, FiFileText, FiZap, FiMoon, FiSun, FiMenu, FiX } from 'react-icons/fi';
+import { FiLogOut, FiGrid, FiShield, FiFileText, FiZap, FiMoon, FiSun, FiX } from 'react-icons/fi';
+import DrawerIcon from './DrawerIcon.jsx';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -99,7 +100,7 @@ export default function Navbar() {
               aria-label={menuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={menuOpen}
             >
-              {menuOpen ? <FiX size={18} /> : <FiMenu size={18} />}
+              {menuOpen ? <FiX size={18} /> : <DrawerIcon size={18} />}
             </button>
           </div>
         </div>

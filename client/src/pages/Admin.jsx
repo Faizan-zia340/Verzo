@@ -8,9 +8,10 @@ import toast from 'react-hot-toast';
 import {
   FiShield, FiUsers, FiZap, FiDatabase, FiEdit2, FiX, FiCheck,
   FiSearch, FiTrash2, FiPlus, FiBarChart2, FiSettings, FiArrowLeft,
-  FiActivity, FiMail, FiGlobe, FiEdit3, FiMessageSquare, FiMenu,
+  FiActivity, FiMail, FiGlobe, FiEdit3, FiMessageSquare,
   FiChevronsLeft, FiChevronsRight,
 } from 'react-icons/fi';
+import DrawerIcon from '../components/DrawerIcon.jsx';
 import Seo from '../components/Seo.jsx';
 
 // ── Credit Edit Modal ──────────────────────────────────────────────
@@ -864,7 +865,7 @@ export default function Admin() {
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <button onClick={() => setSidebarOpen(true)} aria-label="Open menu"
               className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-ink-raised transition flex-shrink-0">
-              <FiMenu size={18} />
+              <DrawerIcon size={18} />
             </button>
             {/* Desktop: collapse / expand the sidebar so it can be closed when not needed. */}
             <button onClick={() => setSidebarCollapsed((value) => !value)}
