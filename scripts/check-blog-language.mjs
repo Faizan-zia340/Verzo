@@ -15,9 +15,18 @@
 //   3. English "**Step N:**" label        (must be translated, e.g. "Marhala 1")
 //   4. Untranslated "Reality Check" name or its English criteria
 //      ("Human-ness", "Punchiness", "No-Cliché")
-//   5. A block of 2+ consecutive English lines (e.g. a whole example email
-//      left in English inside a non-English post — an email is typically
-//      two long English paragraphs, so 2 is the right threshold).
+//   6. Frontmatter title/description in the wrong language. The
+//      title and description are what the blog list and the post
+//      itself show, so an English title on a Roman Urdu/Urdu post is
+//      the most visible mixing of all — and the earlier fix left
+//      frontmatter untouched, so this is where it survived.
+//      Non-Latin-script posts (Urdu, Arabic, Bengali, Hindi, Russian,
+//      Korean, Chinese, Japanese, Persian) must have a non-ASCII
+//      title/description; Roman Urdu posts must carry a strict Roman
+//      Urdu marker word (TITLE_MARKERS — "blog"/"email" do not count).
+//      The SEO `keyword` field is intentionally English (a search
+//      phrase) and is NOT checked. Mixed titles (English phrase +
+//      Roman Urdu words) still pass this guard and rely on review.
 //
 // The English-block check is a heuristic: a prose line counts as English
 // when it carries 3+ common English function words and no marker word of
@@ -57,7 +66,10 @@ const ENGLISH_WORDS = new Set(
 // Note: deliberately EXCLUDES "is", "in", "us", "do", "teen" — those
 // spellings are both Roman Urdu words and English words, so they cannot
 // tell the two apart; Roman Urdu lines carry other markers
-// (hai, karein, mein...).
+// (hai, karein, mein...). It INCLUDES "blog" and "email" because Roman
+// Urdu prose uses those loanwords constantly — but the title check below
+// uses a STRICTER set (TITLE_MARKERS) that leaves them out, since an
+// English title can smuggle itself past the check on "blog" alone.
 const OWN_LANGUAGE_MARKERS = new Set(
   ('hai hain karein karein kare karo karna karne likhein likhna likho aap aapka ' +
    'tum tumhara tumhari yeh ye wo woh ke ki ka mein se aur par ko ne bhi nahi ' +
@@ -65,8 +77,30 @@ const OWN_LANGUAGE_MARKERS = new Set(
    'teri tere hamara hamari aapki kuch sab har aik ek chaar paanch ' +
    'chahiye hota hoti hote jata jati jate raha rahi rahe gaya gayi gaye ' +
    'misaal marhala sawalat pooche aksar behtar asaan mukhtasar email blog ' +
-   'janay wale janay janay').split(' ')
+   'janay wale janay janay bol kar likh dekh sun bata ja aa ho tha thi ' +
+   'the hoga hogi hoge vich naal te da di de nu lahori karachi lahore penlix').split(' ')
 );
+
+// Strict marker words for frontmatter titles/descriptions. Same as
+// OWN_LANGUAGE_MARKERS but WITHOUT the English loanwords "blog" and
+// "email" — an English title like "AI Blog Writer in Roman Urdu: What
+// Actually Works" must not pass on the word "blog" alone.
+const TITLE_MARKERS = new Set(
+  [...OWN_LANGUAGE_MARKERS].filter((w) => w !== 'blog' && w !== 'email')
+);
+
+// Languages written in a non-Latin script. Their title/description
+// must contain at least one non-ASCII character, otherwise the title
+// is English.
+const NON_LATIN_LANGUAGES = new Set([
+  'urdu', 'arabic_msa', 'arabic_gulf', 'bengali', 'hindi', 'russian',
+  'korean', 'chinese_simplified', 'japanese', 'persian',
+]);
+
+// Roman Urdu language values (Latin script, so they need marker words).
+const ROMAN_URDU_LANGUAGES = new Set([
+  'roman-urdu', 'roman_urdu', 'roman_urdu_karachi', 'roman_urdu_lahore',
+]);
 
 const violations = [];
 
@@ -107,7 +141,44 @@ for (const file of readdirSync(BLOG_DIR).filter((f) => f.endsWith('.md')).sort()
   const slug = file.replace(/\.md$/, '');
   if (ENGLISH_POSTS.has(slug)) continue;
 
-  const lines = readFileSync(join(BLOG_DIR, file), 'utf8').split('\n');
+  const content = readFileSync(join(BLOG_DIR, file), 'utf8');
+  const lines = content.split('\n');
+
+  // Rule 6: frontmatter title/description in the wrong language.
+  // Parse the frontmatter fields (title, description, language).
+  const front = content.match(/^---\n([\s\S]*?)\n---/);
+  if (front) {
+    const getField = (name) => {
+      const m = front[1].match(new RegExp(`^${name}:\\s*['"]?(.*?)['"]?\\s*$`, 'm'));
+      return m ? m[1].trim() : '';
+    };
+    const postLang = getField('language');
+    const title = getField('title');
+    const description = getField('description');
+    const checkField = (fieldName, value) => {
+      if (!value) return;
+      if (NON_LATIN_LANGUAGES.has(postLang)) {
+        if (!/[^\x00-\x7F]/.test(value)) {
+          fail(file, 1, 'english-frontmatter-' + fieldName, `${fieldName} is English on a ${postLang} post: ${value}`);
+        }
+      } else if (ROMAN_URDU_LANGUAGES.has(postLang) || !postLang) {
+        // Roman Urdu (or a post with no language field, which the site
+        // renders as Roman Urdu): the title/description must carry at
+        // least one strict Roman Urdu marker word. "blog"/"email" do
+        // not count — an English title must not pass on those alone.
+        // (Mixed titles — an English phrase plus Roman Urdu words —
+        // still pass this check; they are caught by human review, not
+        // by this guard.)
+        const words = value.toLowerCase().split(/[^a-z]+/).filter(Boolean);
+        if (!words.some((w) => TITLE_MARKERS.has(w))) {
+          fail(file, 1, 'english-frontmatter-' + fieldName, `${fieldName} has no Roman Urdu words: ${value}`);
+        }
+      }
+    };
+    checkField('title', title);
+    checkField('description', description);
+  }
+
   let inFrontmatter = false;
   let inCodeFence = false;
   let englishRun = 0;

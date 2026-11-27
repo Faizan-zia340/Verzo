@@ -1,5 +1,5 @@
 ---
-title: Urdu Content Generator: Urdu mein AI content likhne ka tareeqa
+title: 'Urdu Mein AI Content Likhna: Tareeqa Aur Tips'
 description: Urdu mein AI content kaise likhein? Roman Urdu aur Urdu script ka farq, Penlix se draft likhne ka tareeqa, aur Urdu script mein convert karne ke steps.
 slug: urdu-content-generator
 date: 2026-11-25

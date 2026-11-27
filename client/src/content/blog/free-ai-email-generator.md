@@ -1,5 +1,5 @@
 ---
-title: Free AI Email Generator: professional emails minutes mein
+title: 'Muft AI Email Generator: Professional Emails Minutes Mein Likhein'
 description: Professional email likhne mein ghante lagte hain? Free AI email generator se cold outreach, follow-up aur apology emails minutes mein likhein.
 slug: free-ai-email-generator
 date: 2026-11-25

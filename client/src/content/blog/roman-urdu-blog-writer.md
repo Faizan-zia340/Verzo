@@ -1,5 +1,5 @@
 ---
-title: Roman Urdu Blog Writer: AI se Roman Urdu mein blog kaise likhein
+title: 'Roman Urdu Mein Blog Likhna: AI Se Blog Kaise Likhein'
 description: Roman Urdu mein blog likhna mushkil lagta hai? Janiye AI blog writer se Roman Urdu blog kaise likhein — steps, real examples aur aam ghaltiyan.
 slug: roman-urdu-blog-writer
 date: 2026-11-25

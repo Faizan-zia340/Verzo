@@ -1,5 +1,5 @@
 ---
-title: 'AI Blog Writer in Roman Urdu: What Actually Works'
+title: 'Roman Urdu Mein AI Blog Writer: Jo Waqai Kaam Karta Hai'
 description: Roman Urdu mein AI blog writer se kya waqai kaam karta hai? Penlix ke asli outputs, Karachi/Lahore dialects aur wo ghaltiyan jin se bachna hai.
 slug: ai-blog-writer-in-roman-urdu
 date: 2026-11-25
