@@ -29,7 +29,9 @@ export default function Footer() {
   const year = new Date().getFullYear();
   return (
     <footer className="bg-gray-50 dark:bg-ink-page border-t border-gray-100 dark:border-slate-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      {/* pb-24 leaves clearance for the fixed Feedback button so it
+          never covers the bottom row (copyright / tagline). */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-24">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
           <div className="col-span-2">
             <Link to="/" className="flex items-center gap-2.5">

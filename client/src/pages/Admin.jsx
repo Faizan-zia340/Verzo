@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import {
   FiShield, FiUsers, FiZap, FiDatabase, FiEdit2, FiX, FiCheck,
   FiSearch, FiTrash2, FiPlus, FiBarChart2, FiSettings, FiArrowLeft,
-  FiActivity, FiMail, FiGlobe, FiEdit3, FiMessageSquare,
+  FiActivity, FiMail, FiGlobe, FiEdit3, FiMessageSquare, FiMenu,
 } from 'react-icons/fi';
 import Seo from '../components/Seo.jsx';
 
@@ -786,6 +786,7 @@ const NAV = [
 export default function Admin() {
   const { user, loading: authLoading } = useAuth();
   const [section, setSection] = useState('overview');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [stats, setStats] = useState(null);
   const [loadingStats, setLoadingStats] = useState(true);
 
@@ -806,21 +807,32 @@ export default function Admin() {
       <Seo title="Penlix Admin" description="Penlix admin panel — users, credits and activity." path="/admin" noindex />
 
       {/* ── Dark Sidebar ────────────────────────────────────── */}
-      <aside className="w-64 bg-gray-900 flex flex-col py-6 px-3 flex-shrink-0 shadow-xl">
-        <div className="flex items-center gap-2.5 px-3 mb-8">
-          <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center shadow-lg">
-            <FiEdit3 size={15} className="text-white" />
+      {/* Mobile: hidden drawer (overlay), opened from the top bar.
+          md+: normal fixed sidebar, exactly as before. */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 bg-black/50 z-40 md:hidden" onClick={() => setSidebarOpen(false)} aria-hidden="true" />
+      )}
+      <aside className={`fixed md:static inset-y-0 left-0 z-50 md:z-auto w-64 bg-gray-900 flex flex-col py-6 px-3 flex-shrink-0 shadow-xl overflow-y-auto transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+        <div className="flex items-center justify-between px-3 mb-8">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center shadow-lg">
+              <FiEdit3 size={15} className="text-white" />
+            </div>
+            <div>
+              <p className="text-sm font-black text-white tracking-tight">Penlix</p>
+              <p className="text-xs text-gray-400 dark:text-slate-500">Admin Panel</p>
+            </div>
           </div>
-          <div>
-            <p className="text-sm font-black text-white tracking-tight">Penlix</p>
-            <p className="text-xs text-gray-400 dark:text-slate-500">Admin Panel</p>
-          </div>
+          <button onClick={() => setSidebarOpen(false)} aria-label="Close menu"
+            className="md:hidden w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition">
+            <FiX size={18} />
+          </button>
         </div>
 
         <p className="text-xs font-bold text-gray-600 dark:text-slate-400 uppercase tracking-widest px-3 mb-2">Navigation</p>
         <nav className="space-y-0.5 flex-1">
           {NAV.map(({ key, label, icon: Icon }) => (
-            <button key={key} onClick={() => setSection(key)}
+            <button key={key} onClick={() => { setSection(key); setSidebarOpen(false); }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition ${
                 section === key
                   ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-500/30'
@@ -844,21 +856,27 @@ export default function Admin() {
       </aside>
 
       {/* ── Main Content ─────────────────────────────────────── */}
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto min-w-0">
         {/* Top bar */}
-        <div className="bg-white dark:bg-ink-card border-b border-gray-100 dark:border-slate-800 px-8 py-4 flex items-center justify-between shadow-sm">
-          <div>
-            <h1 className="font-black text-gray-900 dark:text-white text-lg">{NAV.find((n) => n.key === section)?.label}</h1>
-            <p className="text-xs text-gray-400 dark:text-slate-500">Penlix Admin · {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+        <div className="bg-white dark:bg-ink-card border-b border-gray-100 dark:border-slate-800 px-4 sm:px-8 py-4 flex items-center justify-between gap-3 shadow-sm">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <button onClick={() => setSidebarOpen(true)} aria-label="Open menu"
+              className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-ink-raised transition flex-shrink-0">
+              <FiMenu size={18} />
+            </button>
+            <div className="min-w-0">
+              <h1 className="font-black text-gray-900 dark:text-white text-lg truncate">{NAV.find((n) => n.key === section)?.label}</h1>
+              <p className="text-xs text-gray-400 dark:text-slate-500 truncate">Penlix Admin · {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <span className="text-xs bg-violet-100 dark:bg-ink-raised text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-900 font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5">
               <FiShield size={10} /> Admin Access
             </span>
           </div>
         </div>
 
-        <div className="max-w-5xl mx-auto px-8 py-7">
+        <div className="max-w-5xl mx-auto px-4 sm:px-8 pt-7 pb-24">
           {section === 'overview' && <Overview stats={stats} loadingStats={loadingStats} />}
           {section === 'users' && <UserManagement />}
           {section === 'suggestions' && <TranslationSuggestions />}
