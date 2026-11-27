@@ -66,7 +66,7 @@ export default function Pricing() {
     ? [
         {
           id: 'free',
-          name: 'Starter',
+          name: 'Free',
           price: 'Free',
           credits: plans.freeCredits,
           color: 'gray',
@@ -88,7 +88,7 @@ export default function Pricing() {
     : [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white dark:from-ink-page dark:to-ink-card">
       <Seo title="Penlix Pricing — Buy Credits, No Subscription" description="Buy Penlix credits once and use them whenever. Simple, transparent pricing with no subscriptions and no surprises." path="/pricing" />
       <div className="max-w-5xl mx-auto px-4 py-16">
         <div className="text-center mb-14">
