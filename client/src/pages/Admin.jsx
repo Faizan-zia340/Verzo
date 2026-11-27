@@ -865,7 +865,7 @@ export default function Admin() {
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <button onClick={() => setSidebarOpen(true)} aria-label="Open menu"
               className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-ink-raised transition flex-shrink-0">
-              <DrawerIcon size={18} />
+              <DrawerIcon size={18} direction="left" />
             </button>
             {/* Desktop: collapse / expand the sidebar so it can be closed when not needed. */}
             <button onClick={() => setSidebarCollapsed((value) => !value)}
