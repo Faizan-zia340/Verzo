@@ -107,6 +107,24 @@ router.patch('/:id/images', protect, asyncHandler(async (req, res) => {
   res.status(200).json({ content });
 }));
 
+// Tune save: replace a history entry's output with its tuned version.
+// Body: { output }. The tuned text no longer matches the original SEO
+// images, so images/imageOptions are cleared with it (the client clears
+// them locally too). No credits used — the tune itself already cost 1.
+router.patch('/:id', protect, asyncHandler(async (req, res) => {
+  const { output } = req.body || {};
+  if (typeof output !== 'string' || !output.trim() || output.length > 20000) {
+    return res.status(400).json({ message: 'output must be non-empty text (max 20000 characters)' });
+  }
+  const content = await Content.findOneAndUpdate(
+    { _id: req.params.id, user: req.user._id },
+    { $set: { output: output.trim(), images: [], imageOptions: [], updatedAt: new Date() } },
+    { new: true, runValidators: true }
+  );
+  if (!content) return res.status(404).json({ message: 'Content not found' });
+  res.status(200).json({ content });
+}));
+
 router.post('/:id/regenerate', protect, userRateLimit(10), reserveCredit(1), regenerateContent);
 
 router.delete('/:id', protect, asyncHandler(async (req, res) => {

@@ -8,7 +8,7 @@ import { scriptOf, googleFontsUrl, useContentFont } from '../utils/fonts.js';
 import {
   FiZap, FiCopy, FiDownload, FiCheck, FiHome, FiSmartphone, FiMail,
   FiAlertCircle, FiRefreshCw, FiSliders, FiFileText, FiShare2, FiImage,
-  FiMic, FiUpload, FiX, FiBriefcase,
+  FiMic, FiUpload, FiX, FiBriefcase, FiDatabase,
 } from 'react-icons/fi';
 
 const TYPES = [
@@ -339,6 +339,10 @@ export default function Generator() {
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
   const [showImages, setShowImages] = useState(false);
+  // RAG: answer from the admin's saved context documents instead of the
+  // general templates. 1 credit, same as a normal generation.
+  const [useRag, setUseRag] = useState(false);
+  const [ragKeywords, setRagKeywords] = useState('');
   // Voice input (Web Speech API) + image upload state
   const [listening, setListening] = useState(false);
   const [voiceSupported, setVoiceSupported] = useState(false);
@@ -465,7 +469,8 @@ export default function Generator() {
     // Client-side required-field check: block before any AI call or credit use.
     // With an image attached the photo is the topic, so no prompt and no
     // details are needed — the server supplies neutral defaults.
-    if (!imageFile) {
+    // RAG is free-form Q&A, so it only needs the prompt, not the type details.
+    if (!imageFile && !useRag) {
       const { missing, errors } = validateDetails(form);
       if (missing.length) {
         setFieldErrors(errors);
@@ -479,6 +484,43 @@ export default function Generator() {
       return;
     }
     setLoading(true); setFetchingImages(false); setError(''); setOutput(''); setSeoData(null); setImages([]); setImageOptions([]); setDisplayImages([]); setContentId(null); setRealityCheck(null); setQualityReport(null);
+
+    // RAG generation: POST /api/generate/rag with the prompt (and optional
+    // topic keywords for the keyword fallback). Exactly 1 credit, and the
+    // server saves the answer to History (type 'rag').
+    if (useRag) {
+      const ragToast = toast.loading('Generating with your saved knowledge...');
+      try {
+        const topicKeywords = ragKeywords.split(',').map((k) => k.trim()).filter(Boolean);
+        const response = await fetch(apiUrl('/api/generate/rag'), {
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userPrompt: form.prompt, topicKeywords }),
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          const msg = data.message || 'RAG generation failed. Please try again.';
+          setError(msg);
+          toast.error(msg, { id: ragToast });
+          setLoading(false);
+          return;
+        }
+        setOutput(data.response || '');
+        setContentId(data.contentId || null);
+        setRealityCheck(data.realityCheck || null);
+        setQualityReport(data.qualityReport || null);
+        deductCredit(1);
+        setLoading(false);
+        toast.success(data.contextUsed ? '1 credit used — answered from your saved knowledge!' : '1 credit used — content ready!', { id: ragToast });
+      } catch {
+        const msg = 'Network error. Please check your connection.';
+        setError(msg);
+        toast.error(msg, { id: ragToast });
+        setLoading(false);
+      }
+      return;
+    }
 
     // With an uploaded image the request goes to /with-image as multipart
     // form data (non-streaming, still exactly 1 credit).
@@ -599,6 +641,12 @@ export default function Generator() {
 
   const handleTune = async (action) => {
     if (!output || tuning || loading) return;
+    // A tune costs 1 credit (reserved server-side by /tune) — same as a
+    // generation. Never tune on an empty balance.
+    if (credits !== null && credits < 1) {
+      toast.error('Not enough credits. Please buy more.');
+      return;
+    }
     setTuning(action);
     setError('');
     const tuneToast = toast.loading('Rewriting...');
@@ -615,11 +663,27 @@ export default function Generator() {
       setImages([]);
       setImageOptions([]);
       setDisplayImages([]);
-      setContentId(null);
       setSeoData(null);
       setRealityCheck(data.realityCheck || null);
       setQualityReport(null); // tuned text has not been quality-checked
-      toast.success('Content refined!', { id: tuneToast });
+      deductCredit(1);
+      // Save the tuned version to History: update the existing entry so
+      // History shows the tuned text, not the original un-tuned version.
+      // contentId is deliberately kept — clearing it orphaned the entry.
+      if (contentId) {
+        try {
+          const saveRes = await fetch(apiUrl(`/api/history/${contentId}`), {
+            method: 'PATCH',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ output: data.output }),
+          });
+          if (!saveRes.ok) toast.error('Refined, but the tuned version could not be saved to History.');
+        } catch {
+          toast.error('Refined, but the tuned version could not be saved to History.');
+        }
+      }
+      toast.success('Content refined! 1 credit used.', { id: tuneToast });
     } catch {
       toast.error('Tune request failed.', { id: tuneToast });
     } finally {
@@ -895,6 +959,26 @@ export default function Generator() {
            </div>
           </div>
 
+          {/* RAG — answer from saved knowledge (admin context documents) */}
+          <div className="border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2.5">
+            <label className="flex items-center gap-2 text-sm text-gray-800 dark:text-slate-100 cursor-pointer">
+              <input type="checkbox" checked={useRag} onChange={(e) => setUseRag(e.target.checked)} disabled={loading} className="accent-indigo-600 h-4 w-4" />
+              <FiDatabase size={14} className="text-indigo-600 dark:text-ink-link" />
+              <span className="font-medium">Use saved knowledge (RAG)</span>
+              <span className="text-xs text-gray-400 dark:text-slate-500 font-normal">— 1 credit, answers from your saved context documents</span>
+            </label>
+            {useRag && (
+              <div className="mt-2.5">
+                <input
+                  value={ragKeywords} onChange={(e) => setRagKeywords(e.target.value)} disabled={loading}
+                  placeholder="Topic keywords (optional, comma-separated) — helps match the right document"
+                  className="w-full border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2 text-sm text-gray-800 dark:text-slate-100 bg-white dark:bg-ink-card focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400 dark:placeholder-slate-500"
+                />
+                <p className="text-xs text-gray-400 dark:text-slate-500 mt-1.5">RAG answers your prompt directly from saved knowledge, so it skips the type details below.</p>
+              </div>
+            )}
+          </div>
+
           {/* Image input — optional context for the generation */}
           <div>
             <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">
@@ -1091,7 +1175,7 @@ export default function Generator() {
               {!loading && output && (
                 <div className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-800">
                   <p className="text-xs text-gray-400 dark:text-slate-500 font-medium mb-2 flex items-center gap-1.5">
-                    <FiSliders size={11} /> Refine output — no credits used
+                    <FiSliders size={11} /> Refine output — 1 credit
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {TUNE_ACTIONS.map(({ key, label }) => (

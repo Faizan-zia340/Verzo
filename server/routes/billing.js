@@ -11,6 +11,8 @@ import { claimCheckoutSession } from '../utils/webhookIdempotency.js';
 
 const router = Router();
 
+const clientBaseUrl = () => (process.env.CLIENT_URL || 'https://verzo-ecru.vercel.app').replace(/\/$/, '');
+
 router.post('/checkout', protect, asyncHandler(async (req, res) => {
   const { planId } = req.body;
   const plan = CREDIT_PACKAGES[planId];
@@ -29,8 +31,8 @@ router.post('/checkout', protect, asyncHandler(async (req, res) => {
       },
     ],
     mode: 'payment',
-    success_url: `${process.env.CLIENT_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${process.env.CLIENT_URL}/pricing`,
+    success_url: `${clientBaseUrl()}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${clientBaseUrl()}/pricing`,
     metadata: {
       userId: req.user._id.toString(),
       credits: plan.credits.toString(),
@@ -39,6 +41,39 @@ router.post('/checkout', protect, asyncHandler(async (req, res) => {
   });
 
   res.status(201).json({ url: session.url });
+}));
+
+// GET /api/billing/session/:id — verify a checkout session for the
+// Payment Success page. Only the buyer (session metadata userId) may
+// see it. creditsGranted is true only once the webhook has landed and
+// created the Payment row — a paid session without that row means the
+// credits are still processing, and the page must say so instead of
+// claiming the credits arrived.
+router.get('/session/:id', protect, asyncHandler(async (req, res) => {
+  let session;
+  try {
+    session = await stripe.checkout.sessions.retrieve(req.params.id);
+  } catch (err) {
+    logger.warn({ sessionId: req.params.id, msg: (err.message || '').slice(0, 200) }, 'checkout session lookup failed');
+    return res.status(502).json({ message: 'Could not verify your payment yet. Please check your Dashboard — your credits will appear shortly.' });
+  }
+
+  const meta = session.metadata || {};
+  if (!meta.userId || meta.userId !== req.user._id.toString()) {
+    return res.status(403).json({ message: 'This payment belongs to a different account.' });
+  }
+
+  const paymentIntentId = session.payment_intent || session.id;
+  const payment = await Payment.findOne({ stripePaymentIntentId: paymentIntentId });
+  const credits = parseInt(meta.credits, 10);
+
+  res.status(200).json({
+    status: session.status,
+    paymentStatus: session.payment_status,
+    credits: Number.isFinite(credits) ? credits : null,
+    planId: meta.planId || null,
+    creditsGranted: Boolean(payment && payment.status === 'succeeded'),
+  });
 }));
 
 router.post('/webhook', asyncHandler(async (req, res) => {

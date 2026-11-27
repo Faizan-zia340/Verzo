@@ -501,8 +501,7 @@ export const generateAIContent = asyncHandler(async (req, res) => {
       : userPrompt;
 
     // Quality-checked generation: retries once if the first draft fails the
-    // check. The RAG route saves nothing, so the retry only costs one extra
-    // AI call. (Two-pass is not applied here — RAG answers are grounded in
+    // check. (Two-pass is not applied here — RAG answers are grounded in
     // retrieved context, not purpose templates.)
     const { text: raw, qualityReport } = await generateWithQualityCheck(generateText, {
       prompt: finalPrompt,
@@ -513,8 +512,21 @@ export const generateAIContent = asyncHandler(async (req, res) => {
     const { cleanContent, realityCheck } = parseRealityCheck(stripAgentLabels(raw));
 
     // NOTE: no $inc here — the credit was reserved by the middleware.
-    // The ledger entry records the spend.
-    await Credit.create({ user: req.user._id, amount: -1, type: 'usage', description: 'Generated RAG content' });
+    // The ledger entry records the spend. The RAG answer is saved as a
+    // History entry (type 'rag') like every other generation, so it shows
+    // up in Content History instead of vanishing after the response.
+    const [content] = await Promise.all([
+      Content.create({
+        user: req.user._id,
+        type: 'rag',
+        prompt: userPrompt,
+        output: cleanContent,
+        creditsUsed: 1,
+        language: 'english_us',
+        format: 'paragraphs',
+      }),
+      Credit.create({ user: req.user._id, amount: -1, type: 'usage', description: 'Generated RAG content' }),
+    ]);
 
     res.status(200).json({
       response: cleanContent,
@@ -523,6 +535,7 @@ export const generateAIContent = asyncHandler(async (req, res) => {
       contextTitles: matchedContexts.map((c) => c.title),
       retrievalMethod,
       qualityReport,
+      contentId: content._id,
     });
   } catch (err) {
     // Generation failed: give the reserved credit back.
