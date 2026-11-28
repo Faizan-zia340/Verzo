@@ -9,7 +9,9 @@ import {
   FiZap, FiCopy, FiDownload, FiCheck, FiHome, FiSmartphone, FiMail,
   FiAlertCircle, FiRefreshCw, FiSliders, FiFileText, FiShare2, FiImage,
   FiMic, FiUpload, FiX, FiBriefcase, FiDatabase,
+  FiVolume2, FiPlay, FiPause, FiSquare,
 } from 'react-icons/fi';
+import { FaXTwitter, FaLinkedinIn, FaFacebookF } from 'react-icons/fa6';
 
 const TYPES = [
   { value: 'blog', label: 'Blog' },
@@ -123,6 +125,10 @@ const SPEECH_LANG = {
   bengali: 'bn-BD', turkish: 'tr-TR', indonesian: 'id-ID',
   persian: 'fa-IR', swahili: 'sw-KE',
 };
+const SPEEDS = [0.5, 0.75, 1, 1.25, 1.5, 2];
+const SITE_URL = 'https://verzo-ecru.vercel.app';
+// Gender is shown only when the voice name states it plainly.
+const voiceGender = (name) => (/female/i.test(name) ? 'Female' : /male/i.test(name) ? 'Male' : '');
 const LENGTHS = ['short', 'medium', 'long'];
 const FORMATS = [
   { value: 'paragraphs', label: 'Paragraphs' },
@@ -349,6 +355,12 @@ export default function Generator() {
   const recognitionRef = useRef(null);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
+  // Listen (text-to-speech): reads the output aloud with device voices.
+  const [ttsSupported, setTtsSupported] = useState(false);
+  const [voices, setVoices] = useState([]);
+  const [ttsState, setTtsState] = useState('idle'); // idle | playing | paused
+  const [ttsRate, setTtsRate] = useState(1);
+  const [ttsVoice, setTtsVoice] = useState('');
 
   useEffect(() => {
     setVoiceSupported(!!(window.SpeechRecognition || window.webkitSpeechRecognition));
@@ -412,6 +424,46 @@ export default function Generator() {
     setListening(false);
   };
 
+  // ── Listen (text-to-speech) ───────────────────────────────────
+  // Free system voices from the browser/device (Web Speech API).
+  // Urdu voices first, then voices matching the output language.
+  const langTag = SPEECH_LANG[form.language] || 'en-US';
+  const voiceRank = (v) => (v.lang === langTag ? 0 : v.lang?.startsWith(langTag.slice(0, 2)) ? 1 : v.lang?.startsWith('ur') ? 2 : 3);
+  const sortedVoices = [...voices].sort((a, b) => voiceRank(a) - voiceRank(b));
+  useEffect(() => {
+    if (!('speechSynthesis' in window)) return;
+    setTtsSupported(true);
+    const load = () => setVoices(window.speechSynthesis.getVoices());
+    load();
+    window.speechSynthesis.addEventListener('voiceschanged', load);
+    return () => {
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.removeEventListener('voiceschanged', load);
+    };
+  }, []);
+  const stopListen = () => {
+    if (ttsSupported) window.speechSynthesis.cancel();
+    setTtsState('idle');
+  };
+  const speak = (rate = ttsRate) => {
+    if (!ttsSupported || !output) return;
+    const synth = window.speechSynthesis;
+    if (ttsState === 'paused') { synth.resume(); setTtsState('playing'); return; }
+    synth.cancel();
+    const u = new SpeechSynthesisUtterance(stripMarkers(output));
+    u.lang = langTag;
+    u.rate = rate;
+    const v = voices.find((x) => x.voiceURI === ttsVoice) || sortedVoices[0];
+    if (v) u.voice = v;
+    u.onend = () => setTtsState('idle');
+    // 'canceled' fires when we stop/restart — not a real failure.
+    u.onerror = (e) => { if (e.error !== 'canceled' && e.error !== 'interrupted') setTtsState('idle'); };
+    synth.speak(u);
+    setTtsState('playing');
+  };
+  const pauseListen = () => { window.speechSynthesis.pause(); setTtsState('paused'); };
+  const changeRate = (r) => { setTtsRate(r); if (ttsState === 'playing') speak(r); };
+
   // ── Image upload (context for the generation) ───────────────
   const handleImageSelect = (e) => {
     const f = e.target.files?.[0];
@@ -458,6 +510,7 @@ export default function Generator() {
   };
 
   const applyTemplate = (tpl) => {
+    stopListen();
     setForm({ ...DETAILS_DEFAULTS, subtype: '', ...tpl.form });
     setOutput(''); setSeoData(null); setImages([]); setImageOptions([]); setDisplayImages([]); setContentId(null); setError('');
     setQualityReport(null); setFieldErrors({});
@@ -483,6 +536,7 @@ export default function Generator() {
       toast.error('Not enough credits. Please buy more.');
       return;
     }
+    stopListen();
     setLoading(true); setFetchingImages(false); setError(''); setOutput(''); setSeoData(null); setImages([]); setImageOptions([]); setDisplayImages([]); setContentId(null); setRealityCheck(null); setQualityReport(null);
 
     // RAG generation: POST /api/generate/rag with the prompt (and optional
@@ -641,6 +695,7 @@ export default function Generator() {
 
   const handleTune = async (action) => {
     if (!output || tuning || loading) return;
+    stopListen();
     // A tune costs 1 credit (reserved server-side by /tune) — same as a
     // generation. Never tune on an empty balance.
     if (credits !== null && credits < 1) {
@@ -766,9 +821,30 @@ export default function Generator() {
     toast.success('Exported as DOCX with images!');
   };
 
+  // LinkedIn's dialog takes a link, not text — open it with the site link
+  // and copy the output so the user can paste it into the post.
   const handleShareLinkedIn = () => {
-    const text = encodeURIComponent(stripMarkers(output).slice(0, 700));
-    window.open(`https://www.linkedin.com/sharing/share-offsite/?mini=true&summary=${text}`, '_blank');
+    navigator.clipboard.writeText(stripMarkers(output));
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?mini=true&url=${encodeURIComponent(SITE_URL)}`, '_blank');
+    toast('Text copied — paste it into your LinkedIn post');
+  };
+
+  const handleShareGmail = () => {
+    window.location.href = `mailto:?subject=${encodeURIComponent('Content generated with Penlix')}&body=${encodeURIComponent(stripMarkers(output))}`;
+  };
+
+  const handleShareFacebook = () => {
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(SITE_URL)}`, '_blank');
+  };
+
+  const handleNativeShare = async () => {
+    const text = stripMarkers(output);
+    if (navigator.share) {
+      try { await navigator.share({ text }); } catch {}
+    } else {
+      await navigator.clipboard.writeText(text);
+      toast.success('Copied to clipboard — share it anywhere!');
+    }
   };
 
   const handleShareTwitter = () => {
@@ -826,9 +902,9 @@ export default function Generator() {
   const isRateLimit = error.toLowerCase().includes('rate limit') || error.toLowerCase().includes('penlix is busy');
 
   return (
-    <div className="space-y-5">
+    <div className="grid grid-cols-1 lg:grid-cols-5 gap-5 items-start">
       {/* Quick Templates */}
-      <div>
+      <div className="lg:col-span-5">
         <p className="text-xs font-semibold text-gray-400 dark:text-slate-500 uppercase tracking-wide mb-3">Quick Templates</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {TEMPLATES.map(({ Icon, label, color, bg, form: tplForm }) => (
@@ -851,8 +927,8 @@ export default function Generator() {
         </div>
       </div>
 
-      {/* Generator Form */}
-      <div className="bg-white dark:bg-ink-card rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-6">
+      {/* Generator Form — sticky studio panel on desktop */}
+      <div className="lg:col-span-2 bg-white dark:bg-ink-card rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-6 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto">
         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-5">Generate Content</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Row 1: Type, Tone, Length, Format */}
@@ -1059,51 +1135,51 @@ export default function Generator() {
         </form>
       </div>
 
-      {/* Loading skeleton — shown while waiting for first token */}
-      <AnimatePresence>
-        {loading && !output && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.22 }}
-            className="bg-white dark:bg-ink-card rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6 space-y-3"
-          >
-            {[1, 0.7, 0.85, 0.55].map((w, i) => (
-              <motion.div
-                key={i}
-                className="h-3 rounded-full bg-gray-100 dark:bg-ink-raised"
-                style={{ width: `${w * 100}%` }}
-                animate={{ opacity: [0.4, 0.85, 0.4] }}
-                transition={{ duration: 1.4, repeat: Infinity, delay: i * 0.18, ease: 'easeInOut' }}
-              />
-            ))}
-            <div className="flex items-center gap-2 pt-1">
-              {[0, 1, 2].map((i) => (
+      {/* RIGHT: output studio */}
+      <div className="lg:col-span-3 space-y-4 min-w-0">
+        {/* Loading skeleton — shown while waiting for first token */}
+        <AnimatePresence>
+          {loading && !output && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.22 }}
+              className="bg-white dark:bg-ink-card rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6 space-y-3"
+            >
+              {[1, 0.7, 0.85, 0.55].map((w, i) => (
                 <motion.div
                   key={i}
-                  className="w-2 h-2 rounded-full bg-teak-400"
-                  animate={{ y: [0, -5, 0], opacity: [0.4, 1, 0.4] }}
-                  transition={{ duration: 0.65, repeat: Infinity, delay: i * 0.13, ease: 'easeInOut' }}
+                  className="h-3 rounded-full bg-gray-100 dark:bg-ink-raised"
+                  style={{ width: `${w * 100}%` }}
+                  animate={{ opacity: [0.4, 0.85, 0.4] }}
+                  transition={{ duration: 1.4, repeat: Infinity, delay: i * 0.18, ease: 'easeInOut' }}
                 />
               ))}
-              <span className="text-xs text-gray-400 dark:text-slate-500 ml-1">AI is writing…</span>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              <div className="flex items-center gap-2 pt-1">
+                {[0, 1, 2].map((i) => (
+                  <motion.div
+                    key={i}
+                    className="w-2 h-2 rounded-full bg-teak-400"
+                    animate={{ y: [0, -5, 0], opacity: [0.4, 1, 0.4] }}
+                    transition={{ duration: 0.65, repeat: Infinity, delay: i * 0.13, ease: 'easeInOut' }}
+                  />
+                ))}
+                <span className="text-xs text-gray-400 dark:text-slate-500 ml-1">AI is writing…</span>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-      {/* Output */}
-      <AnimatePresence>
-        {output && (
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.28, ease: 'easeOut' }}
-            className="grid grid-cols-1 lg:grid-cols-3 gap-4"
-          >
-            {/* Main output */}
-            <div className="lg:col-span-2 bg-white dark:bg-ink-card rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6">
+        {/* Output */}
+        <AnimatePresence>
+          {output && (
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.28, ease: 'easeOut' }}
+              className="bg-white dark:bg-ink-card rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-6"
+            >
               <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
                 <div className="flex items-center gap-2">
                   <h3 className="font-semibold text-gray-900 dark:text-white">Generated Output</h3>
@@ -1115,9 +1191,6 @@ export default function Generator() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <FontPicker script={script} value={font} onChange={setFont} />
-                  <button onClick={handleCopy} className="flex items-center gap-1.5 text-xs bg-gray-100 dark:bg-ink-raised hover:bg-teak-50 dark:hover:bg-ink-raised hover:text-teak-700 dark:hover:text-teak-400 text-gray-600 dark:text-slate-400 px-3 py-1.5 rounded-lg transition font-medium">
-                    {copied ? <><FiCheck size={12} /> Copied!</> : <><FiCopy size={12} /> Copy</>}
-                  </button>
                   <button onClick={handleDownloadTxt} className="flex items-center gap-1.5 text-xs bg-gray-100 dark:bg-ink-raised hover:bg-gray-200 dark:hover:bg-ink-raised text-gray-600 dark:text-slate-400 px-3 py-1.5 rounded-lg transition font-medium">
                     <FiDownload size={12} /> TXT
                   </button>
@@ -1159,15 +1232,55 @@ export default function Generator() {
                 )
               )}
 
-              {/* Social Share */}
+              {/* Share + Listen */}
               {!loading && output && (
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <button onClick={handleShareLinkedIn} className="flex items-center gap-1.5 text-xs bg-[#0077b5]/10 hover:bg-[#0077b5]/20 text-[#0077b5] px-3 py-1.5 rounded-lg transition font-medium">
-                    <FiShare2 size={11} /> LinkedIn
-                  </button>
-                  <button onClick={handleShareTwitter} className="flex items-center gap-1.5 text-xs bg-sky-50 dark:bg-ink-raised hover:bg-sky-100 dark:hover:bg-ink-raised text-sky-600 dark:text-sky-400 px-3 py-1.5 rounded-lg transition font-medium">
-                    <FiShare2 size={11} /> Twitter/X
-                  </button>
+                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-slate-800 space-y-3">
+                  <div className="flex flex-wrap gap-2">
+                    <button onClick={handleShareTwitter} className="flex items-center gap-1.5 text-xs bg-sky-50 dark:bg-ink-raised hover:bg-sky-100 dark:hover:bg-ink-raised text-sky-600 dark:text-sky-400 px-3 py-1.5 rounded-lg transition font-medium">
+                      <FaXTwitter size={11} /> X / Twitter
+                    </button>
+                    <button onClick={handleShareLinkedIn} className="flex items-center gap-1.5 text-xs bg-[#0077b5]/10 hover:bg-[#0077b5]/20 text-[#0077b5] px-3 py-1.5 rounded-lg transition font-medium">
+                      <FaLinkedinIn size={11} /> LinkedIn
+                    </button>
+                    <button onClick={handleShareGmail} className="flex items-center gap-1.5 text-xs bg-red-50 dark:bg-ink-raised hover:bg-red-100 dark:hover:bg-ink-raised text-red-600 dark:text-red-400 px-3 py-1.5 rounded-lg transition font-medium">
+                      <FiMail size={11} /> Gmail
+                    </button>
+                    <button onClick={handleShareFacebook} className="flex items-center gap-1.5 text-xs bg-blue-50 dark:bg-ink-raised hover:bg-blue-100 dark:hover:bg-ink-raised text-blue-600 dark:text-blue-400 px-3 py-1.5 rounded-lg transition font-medium">
+                      <FaFacebookF size={11} /> Facebook
+                    </button>
+                    <button onClick={handleNativeShare} className="flex items-center gap-1.5 text-xs bg-gray-100 dark:bg-ink-raised hover:bg-gray-200 dark:hover:bg-ink-raised text-gray-600 dark:text-slate-400 px-3 py-1.5 rounded-lg transition font-medium">
+                      <FiShare2 size={11} /> Share
+                    </button>
+                    <button onClick={handleCopy} className="flex items-center gap-1.5 text-xs bg-gray-100 dark:bg-ink-raised hover:bg-teak-50 dark:hover:bg-ink-raised hover:text-teak-700 dark:hover:text-teak-400 text-gray-600 dark:text-slate-400 px-3 py-1.5 rounded-lg transition font-medium">
+                      {copied ? <><FiCheck size={12} /> Copied!</> : <><FiCopy size={12} /> Copy</>}
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-400 dark:text-slate-500">Facebook and LinkedIn share a link — copy the text to paste it into your post.</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button onClick={ttsState === 'playing' ? pauseListen : () => speak()} disabled={!ttsSupported} className="flex items-center gap-1.5 text-xs bg-teak-600 hover:bg-teak-700 text-white px-3 py-1.5 rounded-lg transition font-medium disabled:opacity-40">
+                      {ttsState === 'playing' ? <><FiPause size={12} /> Pause</> : ttsState === 'paused' ? <><FiPlay size={12} /> Resume</> : <><FiVolume2 size={12} /> Listen</>}
+                    </button>
+                    {ttsState !== 'idle' && (
+                      <button onClick={stopListen} className="flex items-center gap-1.5 text-xs bg-gray-100 dark:bg-ink-raised hover:bg-gray-200 dark:hover:bg-ink-raised text-gray-600 dark:text-slate-400 px-3 py-1.5 rounded-lg transition font-medium">
+                        <FiSquare size={11} /> Stop
+                      </button>
+                    )}
+                    <select value={ttsRate} onChange={(e) => changeRate(Number(e.target.value))} disabled={!ttsSupported} title="Listening speed" className="border border-gray-200 dark:border-slate-800 rounded-lg px-2 py-1.5 text-xs text-gray-700 dark:text-slate-200 bg-white dark:bg-ink-card focus:outline-none focus:ring-2 focus:ring-teak-500 disabled:opacity-40">
+                      {SPEEDS.map((r) => <option key={r} value={r}>{r}x</option>)}
+                    </select>
+                    {sortedVoices.length > 1 && (
+                      <select value={ttsVoice || sortedVoices[0]?.voiceURI || ''} onChange={(e) => setTtsVoice(e.target.value)} title="Voice" className="border border-gray-200 dark:border-slate-800 rounded-lg px-2 py-1.5 text-xs text-gray-700 dark:text-slate-200 bg-white dark:bg-ink-card focus:outline-none focus:ring-2 focus:ring-teak-500 max-w-[220px]">
+                        {sortedVoices.map((v) => (
+                          <option key={v.voiceURI} value={v.voiceURI}>
+                            {v.name}{voiceGender(v.name) ? ` (${voiceGender(v.name)})` : ''}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+                  {!ttsSupported && <p className="text-xs text-gray-400 dark:text-slate-500">Voice not supported in this browser</p>}
+                  {ttsSupported && sortedVoices.length === 1 && <p className="text-xs text-gray-400 dark:text-slate-500">Only one voice available on this device</p>}
+                  <p className="text-xs text-gray-400 dark:text-slate-500">Voice comes from your browser or device — free system voices, not a recorded human. Natural AI voices are a paid option for later.</p>
                 </div>
               )}
 
@@ -1194,147 +1307,158 @@ export default function Generator() {
                   </div>
                 </div>
               )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Empty state — right panel before the first generation */}
+        {!loading && !output && (
+          <div className="bg-white dark:bg-ink-card rounded-2xl border border-dashed border-gray-200 dark:border-slate-800 shadow-sm p-8 text-center">
+            <div className="w-12 h-12 mx-auto mb-3 bg-teak-50 dark:bg-ink-raised rounded-xl flex items-center justify-center">
+              <FiFileText size={20} className="text-teak-600 dark:text-teak-400" />
+            </div>
+            <h3 className="font-semibold text-gray-900 dark:text-white">Your content will appear here</h3>
+            <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">Fill in the form and hit Generate — the output, SEO package and Reality Check show up in this panel.</p>
+          </div>
+        )}
+
+        {/* Right panels: SEO, Reality Check, Stock Photos */}
+        <div className="space-y-4">
+          {/* SEO Panel */}
+          <div className="bg-white dark:bg-ink-card rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-7 h-7 bg-teak-100 dark:bg-ink-raised rounded-lg flex items-center justify-center">
+                <FiZap size={13} className="text-teak-600 dark:text-teak-400" />
+              </div>
+              <h3 className="font-semibold text-gray-900 dark:text-white text-sm">SEO Package</h3>
             </div>
 
-            {/* Right panel: SEO + sidebar images (non-blog) */}
-            <div className="space-y-4">
-              {/* SEO Panel */}
-              <div className="bg-white dark:bg-ink-card rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-7 h-7 bg-teak-100 dark:bg-ink-raised rounded-lg flex items-center justify-center">
-                    <FiZap size={13} className="text-teak-600 dark:text-teak-400" />
+            {loading && !seoData && (
+              <div className="space-y-2.5">
+                {[1, 0.8, 0.6].map((w, i) => (
+                  <div key={i} className="h-2.5 bg-gray-100 dark:bg-ink-raised rounded-full animate-pulse" style={{ width: `${w * 100}%` }} />
+                ))}
+                <p className="text-xs text-gray-400 dark:text-slate-500 mt-2">Generating SEO metadata...</p>
+              </div>
+            )}
+
+            {!loading && !seoData && (
+              <p className="text-xs text-gray-400 dark:text-slate-500">SEO metadata appears here after generation.</p>
+            )}
+
+            {seoData && (
+              <div className="space-y-3">
+                <div>
+                  <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1">Meta Title</p>
+                  <div className="bg-teak-50 dark:bg-ink-raised border border-teak-100 rounded-lg px-3 py-2">
+                    <p className="text-sm text-gray-800 dark:text-slate-100 font-medium">{seoData.title || '—'}</p>
                   </div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white text-sm">SEO Package</h3>
                 </div>
-
-                {loading && !seoData && (
-                  <div className="space-y-2.5">
-                    {[1, 0.8, 0.6].map((w, i) => (
-                      <div key={i} className="h-2.5 bg-gray-100 dark:bg-ink-raised rounded-full animate-pulse" style={{ width: `${w * 100}%` }} />
-                    ))}
-                    <p className="text-xs text-gray-400 dark:text-slate-500 mt-2">Generating SEO metadata...</p>
+                <div>
+                  <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1">Meta Description</p>
+                  <div className="bg-gray-50 dark:bg-ink-page border border-gray-100 dark:border-slate-800 rounded-lg px-3 py-2">
+                    <p className="text-xs text-gray-700 dark:text-slate-200 leading-relaxed">{seoData.description || '—'}</p>
                   </div>
-                )}
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Keywords</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {(seoData.keywords || []).map((kw, i) => (
+                      <span key={i} className="bg-teak-100 dark:bg-ink-raised text-teak-700 dark:text-teak-400 text-xs px-2.5 py-0.5 rounded-full font-medium">{kw}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
 
-                {!loading && !seoData && (
-                  <p className="text-xs text-gray-400 dark:text-slate-500">SEO metadata appears here after generation.</p>
-                )}
-
-                {seoData && (
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1">Meta Title</p>
-                      <div className="bg-teak-50 dark:bg-ink-raised border border-teak-100 rounded-lg px-3 py-2">
-                        <p className="text-sm text-gray-800 dark:text-slate-100 font-medium">{seoData.title || '—'}</p>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1">Meta Description</p>
-                      <div className="bg-gray-50 dark:bg-ink-page border border-gray-100 dark:border-slate-800 rounded-lg px-3 py-2">
-                        <p className="text-xs text-gray-700 dark:text-slate-200 leading-relaxed">{seoData.description || '—'}</p>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Keywords</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {(seoData.keywords || []).map((kw, i) => (
-                          <span key={i} className="bg-teak-100 dark:bg-ink-raised text-teak-700 dark:text-teak-400 text-xs px-2.5 py-0.5 rounded-full font-medium">{kw}</span>
-                        ))}
-                      </div>
-                    </div>
+          {/* Reality Check Score Card */}
+          {realityCheck && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white dark:bg-ink-card rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-5"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 bg-violet-100 dark:bg-ink-raised rounded-lg flex items-center justify-center">
+                    <span className="text-xs">⚡</span>
+                  </div>
+                  <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Reality Check</h3>
+                </div>
+                {realityCheck.rating != null && (
+                  <div className={`text-sm font-bold px-2.5 py-1 rounded-lg ${
+                    realityCheck.rating >= 8 ? 'bg-emerald-100 dark:bg-ink-raised text-emerald-700 dark:text-emerald-300' :
+                    realityCheck.rating >= 6 ? 'bg-amber-100 dark:bg-ink-raised text-amber-700 dark:text-amber-300' :
+                    'bg-red-100 dark:bg-ink-raised text-red-700 dark:text-red-300'
+                  }`}>
+                    {realityCheck.rating}/10
                   </div>
                 )}
               </div>
-
-              {/* Reality Check Score Card */}
-              {realityCheck && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-white dark:bg-ink-card rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-5"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 bg-violet-100 dark:bg-ink-raised rounded-lg flex items-center justify-center">
-                        <span className="text-xs">⚡</span>
+              <div className="space-y-3">
+                {realityCheck.pillars.map((pillar) => {
+                  const pct = Math.round((pillar.score / 10) * 100);
+                  const color = pillar.score >= 8 ? 'bg-emerald-500' : pillar.score >= 6 ? 'bg-amber-400' : 'bg-red-400';
+                  const textColor = pillar.score >= 8 ? 'text-emerald-700 dark:text-emerald-300' : pillar.score >= 6 ? 'text-amber-700 dark:text-amber-300' : 'text-red-600 dark:text-red-400';
+                  return (
+                    <div key={pillar.name}>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs font-medium text-gray-700 dark:text-slate-200">{pillar.name}</span>
+                        <span className={`text-xs font-bold ${textColor}`}>{pillar.score}/10</span>
                       </div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Reality Check</h3>
+                      <div className="h-1.5 bg-gray-100 dark:bg-ink-raised rounded-full overflow-hidden mb-1">
+                        <div className={`h-full ${color} rounded-full transition-all`} style={{ width: `${pct}%` }} />
+                      </div>
+                      <p className="text-xs text-gray-400 dark:text-slate-500 leading-snug">{pillar.verdict}</p>
                     </div>
-                    {realityCheck.rating != null && (
-                      <div className={`text-sm font-bold px-2.5 py-1 rounded-lg ${
-                        realityCheck.rating >= 8 ? 'bg-emerald-100 dark:bg-ink-raised text-emerald-700 dark:text-emerald-300' :
-                        realityCheck.rating >= 6 ? 'bg-amber-100 dark:bg-ink-raised text-amber-700 dark:text-amber-300' :
-                        'bg-red-100 dark:bg-ink-raised text-red-700 dark:text-red-300'
-                      }`}>
-                        {realityCheck.rating}/10
-                      </div>
-                    )}
-                  </div>
-                  <div className="space-y-3">
-                    {realityCheck.pillars.map((pillar) => {
-                      const pct = Math.round((pillar.score / 10) * 100);
-                      const color = pillar.score >= 8 ? 'bg-emerald-500' : pillar.score >= 6 ? 'bg-amber-400' : 'bg-red-400';
-                      const textColor = pillar.score >= 8 ? 'text-emerald-700 dark:text-emerald-300' : pillar.score >= 6 ? 'text-amber-700 dark:text-amber-300' : 'text-red-600 dark:text-red-400';
-                      return (
-                        <div key={pillar.name}>
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-xs font-medium text-gray-700 dark:text-slate-200">{pillar.name}</span>
-                            <span className={`text-xs font-bold ${textColor}`}>{pillar.score}/10</span>
-                          </div>
-                          <div className="h-1.5 bg-gray-100 dark:bg-ink-raised rounded-full overflow-hidden mb-1">
-                            <div className={`h-full ${color} rounded-full transition-all`} style={{ width: `${pct}%` }} />
-                          </div>
-                          <p className="text-xs text-gray-400 dark:text-slate-500 leading-snug">{pillar.verdict}</p>
-                        </div>
-                      );
-                    })}
-                  </div>
-                  {realityCheck.rating != null && (
-                    <p className="text-xs text-gray-400 dark:text-slate-500 mt-3 pt-3 border-t border-gray-100 dark:border-slate-800 text-center">
-                      Avg score vs leading AI models
-                    </p>
-                  )}
-                </motion.div>
+                  );
+                })}
+              </div>
+              {realityCheck.rating != null && (
+                <p className="text-xs text-gray-400 dark:text-slate-500 mt-3 pt-3 border-t border-gray-100 dark:border-slate-800 text-center">
+                  Avg score vs leading AI models
+                </p>
               )}
+            </motion.div>
+          )}
 
-              {/* Sidebar images — only for non-blog types (blog shows inline) */}
-              {images.length > 0 && !hasInlineImages(output) && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-white dark:bg-ink-card rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-5"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 bg-emerald-100 dark:bg-ink-raised rounded-lg flex items-center justify-center">
-                        <FiImage size={13} className="text-emerald-600 dark:text-emerald-400" />
-                      </div>
-                      <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Stock Photos</h3>
-                    </div>
-                    <button onClick={() => setShowImages(!showImages)} className="text-xs text-teak-600 dark:text-teak-400 hover:text-teak-800 dark:hover:text-teak-300 font-medium">
-                      {showImages ? 'Hide' : 'Show'}
-                    </button>
+          {/* Sidebar images — only for non-blog types (blog shows inline) */}
+          {images.length > 0 && !hasInlineImages(output) && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white dark:bg-ink-card rounded-2xl border border-gray-100 dark:border-slate-800 shadow-sm p-5"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 bg-emerald-100 dark:bg-ink-raised rounded-lg flex items-center justify-center">
+                    <FiImage size={13} className="text-emerald-600 dark:text-emerald-400" />
                   </div>
-                  <AnimatePresence>
-                    {showImages && (
-                      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
-                        {images.map((img, i) => (
-                          <a key={i} href={img.photographerUrl} target="_blank" rel="noopener noreferrer" className="block group">
-                            <img src={img.thumb || img.url} alt={img.alt} className="w-full h-24 object-cover rounded-lg group-hover:opacity-90 transition" />
-                            <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">📷 {img.photographer} · Unsplash</p>
-                          </a>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                  {!showImages && (
-                    <p className="text-xs text-gray-400 dark:text-slate-500">{images.length} photos matched your content.</p>
-                  )}
-                </motion.div>
+                  <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Stock Photos</h3>
+                </div>
+                <button onClick={() => setShowImages(!showImages)} className="text-xs text-teak-600 dark:text-teak-400 hover:text-teak-800 dark:hover:text-teak-300 font-medium">
+                  {showImages ? 'Hide' : 'Show'}
+                </button>
+              </div>
+              <AnimatePresence>
+                {showImages && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-2">
+                    {images.map((img, i) => (
+                      <a key={i} href={img.photographerUrl} target="_blank" rel="noopener noreferrer" className="block group">
+                        <img src={img.thumb || img.url} alt={img.alt} className="w-full h-24 object-cover rounded-lg group-hover:opacity-90 transition" />
+                        <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">📷 {img.photographer} · Unsplash</p>
+                      </a>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              {!showImages && (
+                <p className="text-xs text-gray-400 dark:text-slate-500">{images.length} photos matched your content.</p>
               )}
-            </div>
-          </motion.div>
-        )}
+            </motion.div>
+          )}
+        </div>
 
         {/* Blog image picker — swap any embedded photo for another suggestion */}
         {output && !loading && form.type === 'blog' && imageOptions.length > 0 && (
@@ -1381,7 +1505,7 @@ export default function Generator() {
             </div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </div>
     </div>
   );
 }
