@@ -243,6 +243,13 @@ export const streamGenerate = asyncHandler(async (req, res) => {
       qualityReport = checkQuality(cleanContent, { type, purpose, input: req.body, length });
     }
 
+    // The editor pass runs through generateText, whose system message
+    // appends a fresh REALITY CHECK table — strip it (and take its scores
+    // only if pass 1 produced none) so it never leaks into the saved output.
+    const reparsed = parseRealityCheck(cleanContent);
+    cleanContent = reparsed.cleanContent;
+    if (!realityCheck && reparsed.realityCheck) realityCheck = reparsed.realityCheck;
+
     // Post-generation: SEO + images + save
     try {
       const seoData = await generateSEO(cleanContent);
