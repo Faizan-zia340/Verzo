@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useCredits } from '../context/CreditContext.js';
 import { useAuth } from '../context/AuthContext.js';
-import DashboardStats from '../components/Dashboard.jsx';
+import AccountOverview from '../components/AccountOverview.jsx';
 import Generator from '../components/Generator.jsx';
 import ContentHistory from '../components/ContentHistory.jsx';
 import { Link } from 'react-router-dom';
-import { FiZap, FiClock, FiFileText, FiEdit3, FiMail, FiDownload } from 'react-icons/fi';
+import { FiZap, FiClock, FiFileText, FiEdit3, FiMail, FiDownload, FiUser } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import api from '../services/api.js';
 import Seo from '../components/Seo.jsx';
@@ -20,8 +20,8 @@ const greet = () => {
 
 export default function Dashboard() {
   const { user, toggleTwoFactor } = useAuth();
-  const { fetchCredits, credits, loading: creditsLoading } = useCredits();
-  const [tab, setTab] = useState('generate');
+  const { fetchCredits, credits } = useCredits();
+  const [tab, setTab] = useState('overview');
   const [resending, setResending] = useState(false);
   const [resent, setResent] = useState(false);
   const [downloading, setDownloading] = useState(false);
@@ -51,8 +51,6 @@ export default function Dashboard() {
       setTwoFactorLoading(false);
     }
   };
-
-  const dashboardLoading = creditsLoading;
 
   const handleResendVerification = async () => {
     setResending(true);
@@ -155,38 +153,13 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Stats */}
-        {dashboardLoading ? (
-          <div className="mb-6 animate-pulse">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              {[1, 2, 3].map((card) => (
-                <div key={card} className="bg-white dark:bg-ink-card rounded-2xl border border-gray-100 dark:border-slate-800 p-5 h-[145px]">
-                  <div className="flex justify-between mb-5">
-                    <div className="w-10 h-10 rounded-xl bg-gray-200 dark:bg-ink-raised" />
-                    <div className="w-20 h-3 rounded bg-gray-200 dark:bg-ink-raised" />
-                  </div>
-                  <div className="w-16 h-3 rounded bg-gray-200 dark:bg-ink-raised mb-3" />
-                  <div className="w-24 h-7 rounded bg-gray-200 dark:bg-ink-raised" />
-                </div>
-              ))}
-            </div>
-            <div className="bg-white dark:bg-ink-card rounded-2xl border border-gray-100 dark:border-slate-800 p-5 h-[200px]">
-              <div className="w-32 h-4 rounded bg-gray-200 dark:bg-ink-raised mb-6" />
-              <div className="h-28 rounded-lg bg-gray-100 dark:bg-ink-raised" />
-            </div>
-          </div>
-        ) : (
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.05 }}>
-            <DashboardStats />
-          </motion.div>
-        )}
-
         {/* Tab bar */}
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.1 }}
           className="flex gap-1 p-1 bg-white dark:bg-ink-card border border-gray-200 dark:border-slate-800 rounded-xl shadow-sm mb-6 w-fit max-w-full overflow-x-auto"
         >
           {[
+            { key: 'overview', label: 'Overview', icon: FiUser },
             { key: 'generate', label: 'Generate', icon: FiEdit3 },
             { key: 'history', label: 'History', icon: FiClock },
           ].map(({ key, label, icon: Icon }) => (
@@ -204,9 +177,10 @@ export default function Dashboard() {
           ))}
         </motion.div>
 
-        {/* Tab content */}
+        {/* Tab content — stats now live inside Overview, so Generate and
+            History get the full width to themselves. */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, delay: 0.15 }}>
-          {tab === 'generate' ? <Generator /> : <ContentHistory />}
+          {tab === 'overview' ? <AccountOverview onNavigate={setTab} /> : tab === 'generate' ? <Generator /> : <ContentHistory />}
         </motion.div>
 
         {/* Your data — download everything Penlix stores about you. */}

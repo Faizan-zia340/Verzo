@@ -12,13 +12,16 @@ const PLAN_COLORS = {
   enterprise: 'text-violet-700 dark:text-violet-300 bg-violet-100 dark:bg-ink-raised',
 };
 
-export default function DashboardStats() {
+export default function DashboardStats({ totalGenerated = null }) {
   const { user } = useAuth();
   const { creditLogs } = useCredits();
 
   const safeLogs = Array.isArray(creditLogs) ? creditLogs : [];
   const usageLogs = safeLogs.filter((l) => l.type === 'usage');
-  const totalUsed = usageLogs.length;
+  // The credit-log feed is capped, so its length undercounts once a user
+  // has generated a lot — the caller passes the true history total when
+  // it has one.
+  const totalUsed = totalGenerated ?? usageLogs.length;
   const plan = user?.subscription || 'free';
 
   const usageData = usageLogs.slice(0, 7).map((l, i) => ({
