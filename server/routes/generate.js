@@ -1,16 +1,12 @@
 import { Router } from 'express';
 import multer from 'multer';
-import { generate, streamGenerate, tuneContent, generateAIContent, generateFromImage } from '../controllers/generatorController.js';
+import { streamGenerate, tuneContent, generateAIContent, generateFromImage } from '../controllers/generatorController.js';
 import protect from '../middleware/auth.js';
 import reserveCredit from '../middleware/reserveCredit.js';
 import uploadLimit from '../middleware/uploadLimit.js';
 import userRateLimit from '../middleware/userRateLimit.js';
 import { validate, generateSchema, tuneSchema, ragSchema } from '../utils/validators.js';
 import { MAX_IMAGE_BYTES, ALLOWED_IMAGE_MIMES } from '../utils/imageInput.js';
-import getClient, { MODEL, API_VERSION } from '../config/gemini.js';
-import logger from '../utils/logger.js';
-import asyncHandler from '../utils/asyncHandler.js';
-import { mapProviderError, penlixUnavailableMessage } from '../utils/quotaMessages.js';
 
 const router = Router();
 
@@ -43,31 +39,10 @@ const handleUploadError = (err, _req, res, next) => {
   return next(err);
 };
 
-router.post('/', protect, genLimit, validate(generateSchema), reserveCredit(1), generate);
 router.post('/stream', protect, genLimit, validate(generateSchema), reserveCredit(1), streamGenerate);
 router.post('/with-image', protect, genLimit, imageUpload.single('image'), handleUploadError, uploadLimit('image'), reserveCredit(1), generateFromImage);
 router.post('/tune', protect, genLimit, validate(tuneSchema), reserveCredit(1), tuneContent);
 router.post('/rag', protect, genLimit, validate(ragSchema), reserveCredit(1), generateAIContent);
-
-// Diagnostic: verify the AI key works without consuming user credits
-router.get('/ping-ai', protect, asyncHandler(async (req, res) => {
-  if (!process.env.GEMINI_API_KEY) {
-    return res.status(503).json({ ok: false, error: penlixUnavailableMessage() });
-  }
-  try {
-    const genAI = getClient();
-    const model = genAI.getGenerativeModel({ model: MODEL }, { apiVersion: API_VERSION });
-    const result = await model.generateContent('Say "ok" in one word only.');
-    const text = result.response.text().trim();
-    logger.info({ text }, 'AI ping success');
-    return res.status(200).json({ ok: true, model: MODEL, response: text });
-  } catch (err) {
-    const msg = err.message || 'Unknown error';
-    logger.error({ msg: msg.slice(0, 200) }, 'AI ping failed');
-    const mapped = mapProviderError(err);
-    return res.status(mapped.status).json({ ok: false, error: mapped.message });
-  }
-}));
 
 export default router;
 

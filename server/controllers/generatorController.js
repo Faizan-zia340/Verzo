@@ -321,61 +321,6 @@ export const streamGenerate = asyncHandler(async (req, res) => {
 });
 
 // ── Non-streaming generate (fallback) ───────────────────────────
-export const generate = asyncHandler(async (req, res) => {
-  const userId = req.user._id;
-
-  try {
-    checkKey();
-    const { type, prompt, tone, length, language = 'english_us', format = 'paragraphs', purpose = '', readingLevel = 'standard', writingSample = '', subtype: rawSubtype, ...details } = req.body;
-    const subtype = normalizeSubtype(type, rawSubtype);
-
-
-    // Two-pass + quality-checked generation: retries once if the first draft
-    // fails the check. Only the final text is saved and only 1 credit deducted.
-    const { text: rawOutput, qualityReport } = await generateWithQualityCheck(
-      runTwoPassDraft(generateText, { type, purpose }),
-      {
-        prompt: buildPrompt({ type, prompt, tone, length, language, format, details, purpose, readingLevel, writingSample, subtype }),
-        type,
-        purpose,
-        input: req.body,
-        length,
-      }
-    );
-    const { cleanContent, realityCheck } = parseRealityCheck(rawOutput);
-
-
-    const seoData = await generateSEO(cleanContent);
-    const keywords = blogKeywords(seoData, prompt, details);
-
-    let images = [];
-    let imageOptions = [];
-    let finalOutput = cleanContent;
-
-    if (type === 'blog' && process.env.UNSPLASH_ACCESS_KEY) {
-      const candidates = await fetchAndAnalyzeImages(keywords);
-      imageOptions = candidates;
-      images = candidates.slice(0, 3);
-      if (images.length) finalOutput = await embedImagesInContent(cleanContent, images);
-    } else {
-      images = await fetchImages(keywords);
-    }
-
-    const [content] = await Promise.all([
-      Content.create({ user: userId, type, subtype, prompt, output: finalOutput, creditsUsed: 1, language, format, seoData, images, imageOptions }),
-      // NOTE: no $inc here anymore — the credit was reserved by the middleware.
-      Credit.create({ user: userId, amount: -1, type: 'usage', description: `Generated ${type} content` }),
-    ]);
-
-    res.status(200).json({ content, realityCheck, qualityReport });
-  } catch (err) {
-    // Generation or save failed: give the reserved credit back.
-    // checkKey is inside the try too — a missing API key must not cost a credit.
-    if (req.creditReserved) await refundCredit(userId, req.creditReserved);
-    throw err;
-  }
-});
-
 // ── Generate from an uploaded image (non-streaming) ──────────────
 // POST /api/generate/with-image — multipart/form-data with the same text
 // fields as /stream plus one "image" file (JPG/PNG/WebP, max 5 MB).

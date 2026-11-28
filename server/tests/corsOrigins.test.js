@@ -1,6 +1,7 @@
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { isAllowedOrigin } from '../utils/corsOrigins.js';
+import { corsGuard } from '../middleware/corsGuard.js';
 
 // Security fix C2: CORS must allow only the production frontend, local
 // dev origins, and Vercel preview deployments of THIS project — never
@@ -49,5 +50,48 @@ describe('isAllowedOrigin (C2)', () => {
   it('allows requests with no Origin (non-browser / server-to-server)', () => {
     assert.equal(isAllowedOrigin(undefined), true);
     assert.equal(isAllowedOrigin(''), true);
+  });
+});
+
+// A disallowed Origin must get a clean 403, never a 500 (the cors
+// middleware turns a callback Error into a 500 via the error handler).
+describe('corsGuard (403, not 500)', () => {
+  const ORIGINAL_CLIENT_URL = process.env.CLIENT_URL;
+
+  before(() => {
+    process.env.CLIENT_URL = 'https://verzo-ecru.vercel.app';
+  });
+
+  after(() => {
+    if (ORIGINAL_CLIENT_URL === undefined) delete process.env.CLIENT_URL;
+    else process.env.CLIENT_URL = ORIGINAL_CLIENT_URL;
+  });
+
+  const mockRes = () => {
+    const res = { statusCode: null, body: null };
+    res.status = (code) => { res.statusCode = code; return res; };
+    res.json = (body) => { res.body = body; return res; };
+    return res;
+  };
+
+  it('403s a disallowed origin with a Penlix message and never calls next', () => {
+    const res = mockRes();
+    let nextCalled = false;
+    corsGuard({ headers: { origin: 'https://evil.com' } }, res, () => { nextCalled = true; });
+    assert.equal(res.statusCode, 403);
+    assert.match(res.body.message, /Penlix/);
+    assert.equal(nextCalled, false);
+  });
+
+  it('lets an allowed origin through', () => {
+    let nextCalled = false;
+    corsGuard({ headers: { origin: 'https://verzo-ecru.vercel.app' } }, mockRes(), () => { nextCalled = true; });
+    assert.equal(nextCalled, true);
+  });
+
+  it('lets requests without an Origin through', () => {
+    let nextCalled = false;
+    corsGuard({ headers: {} }, mockRes(), () => { nextCalled = true; });
+    assert.equal(nextCalled, true);
   });
 });

@@ -19,9 +19,7 @@ import authRoutes from './routes/auth.js';
 import generateRoutes from './routes/generate.js';
 import userRoutes from './routes/user.js';
 import creditsRoutes from './routes/credits.js';
-import paymentRoutes from './routes/payment.js';
 import historyRoutes from './routes/history.js';
-import mediaRoutes from './routes/media.js';
 import adminRoutes from './routes/admin.js';
 import billingRoutes from './routes/billing.js';
 import pdfRoutes from './routes/pdf.js';
@@ -29,6 +27,8 @@ import glossaryRoutes from './routes/glossary.js';
 import feedbackRoutes from './routes/feedback.js';
 import errorHandler from './middleware/errorHandler.js';
 import { corsOriginCheck } from './utils/corsOrigins.js';
+import corsGuard from './middleware/corsGuard.js';
+import { cspDirectives } from './utils/securityHeaders.js';
 import { scheduleDailyFreeCreditReset } from './jobs/dailyCreditReset.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -45,8 +45,10 @@ scheduleDailyFreeCreditReset();
 app.set('trust proxy', 1);
 app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' },
-  contentSecurityPolicy: false,
+  contentSecurityPolicy: { directives: cspDirectives },
 }));
+// Non-allowlisted Origin -> 403 here, before cors can turn it into a 500.
+app.use(corsGuard);
 app.use(cors({ origin: corsOriginCheck, credentials: true }));
 app.use(pinoHttp({
   logger,
@@ -65,7 +67,7 @@ app.use(morgan('combined', {
 }));
 
 const stripeWebhookRawBody = express.raw({ type: 'application/json' });
-app.use(['/api/billing/webhook', '/api/payment/webhook'], stripeWebhookRawBody);
+app.use(['/api/billing/webhook'], stripeWebhookRawBody);
 app.use(express.json());
 app.use(cookieParser());
 app.use(mongoSanitize({
@@ -103,9 +105,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/generate', generateRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/credits', creditsRoutes);
-app.use('/api/payment', paymentRoutes);
 app.use('/api/history', historyRoutes);
-app.use('/api/media', mediaRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/billing', billingRoutes);
 app.use('/api/pdf', pdfRoutes);
