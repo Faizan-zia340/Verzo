@@ -1,5 +1,5 @@
 ---
-title: Posts para redes sociais em português: como criar legendas que engajam com a Penlix
+title: Posts para redes sociais em português com a Penlix
 description: Criar posts para Instagram e Facebook em português leva tempo? Com a Penlix você gera legendas, hashtags e ideias em segundos — veja como funciona.
 slug: posts-para-redes-sociais-em-portugues
 date: 2026-11-26

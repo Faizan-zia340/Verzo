@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FiArrowRight, FiClock, FiEdit3, FiX } from 'react-icons/fi';
 import { POSTS, readingTime } from '../content/blog/index.js';
-import { setPageMeta } from '../utils/pageMeta.js';
+import Seo from '../components/Seo.jsx';
 
 const formatDate = (date) =>
   new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
@@ -28,10 +28,6 @@ const GROUPS = [
 export default function BlogList() {
   const [filter, setFilter] = useState(null);
   useEffect(() => {
-    setPageMeta(
-      'Blog — Penlix | AI Content Guides',
-      'Practical guides to writing blogs, emails and more with AI — in Roman Urdu, Urdu and English. Real examples, no filler.'
-    );
     window.scrollTo(0, 0);
   }, []);
 
@@ -40,6 +36,11 @@ export default function BlogList() {
 
   return (
     <main className="bg-white dark:bg-ink-page min-h-screen">
+      <Seo
+        title="Blog — Penlix | AI Content Guides"
+        description="Practical guides to writing blogs, emails and more with AI — in Roman Urdu, Urdu and English. Real examples, no filler."
+        path="/blog"
+      />
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20">
         <div className="max-w-2xl mb-12">
           <span className="inline-flex items-center gap-2 bg-teak-50 dark:bg-teak-950 border border-teak-100 dark:border-teak-900 text-teak-700 dark:text-teak-300 text-xs font-semibold px-3 py-1.5 rounded-full mb-5">

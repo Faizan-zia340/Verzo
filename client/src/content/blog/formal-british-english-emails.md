@@ -1,5 +1,5 @@
 ---
-title: Formal British English Emails: Write Polished, Professional Emails with Penlix
+title: Formal British English Emails: Write Polished Emails
 description: Need a formal email in British English? Penlix's email types, UK spelling and tone controls help you draft polished professional emails in minutes.
 slug: formal-british-english-emails
 date: 2026-11-26

@@ -1,5 +1,5 @@
 ---
-title: Türkçe Profesyonel E-posta Yazmak: Penlix ile Dakikalar İçinde
+title: Türkçe Profesyonel E-posta Yazmak: Penlix ile Dakikalar
 description: Türkçe profesyonel e-posta yazmak zor mu geliyor? Penlix'in 9 e-posta türüyle soğuk tanışma, takip ve teşekkür e-postalarını dakikalar içinde yazın.
 slug: turkish-professional-emails
 date: 2026-11-26

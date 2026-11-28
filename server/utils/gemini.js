@@ -80,13 +80,22 @@ export const generateWithImage = async (prompt, { data, mimeType }) => {
 };
 
 export const generateSEO = async (content) => {
+  // The model returns free-form JSON — validate its shape before callers
+  // trust it; anything invalid falls back to empty SEO, never a throw.
+  const fallback = { title: '', description: '', keywords: [] };
   try {
     const model = getModel();
     const result = await model.generateContent(buildSEOPrompt(content));
     const raw = result.response.text().trim().replace(/```json|```/g, '').trim();
-    return JSON.parse(raw);
+    const seo = JSON.parse(raw);
+    if (!seo || typeof seo !== 'object' || Array.isArray(seo)) return fallback;
+    if (typeof seo.title !== 'string' || seo.title.length > 60) return fallback;
+    if (typeof seo.description !== 'string' || seo.description.length > 160) return fallback;
+    if (!Array.isArray(seo.keywords) || !seo.keywords.every((k) => typeof k === 'string')) return fallback;
+    if (seo.imageKeywords !== undefined && (!Array.isArray(seo.imageKeywords) || !seo.imageKeywords.every((k) => typeof k === 'string'))) return fallback;
+    return seo;
   } catch {
-    return { title: '', description: '', keywords: [] };
+    return fallback;
   }
 };
 
