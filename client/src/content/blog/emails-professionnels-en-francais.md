@@ -11,7 +11,7 @@ language: french
 
 Un e-mail professionnel en français n'est pas seulement un e-mail avec « s'il vous plaît » ajouté. La formule d'appel, le niveau de politesse, la formule de politesse finale et le vouvoiement envoient tous un signal — et une seule erreur peut faire paraître un message soigné négligé. Ouvrir par « Salut » à un recruteur, ou signer par « Merci ! » à un notaire, et le lecteur le remarque avant la deuxième ligne.
 
-Penlix propose une option de langue française, pour que le ton et les formules sortent naturellement en français, et le type de contenu E-mail vous donne la structure d'un vrai e-mail professionnel. Voici comment utiliser les deux.
+Penlix propose une option de langue française, pour que le ton et les formules sortent naturellement en français, et le type de contenu E-mail vous donne la structure d'un vrai e-mail professionnel. Voici comment utiliser les deux. La même méthode existe pour d'autres langues — par exemple les [e-mails formels en anglais britannique](/blog/formal-british-english-emails).
 
 ## Les 9 sous-types d'e-mails — choisir la bonne structure d'abord
 
@@ -33,7 +33,7 @@ Choisir le mauvais sous-type change complètement le ton — des excuses rédig�
 
 **Étape 1 : Choisissez le type de contenu E-mail.** Sur la page du Générateur, sélectionnez Email.
 
-**Étape 2 : Choisissez le sous-type et la langue.** Choisissez le sous-type qui correspond à votre situation, puis réglez la langue sur le français. C'est cette étape qui donne à l'e-mail son ton français.
+**Étape 2 : Choisissez le sous-type et la langue.** Choisissez le sous-type qui correspond à votre situation, puis réglez la langue sur le français. C'est cette étape qui donne à l'e-mail son ton français. Le générateur couvre aussi d'autres langues, dont les [e-mails professionnels en turc](/blog/turkish-professional-emails).
 
 **Étape 3 : Donnez les détails.** À qui écrivez-vous, de quoi s'agit-il, et que voulez-vous ? Écrivez les noms, les entreprises, les dates et les liens exactement comme ils doivent apparaître — Penlix n'écrit que ce que vous lui dites, et il n'inventera pas un nom ou un numéro correct à partir d'une supposition.
 
@@ -81,7 +81,7 @@ Ce qui fonctionne ici : l'objet annonce le but, l'appel est formel, la demande e
 ## Questions fréquentes
 
 **Penlix écrit-il en français ?**
-Oui — choisissez le français comme langue et le résultat sera rédigé en français.
+Oui — choisissez le français comme langue et le résultat sera rédigé en français. Il écrit aussi dans 22 autres langues, dont les [e-mails professionnels en néerlandais](/blog/professionele-e-mails-schrijven).
 
 **Combien coûte un e-mail ?**
 Généralement 1 crédit par génération. L'inscription gratuite inclut 20 crédits ; les [tarifs](/pricing) commencent à 4,99 $ pour 50 crédits.

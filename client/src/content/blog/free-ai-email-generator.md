@@ -96,14 +96,14 @@ Achi apology mein teen cheezein hoti hain: ghalti mani jaye, wajah saaf batayi j
 ## Aam ghaltiyan
 
 - **Generic shuruaat:** "I hope you are doing well" har email mein likhna waqt zaya hai — seedhi baat se shuru karein.
-- **Bohat zyada formal:** "Respected Sir, I beg to state that..." — aaj kal ki professional emails seedhi aur dostana hoti hain.
+- **Bohat zyada formal:** "Respected Sir, I beg to state that..." — aaj kal ki professional emails seedhi aur dostana hoti hain. UK ke readers ke liye [formal British English emails](/blog/formal-british-english-emails) ka alag tareeqa hai — spelling aur sign-off dono British hote hain.
 - **Bina proofread bhejna:** Aik ghalat naam ya ghalat tareekh poori email ki credibility khatam kar deti hai.
 - **Sab ko aik jaisi email:** Har client ka naam, business aur masla alag hai — template aik jaisa ho sakta hai, lekin email har dafa nayi honi chahiye.
 
 ## Aksar Pooche Jane Wale Sawalat
 
 **Kya free AI email generator waqai free hai?**
-Penlix par free signup ke saath [20 free credits](/register) milte hain aur aik email aam tor par 1 credit mein banti hai — matlab aap 20 emails free likh sakte hain. Us ke baad [paid plans](/pricing) hain, jo $4.99 se shuru hote hain.
+Penlix par free signup ke saath [20 free credits](/register) milte hain aur aik email aam tor par 1 credit mein banti hai — matlab aap 20 emails free likh sakte hain. Us ke baad [paid plans](/pricing) hain, jo $4.99 se shuru hote hain. Mukammal tafseel [Penlix pricing aur free credits](/pricing) par dekhein.
 
 **Kya AI email spam jaisi lagti hai?**
 Sirf tab jab aap usay bina parhe bhej dein. Penlix ki emails mein khaas details hoti hain — naam, business, maqsad — lekin bhejne se pehle aik dafa khud parhna aur apne lafz mein dhalna zaroori hai. Jo email sab ko aik jaisi lage, wo spam hi hai.
@@ -112,7 +112,7 @@ Sirf tab jab aap usay bina parhe bhej dein. Penlix ki emails mein khaas details 
 Cold email pehli dafa likhi jati hai — is mein aap ko apna taaruf aur aik wajah deni hoti hai ke reader jawab kyun de. Follow-up usi baat ko yaad dilata hai — naram lehja, mukhtasar dobara, aur aik naya reason.
 
 **Kya AI email mein Urdu bhi likh sakta hai?**
-Ji — Penlix 23 languages mein likhta hai, jin mein Roman Urdu (Karachi aur Lahore dialects) bhi shamil hain. Roman Urdu mein email likhna aise hi hai: language select karein aur baaqi steps wohi hain.
+Ji — Penlix 23 languages mein likhta hai, jin mein Roman Urdu (Karachi aur Lahore dialects) bhi shamil hain. Roman Urdu mein email likhna aise hi hai: language select karein aur baaqi steps wohi hain. Urdu mein professional email likhne ka mukammal tareeqa yahan hai: [Urdu mein professional email kaise likhein](/blog/urdu-mein-professional-email-kaise-likhein).
 
 ## Shuru karein
 

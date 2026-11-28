@@ -11,7 +11,7 @@ language: portuguese_brazil
 
 No Instagram e no Facebook, a foto chama a atenção — mas é a legenda que faz a pessoa ficar, curtir, comentar e seguir. O problema é que escrever uma boa legenda em português leva tempo: pensar no gancho, no tom certo, nos hashtags e numa chamada para ação, tudo em poucas linhas.
 
-É para isso que serve o tipo Social da Penlix. Você descreve o assunto e a Penlix escreve a legenda para você — em português brasileiro, no tom que você escolher, com hashtags e uma chamada para ação incluídas.
+É para isso que serve o tipo Social da Penlix. Você descreve o assunto e a Penlix escreve a legenda para você — em português brasileiro, no tom que você escolher, com hashtags e uma chamada para ação incluídas. O mesmo processo funciona em outros idiomas — veja o [conteúdo de redes sociais em coreano](/blog/korean-social-media-content).
 
 ## Como funciona — 4 passos
 
@@ -48,7 +48,7 @@ Cada geração custa 1 crédito. O cadastro gratuito inclui 20 créditos.
 >
 > #verao2026 #modabrasileira #novacolecao #lookdodia
 
-Perceba a estrutura: gancho, informação, pergunta e uma recompensa por comentar. A legenda não vende o produto — ela começa uma conversa.
+Perceba a estrutura: gancho, informação, pergunta e uma recompensa por comentar. A legenda não vende o produto — ela começa uma conversa. A mesma estrutura funciona em outros idiomas — como no [conteúdo de redes sociais em hindi](/blog/hindi-mein-social-media-content).
 
 ## Erros comuns
 
@@ -63,7 +63,7 @@ Perceba a estrutura: gancho, informação, pergunta e uma recompensa por comenta
 1 crédito por geração. O cadastro gratuito inclui 20 créditos; os [planos](/pricing) começam em $4,99 por 50 créditos.
 
 **A Penlix escreve em português brasileiro?**
-Sim. Selecione o idioma Português (Brasil) no gerador. A Penlix também escreve em outros 22 idiomas, incluindo inglês, espanhol e francês.
+Sim. Selecione o idioma Português (Brasil) no gerador. A Penlix também escreve em outros 22 idiomas, incluindo inglês, espanhol e francês — por exemplo, o [conteúdo de redes sociais em persa](/blog/persian-social-media-content).
 
 **Posso gerar ideias, não só legendas?**
 Sim. Peça "10 ideias de posts para a próxima semana" e você recebe uma lista para planejar o conteúdo.

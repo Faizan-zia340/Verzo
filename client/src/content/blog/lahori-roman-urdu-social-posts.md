@@ -11,7 +11,7 @@ language: roman_urdu_lahore
 
 Lahore di gal hi hor ay — khana, galliyan, dosti, te hasna-khedna. Jado tusi social media te Lahore wale andaaz vich post likhde o, taan oh parhan wale nu apna lagda ay. Masla sirf ay ke roz roz nava post sochna te likhna waqt lainda ay.
 
-Penlix da Social type isse layi ay. Language vich Roman Urdu (Lahore) chuno, topic likho, te kuch second vich tyaar post mil jayegi — Lahori lehje vich, tuhade style de mutabik.
+Penlix da Social type isse layi ay. Language vich Roman Urdu (Lahore) chuno, topic likho, te kuch second vich tyaar post mil jayegi — Lahori lehje vich, tuhade style de mutabik. Hor lehje vich vi ohi tareeqa chalda ay — misal layi, [Gulf Arabic mein social captions](/blog/gulf-arabic-social-captions) vekho.
 
 ## Tareeqa — 4 steps
 
@@ -36,7 +36,7 @@ Penlix da Social type isse layi ay. Language vich Roman Urdu (Lahore) chuno, top
 - **Audience daso.** "Lahore de students layi" ya "food lovers layi" — audience likhan naal post di zubaan te misalan badal jandiyan ne.
 - **Lahore diyan misalan mango.** "Har point naal Lahore di aik misaal deyo" likho — nihari, paye, lassi, ya Liberty di sair — post vich jaan aa jandi ay.
 - **Length short rakho.** Social post chhota hi changa lagda ay. Length short te rakho.
-- **Voice input vi use kar sakde o.** Je type karna slow lagda ay, Speak button dabao te bol ke prompt deyo. Chrome te Edge vich chalda ay; tuhadi awaaz record nahi hondi te kise server te nahi jandi.
+- **Voice input vi use kar sakde o.** Je type karna slow lagda ay, [bol kar content likhna](/blog/bol-kar-content-likhein) — Speak button dabao te bol ke prompt deyo. Chrome te Edge vich chalda ay; tuhadi awaaz record nahi hondi te kise server te nahi jandi.
 - **Generate to baad aik vaari parh lo.** Naam, jagah te number theek ne ya nahi — post karan to pehlan check kar lo.
 
 ## Misal: prompt te post (sample)
@@ -57,7 +57,7 @@ Eh sample ay — asal result tuhade prompt te setting mutabik badal sakda ay.
 ## Aksar Pooche Jane Wale Sawalat
 
 **Lahori Roman Urdu vich post natural lagdi ay?**
-Ji. Je language Roman Urdu (Lahore) select karo, taan post ohi lehje vich likhi jandi ay. Khaas naam ya jagah prompt vich theek likh deyo.
+Ji. Je language Roman Urdu (Lahore) select karo, taan post ohi lehje vich likhi jandi ay. Khaas naam ya jagah prompt vich theek likh deyo. Hor languages vich vi likh sakde o — [Hindi mein social media content](/blog/hindi-mein-social-media-content) vekho.
 
 **Aik generation da ki kharcha ay?**
 Aam tor te 1 credit. Free signup naal 20 credits milde ne; [pricing](/pricing) $4.99 to 50 credits to shuru hondi ay.

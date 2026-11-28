@@ -11,11 +11,11 @@ language: swahili
 
 Tangazo zuri halihitaji maneno mengi. Linahitaji kichwa kinachoshika macho, faida moja iliyo wazi, na wito mmoja wa hatua. Lakini kuandika maneno hayo kwa Kiswahili — kwa sauti sahihi, bila kujirudia — huchukua muda mrefu.
 
-Aina ya Ad kwenye Penlix imeundwa kwa ajili hiyo. Chagua lugha ya Kiswahili, andika bidhaa au huduma yako, na ndani ya sekunde utapata nakala ya tangazo iliyo tayari kutumika.
+Aina ya Ad kwenye Penlix imeundwa kwa ajili hiyo. Chagua lugha ya Kiswahili, andika bidhaa au huduma yako, na ndani ya sekunde utapata nakala ya tangazo iliyo tayari kutumika. Kama unahitaji lugha nyingine, unaweza pia [kuandika nakala za matangazo kwa Kichina](/blog/xie-zhongwen-guanggao-wenan) kwa hatua zile zile.
 
 ## Jinsi ya kutumia — hatua 4
 
-**Hatua ya 1: Chagua lugha ya Kiswahili.** Kwenye ukurasa wa Generator, weka lugha kuwa Swahili. Penlix huandika kwa lugha uliyochagua.
+**Hatua ya 1: Chagua lugha ya Kiswahili.** Kwenye ukurasa wa Generator, weka lugha kuwa Swahili. Penlix huandika kwa lugha uliyochagua. Kwa mfano, unaweza pia [kuandika matangazo kwa Kihispania](/blog/anuncios-en-espanol-de-espana) kwa kuchagua Spanish (Spain).
 
 **Hatua ya 2: Chagua aina ya Ad.** Katika aina za maudhui, chagua Ad. Hii hutengeneza nakala fupi ya matangazo — si makala ya blog wala barua pepe.
 
@@ -38,6 +38,8 @@ Aina ya Ad kwenye Penlix imeundwa kwa ajili hiyo. Chagua lugha ya Kiswahili, and
 - **Tumia namba inapofaa.** "Punguzo la 20%" au "Ndani ya dakika 15" — namba huvutia macho na huongeza uaminifu.
 - **Jaribu matoleo mawili.** Tengeneza toleo la kirafiki na toleo rasmi, kisha linganisha. Ni bora kuliko kukwama na toleo moja.
 - **Soma kabla ya kuchapisha.** Angalia majina, bei, na tarehe. Kosa moja dogo linaweza kuharibu tangazo zima.
+
+Kwa mitandao ya kijamii, unaweza pia kuandika [maandishi mafupi ya mitandao ya kijamii kwa Kiarabu](/blog/gulf-arabic-social-captions) kwa hatua zile zile.
 
 ## Mfano: prompt na matokeo (sampuli)
 

@@ -9,7 +9,7 @@ language: spanish_latam
 
 ## Por qué escribir un blog en español latinoamericano cuesta tanto
 
-Escribir un blog en español latinoamericano es un doble reto: por un lado, el artículo debe estar bien organizado — una introducción que enganche, un cuerpo dividido en secciones y una conclusión clara. Por otro lado, el español debe sonar natural para lectores de México, Colombia, Argentina o Chile: sin expresiones de España que suenen raras y sin un tono demasiado formal. El resultado es que un artículo corto puede tomar una hora, y aun así no estás seguro de su calidad.
+Escribir un blog en español latinoamericano es un doble reto: por un lado, el artículo debe estar bien organizado — una introducción que enganche, un cuerpo dividido en secciones y una conclusión clara. Por otro lado, el español debe sonar natural para lectores de México, Colombia, Argentina o Chile: sin expresiones de España que suenen raras y sin un tono demasiado formal. Si lo que buscas es [crear anuncios en español de España](/blog/anuncios-en-espanol-de-espana), Penlix también tiene una guía para ese registro. El resultado es que un artículo corto puede tomar una hora, y aun así no estás seguro de su calidad.
 
 La solución no es escribir el blog en inglés — la solución es empezar con una estructura lista. Con Penlix eliges el tipo de contenido "Blog" y el idioma "Español (Latinoamérica)", escribes tu tema y obtienes un artículo organizado en español latinoamericano en pocos minutos.
 
@@ -46,7 +46,7 @@ Ten en cuenta que el Chequeo de realidad es Penlix puntuando su propio borrador 
 1. **Un tema demasiado amplio.** Un artículo sobre "la tecnología" será superficial. Acota el tema hasta que se pueda cubrir en un solo artículo.
 2. **Dejar vacíos el tema y la audiencia.** Se puede generar sin ellos, pero el resultado será genérico. Dos frases mejoran mucho el artículo.
 3. **Publicar sin leer.** Lee el artículo una vez antes de publicar: ¿los datos son correctos? ¿Los nombres y números están bien? Corregir es fácil antes de publicar y difícil después.
-4. **Ignorar el paquete SEO.** El título y las palabras clave vienen con el artículo — úsalos al publicar en lugar de escribirlos de nuevo.
+4. **Ignorar el paquete SEO.** El título y las palabras clave vienen con el artículo — úsalos al publicar en lugar de escribirlos de nuevo. Y si te preguntas [¿el contenido generado por IA perjudica el SEO?](/blog/does-ai-generated-content-hurt-seo), ahí encontrarás la respuesta.
 5. **Esperar que conozca el contexto.** La IA escribe solo con los detalles que le das. Si el lugar o la historia importan, agrega una frase en el prompt.
 
 ## ¿Se puede escribir desde una foto?
@@ -56,7 +56,7 @@ Sí. Sube una foto, elige Blog y puedes dejar el prompt completamente vacío —
 ## Preguntas frecuentes
 
 **¿Penlix escribe en español latinoamericano?**
-Sí. Elige Spanish (Latin America) como idioma y el artículo saldrá en español latinoamericano.
+Sí. Elige Spanish (Latin America) como idioma y el artículo saldrá en español latinoamericano. Penlix escribe también en otros idiomas — por ejemplo, puedes [escribir un blog en italiano](/blog/scrivere-un-blog-in-italiano).
 
 **¿Cuánto cuesta un artículo?**
 Normalmente 1 crédito por generación. El registro gratuito incluye 20 créditos; los [precios](/pricing) empiezan en $4.99 por 50 créditos.

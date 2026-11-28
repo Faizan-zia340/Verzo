@@ -11,7 +11,7 @@ language: english_uk
 
 A formal email in British English is not just an email with "please" added. The spelling, the greeting, the sign-off and the level of politeness all send a signal — and getting one of them wrong can make a careful message look careless. Write "organize" instead of "organise", sign off with "Thanks!" to a hiring manager, or open with "Hi" to a solicitor, and the reader notices before they read the second line.
 
-Penlix has a language option for English (UK), so the spelling and tone come out British by default — organise, colour, favour, behaviour, centre — and the Email content type gives you the structure of a proper formal email. This post explains how to use both.
+Penlix has a language option for English (UK), so the spelling and tone come out British by default — organise, colour, favour, behaviour, centre — and the Email content type gives you the structure of a proper formal email. This post explains how to use both. For the general guide to generating emails in any language, start with the [free AI email generator](/blog/free-ai-email-generator) overview.
 
 ## The 9 email subtypes — pick the right structure first
 
@@ -33,7 +33,7 @@ Choosing the wrong subtype changes the tone completely — an apology written li
 
 **Step 1: Choose Email as the content type.** On the Generator page, select Email.
 
-**Step 2: Pick the subtype and the language.** Choose the subtype that matches your situation, then set the language to English (UK). This is the step that makes the spelling British — organise instead of organize, colour instead of color, realise instead of realize.
+**Step 2: Pick the subtype and the language.** Choose the subtype that matches your situation, then set the language to English (UK). This is the step that makes the spelling British — organise instead of organize, colour instead of color, realise instead of realize. The same generator also writes [professional emails in French](/blog/emails-professionnels-en-francais) and in other languages.
 
 **Step 3: Give the details.** Who you are writing to, what it is about, and what you want. Write names, companies, dates and links exactly as they should appear — Penlix writes only what you tell it, and it will not invent a correct name or number from a guess.
 
@@ -81,7 +81,7 @@ What works here: the subject line states the purpose, the greeting is formal, th
 ## FAQ
 
 **Does Penlix write in British English?**
-Yes — choose English (UK) as the language and the output uses British spelling and conventions.
+Yes — choose English (UK) as the language and the output uses British spelling and conventions. It also covers other languages, including [professional emails in Turkish](/blog/turkish-professional-emails).
 
 **How much does an email cost?**
 Usually 1 credit per generation. Free signup includes 20 credits; [pricing](/pricing) starts at $4.99 for 50 credits.

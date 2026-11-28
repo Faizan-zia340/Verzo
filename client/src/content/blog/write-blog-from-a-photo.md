@@ -21,7 +21,7 @@ That is what image-to-blog is for. Upload a photo to [Penlix](/register), pick B
 
 **Step 3: Generate — prompt optional.** Click Generate. You can leave the prompt completely empty and Penlix will still write about the photo. If you want a specific angle — "focus on the colours" or "write it for beginners" — type that as the prompt and Penlix follows it.
 
-That is the whole flow. No topic field to fill, no audience to pick, no prompt to write — unless you want to.
+That is the whole flow. No topic field to fill, no audience to pick, no prompt to write — unless you want to. The same flow works in other languages too — for example, [writing a blog in Roman Urdu](/blog/roman-urdu-blog-writer) follows the same steps.
 
 ## A real test: a mountain photo, no prompt
 
@@ -59,7 +59,7 @@ A prompt of one sentence is enough. The photo does most of the work.
 Every image-to-blog generation returns the same package as a text blog:
 
 - **The blog post itself** — opening hook, organised body, conclusion.
-- **An SEO package** — meta title, meta description and 5 keywords, so the post is ready to publish.
+- **An SEO package** — meta title, meta description and 5 keywords, so the post is ready to publish. If you are wondering [whether AI-generated content hurts SEO](/blog/does-ai-generated-content-hurt-seo), that question is answered there.
 - **A Reality Check score** — Human-ness, Punchiness and No-Cliché out of 10.
 - **A font picker** — change the font of the generated post on the output card (Default, Inter, Roboto, Open Sans, Lora, Merriweather), and copy or export it as TXT, PDF or DOCX.
 
@@ -89,4 +89,4 @@ Yes — product photos are one of the best uses. Upload the product shot, add a 
 
 ## Try it with a photo you already have
 
-Pick a photo on your phone — a meal, a place, a product — and [upload it to Penlix](/register). Leave the prompt empty the first time and see what it writes. Then try again with one sentence of direction and compare the two drafts.
+Pick a photo on your phone — a meal, a place, a product — and [upload it to Penlix](/register). Leave the prompt empty the first time and see what it writes. Then try again with one sentence of direction and compare the two drafts. Ready to begin? [try Penlix free](/) and pick your first photo.
