@@ -30,6 +30,7 @@ import { corsOriginCheck } from './utils/corsOrigins.js';
 import corsGuard from './middleware/corsGuard.js';
 import { cspDirectives } from './utils/securityHeaders.js';
 import { scheduleDailyFreeCreditReset } from './jobs/dailyCreditReset.js';
+import { scheduleDailyBackup } from './jobs/dailyBackup.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const isProd = process.env.NODE_ENV === 'production';
@@ -41,6 +42,7 @@ const server = http.createServer(app);
 
 connectDB();
 scheduleDailyFreeCreditReset();
+scheduleDailyBackup();
 
 app.set('trust proxy', 1);
 app.use(helmet({
