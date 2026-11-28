@@ -23,5 +23,8 @@ export const isAllowedOrigin = (origin) => {
 
 export const corsOriginCheck = (origin, callback) => {
   if (isAllowedOrigin(origin)) return callback(null, true);
-  return callback(new Error(`Origin ${origin} not allowed by CORS`));
+  // Never pass an Error: the cors middleware turns it into a 500. The
+  // corsGuard middleware in front of cors already answers 403 for a
+  // disallowed Origin; this just withholds the CORS headers as a fallback.
+  return callback(null, false);
 };

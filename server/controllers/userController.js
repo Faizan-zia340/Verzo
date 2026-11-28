@@ -3,11 +3,6 @@ import asyncHandler from '../utils/asyncHandler.js';
 import { createVerificationToken } from '../utils/emailVerification.js';
 import { sendVerificationEmail } from '../utils/sendEmail.js';
 
-export const getProfile = asyncHandler(async (req, res) => {
-  const { _id: id, name, email, credits, subscription, createdAt } = req.user;
-  res.status(200).json({ id, name, email, credits, subscription, createdAt });
-});
-
 // Name changes apply immediately. An email change needs the current
 // password and must not collide with another account (409, not 500) —
 // and the address itself only changes after the verification link sent
