@@ -76,13 +76,16 @@ const AuthSpinner = () => (
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth();
-  if (loading) return <AuthSpinner />;
+  // A cached session renders at once; only a visitor with no cached
+  // user waits for /auth/me (30s timeout) before the login redirect.
+  // /auth/me still validates in the background and clears a dead session.
+  if (!user && loading) return <AuthSpinner />;
   return user ? children : <Navigate to="/login" replace />;
 }
 
 function AdminRoute({ children }) {
   const { user, loading } = useAuth();
-  if (loading) return <AuthSpinner />;
+  if (!user && loading) return <AuthSpinner />;
   if (!user) return <Navigate to="/login" replace />;
   if (!user.isAdmin) return <Navigate to="/dashboard" replace />;
   return children;

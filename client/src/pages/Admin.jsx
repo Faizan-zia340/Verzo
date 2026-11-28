@@ -804,7 +804,7 @@ const NAV = [
 
 // ── Main Admin Page ────────────────────────────────────────────────
 export default function Admin() {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
   const [section, setSection] = useState('overview');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -816,11 +816,6 @@ export default function Admin() {
     api.get('/admin/stats').then(({ data }) => setStats(data)).finally(() => setLoadingStats(false));
   }, [user]);
 
-  if (authLoading) return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center">
-      <span className="animate-spin h-8 w-8 border-2 border-teak-500 border-t-transparent rounded-full" />
-    </div>
-  );
   if (!user?.isAdmin) return <Navigate to="/dashboard" replace />;
 
   return (
