@@ -117,7 +117,7 @@ export default function Login() {
           <CheckList items={TRUST} Icon={FiShield} badge="bg-emerald-500/20 border-emerald-400/30 text-emerald-400" text="text-gray-400 text-xs" className="mt-8 pt-6 border-t border-white/10" />
         </div>
 
-        <div className="bg-white/5 dark:bg-ink-card/5 border border-white/10 rounded-2xl p-5">
+        <div className="mt-8 bg-white/5 dark:bg-ink-card/5 border border-white/10 rounded-2xl p-5">
           <p className="text-gray-300 text-sm leading-relaxed">
             I built Penlix because AI writing kept sounding like a robot. Every word it
             generates is checked to sound human — that is the whole point.
