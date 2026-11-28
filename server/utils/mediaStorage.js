@@ -15,7 +15,7 @@ export class MediaNotConfiguredError extends Error {
   }
 }
 
-const isConfigured = () =>
+export const isConfigured = () =>
   Boolean(
     process.env.CLOUDINARY_CLOUD_NAME &&
       process.env.CLOUDINARY_API_KEY &&
@@ -47,7 +47,7 @@ export const mediaResourceType = (mediaType) => (mediaType === 'audio' ? 'video'
 // server (or a test run) that has no cloudinary package / keys installed.
 // Tests inject a fake client through `deps.cloudinary` instead.
 let cachedClient = null;
-const getCloudinary = async () => {
+export const getCloudinary = async () => {
   if (cachedClient) return cachedClient;
   const mod = await import('cloudinary');
   const client = mod.v2;
