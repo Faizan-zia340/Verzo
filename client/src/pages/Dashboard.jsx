@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useCredits } from '../context/CreditContext.js';
 import { useAuth } from '../context/AuthContext.js';
 import AccountOverview from '../components/AccountOverview.jsx';
+import ChangePassword from '../components/ChangePassword.jsx';
 import Generator from '../components/Generator.jsx';
 import ContentHistory from '../components/ContentHistory.jsx';
 import { Link } from 'react-router-dom';
@@ -229,6 +230,9 @@ export default function Dashboard() {
                 : 'Enable'}
           </button>
         </div>
+
+        {/* Security — change password while signed in. */}
+        <ChangePassword />
       </div>
     </div>
   );

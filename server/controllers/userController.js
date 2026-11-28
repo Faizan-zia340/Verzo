@@ -45,3 +45,23 @@ export const updateProfile = asyncHandler(async (req, res) => {
   await user.save();
   res.status(200).json({ id: user._id, name: user.name, email: user.email, credits: user.credits, subscription: user.subscription });
 });
+
+// Change password while signed in. The current password must match
+// (401 if not) and the new one follows the same 6-character rule as
+// registration/reset. Setting passwordChangedAt invalidates every JWT
+// issued before this change — including the current session — exactly as
+// the reset flow does, so the user signs in again with the new password.
+export const changePassword = asyncHandler(async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  const user = await User.findById(req.user._id);
+  if (!user) return res.status(404).json({ message: 'User not found' });
+  if (!(await user.comparePassword(currentPassword))) {
+    return res.status(401).json({ message: 'Current password is incorrect' });
+  }
+  // The User pre-save hook hashes the password (bcrypt, 12 rounds),
+  // exactly as it does on registration and reset.
+  user.password = newPassword;
+  user.passwordChangedAt = new Date();
+  await user.save();
+  res.status(200).json({ message: 'Password changed. Please sign in again with your new password.' });
+});

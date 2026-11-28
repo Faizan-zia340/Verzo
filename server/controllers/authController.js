@@ -30,6 +30,10 @@ const formatUser = (user) => ({
   // unaffected. Only an explicit `false` (a new unverified registration)
   // reports as unverified.
   isEmailVerified: user.isEmailVerified !== false,
+  // Pending email change (set by updateProfile, cleared on verification):
+  // exposed so the Dashboard can show "verification sent to <new address>"
+  // after a reload, not just in the save response.
+  pendingEmail: user.pendingEmail || undefined,
 });
 
 // Issues a fresh email-verification token for the user (only the SHA-256

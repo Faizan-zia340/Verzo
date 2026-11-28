@@ -45,6 +45,13 @@ export const resetPasswordSchema = Joi.object({
   password: Joi.string().min(6).required(),
 });
 
+// Change password while signed in: same 6-character rule as registration
+// and reset — no new length invented.
+export const changePasswordSchema = Joi.object({
+  currentPassword: Joi.string().required(),
+  newPassword: Joi.string().min(6).required(),
+});
+
 // Tune an existing piece of content. Text is capped at 5000 characters —
 // without a limit the endpoint was a free, unbounded rewrite service.
 // The schema runs in the route BEFORE the credit is reserved, so a bad
