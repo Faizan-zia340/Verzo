@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { marked } from 'marked';
 import { FiArrowLeft, FiClock, FiArrowRight } from 'react-icons/fi';
 import { getPostBySlug, POSTS, readingTime } from '../content/blog/index.js';
-import { setPageMeta } from '../utils/pageMeta.js';
+import Seo from '../components/Seo.jsx';
 import FontPicker from '../components/FontPicker.jsx';
 import SuggestTranslation from '../components/SuggestTranslation.jsx';
 import { scriptOf, useContentFont } from '../utils/fonts.js';
@@ -35,10 +35,7 @@ export default function BlogPost() {
   );
 
   useEffect(() => {
-    if (post) {
-      setPageMeta(`${post.title} | Penlix Blog`, post.description);
-      window.scrollTo(0, 0);
-    }
+    if (post) window.scrollTo(0, 0);
   }, [post]);
 
   // Content font for the post's language (persisted per script).
@@ -48,6 +45,7 @@ export default function BlogPost() {
   if (!post) {
     return (
       <main className="bg-white dark:bg-ink-page min-h-screen flex items-center justify-center px-4">
+        <Seo title="Post Not Found — Penlix Blog" description="This blog post doesn't exist — it may have moved or the link may be wrong." noindex />
         <div className="text-center max-w-md py-20">
           <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-3">Post not found</h1>
           <p className="text-gray-600 dark:text-slate-300 mb-6">
@@ -66,6 +64,21 @@ export default function BlogPost() {
 
   return (
     <main className="bg-white dark:bg-ink-page min-h-screen">
+      <Seo
+        title={`${post.title} | Penlix Blog`}
+        description={post.description}
+        path={`/blog/${post.slug}`}
+        type="article"
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'BlogPosting',
+          headline: post.title,
+          description: post.description,
+          datePublished: post.date,
+          author: { '@type': 'Person', name: 'M. Faizan' },
+          publisher: { '@type': 'Organization', name: 'Penlix', url: 'https://verzo-ecru.vercel.app/' },
+        }}
+      />
       <article className="max-w-3xl mx-auto px-4 sm:px-6 pt-14 pb-20">
         <div className="flex items-center justify-between mb-8">
           <Link

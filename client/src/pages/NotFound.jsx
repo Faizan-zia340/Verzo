@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom';
 import { FiHome } from 'react-icons/fi';
+import Seo from '../components/Seo.jsx';
 
 export default function NotFound() {
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4">
+      <Seo title="Page Not Found — Penlix" description="The page you are looking for does not exist or was moved." noindex />
       <div className="text-center max-w-md">
         <p className="text-7xl font-black text-teak-600 dark:text-teak-400 tracking-tight">404</p>
         <h1 className="mt-4 text-2xl font-bold text-gray-900 dark:text-white">Page not found</h1>

@@ -1,5 +1,5 @@
 ---
-title: Comment rédiger un e-mail professionnel en français avec Penlix
+title: Comment rédiger un e-mail professionnel en français
 description: Rédiger un e-mail professionnel en français vous prend trop de temps ? Avec les 9 sous-types d'e-mails de Penlix, obtenez un e-mail soigné en quelques minutes.
 slug: emails-professionnels-en-francais
 date: 2026-11-26

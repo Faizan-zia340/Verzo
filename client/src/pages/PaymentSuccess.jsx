@@ -82,7 +82,7 @@ export default function PaymentSuccess() {
       <Seo title="Payment Successful — Penlix" description="Your Penlix payment was successful and your credits are ready to use." path="/payment-success" noindex />
       <div className="bg-white dark:bg-ink-card rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-10 max-w-md w-full text-center">
         {copy.icon}
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{copy.title}</h2>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{copy.title}</h1>
         <p className="text-gray-500 dark:text-slate-400 mb-6">{copy.text}</p>
         <Link to="/dashboard" className="bg-teak-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-teak-700 transition inline-block">Go to Dashboard</Link>
         {state === 'failed' && (

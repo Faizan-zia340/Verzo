@@ -1,5 +1,5 @@
 ---
-title: Menulis Blog Bahasa Indonesia dengan Penlix: Cepat dan SEO-Ready
+title: Menulis Blog Bahasa Indonesia dengan Penlix
 description: Ingin menulis blog bahasa Indonesia? Pilih tipe Blog di Penlix, tulis topik Anda, dan dapatkan artikel lengkap dengan paket SEO dalam hitungan detik.
 slug: indonesian-blog-writing
 date: 2026-11-26

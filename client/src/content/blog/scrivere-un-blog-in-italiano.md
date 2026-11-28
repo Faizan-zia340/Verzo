@@ -1,5 +1,5 @@
 ---
-title: Scrivere un blog in italiano con l'IA: la guida pratica di Penlix
+title: Scrivere un blog in italiano con l'IA: la guida di Penlix
 description: Scrivere un blog in italiano richiede tempo? Con Penlix generi articoli completi, con pacchetto SEO e controllo di qualità, in pochi minuti. Ecco come.
 slug: scrivere-un-blog-in-italiano
 date: 2026-11-26

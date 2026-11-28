@@ -1,5 +1,5 @@
 ---
-title: Professionele e-mails schrijven met AI: sneller en beter met Penlix
+title: Professionele e-mails schrijven met AI: sneller met Penlix
 description: Een professionele e-mail schrijven kost vaak een halfuur. Met Penlix schrijf je koude acquisitie, follow-ups en bedankmails in enkele minuten.
 slug: professionele-e-mails-schrijven
 date: 2026-11-26

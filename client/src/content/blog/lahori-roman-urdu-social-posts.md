@@ -1,5 +1,5 @@
 ---
-title: Lahori Style Vich Social Posts: Penlix Naal Mazedaar Content Likho
+title: Lahori Style Vich Social Posts: Penlix Naal Content Likho
 description: Lahori andaaz vich social posts chahide ne? Penlix te Social type chuno, topic likho — te mazedaar, asaan Urdu vich post tyaar. Tareeqa te tips.
 slug: lahori-roman-urdu-social-posts
 date: 2026-11-26
