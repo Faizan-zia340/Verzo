@@ -17,7 +17,7 @@ Die Lösung ist nicht, den Blog auf Englisch zu schreiben — die Lösung ist, m
 
 **Schritt 1: Wählen Sie den Inhaltstyp „Blog".** Wählen Sie auf der Generator-Seite Blog als Inhaltstyp.
 
-**Schritt 2: Wählen Sie die Sprache Deutsch.** Wählen Sie German in der Sprachenliste, damit der Artikel auf Deutsch verfasst wird.
+**Schritt 2: Wählen Sie die Sprache Deutsch.** Wählen Sie German in der Sprachenliste, damit der Artikel auf Deutsch verfasst wird. Die Sprachenliste enthält viele weitere Sprachen — wer zum Beispiel einen [Blog auf Bengalisch schreiben](/blog/bengali-blog-writing) möchte, wählt dort einfach Bengalisch.
 
 **Schritt 3: Geben Sie Thema und Zielgruppe ein.** Worum geht es? Für wen schreiben Sie? Beispiel: „Vorteile des täglichen Lesens" für „Studierende". Je klarer das Thema, desto besser der Artikel.
 
@@ -50,7 +50,7 @@ Im Deutschen ist die Anrede eine echte Entscheidung. Für einen Firmenblog oder 
 1. **Ein zu breites Thema.** Ein Artikel über „die Technologie" wird oberflächlich. Engen Sie das Thema ein, bis es in einem Artikel abgedeckt werden kann.
 2. **Thema und Zielgruppe leer lassen.** Man kann auch ohne sie generieren, aber das Ergebnis wird allgemein. Zwei Sätze verbessern den Artikel erheblich.
 3. **Veröffentlichen ohne zu lesen.** Lesen Sie den Artikel einmal vor dem Veröffentlichen: Sind die Fakten richtig? Sind Namen und Zahlen korrekt? Korrigieren ist vor dem Veröffentlichen einfach und danach schwierig.
-4. **Das SEO-Paket ignorieren.** Titel und Keywords kommen mit dem Artikel — verwenden Sie sie beim Veröffentlichen, statt sie neu zu schreiben.
+4. **Das SEO-Paket ignorieren.** Titel und Keywords kommen mit dem Artikel — verwenden Sie sie beim Veröffentlichen, statt sie neu zu schreiben. Wenn Sie sich fragen, [Schadet KI-generierter Content der SEO?](/blog/does-ai-generated-content-hurt-seo), finden Sie die Antwort dort.
 5. **Kontext erwarten.** Die KI schreibt nur mit den Details, die Sie ihr geben. Wenn der Ort oder die Geschichte wichtig sind, fügen Sie einen Satz im Prompt hinzu.
 
 ## Kann man auch aus einem Foto schreiben?
@@ -60,7 +60,7 @@ Ja. Laden Sie ein Foto hoch, wählen Sie Blog, und Sie können den Prompt komple
 ## Häufig gestellte Fragen
 
 **Schreibt Penlix auf Deutsch?**
-Ja. Wählen Sie German als Sprache, und der Artikel wird auf Deutsch verfasst.
+Ja. Wählen Sie German als Sprache, und der Artikel wird auf Deutsch verfasst. Penlix schreibt auch in anderen Sprachen — zum Beispiel können Sie einen [Blog auf Russisch schreiben](/blog/kak-pisat-blog-na-russkom).
 
 **Was kostet ein Artikel?**
 In der Regel 1 Credit pro Generierung. Die kostenlose Anmeldung umfasst 20 Credits; die [Preise](/pricing) beginnen bei 4,99 $ für 50 Credits.

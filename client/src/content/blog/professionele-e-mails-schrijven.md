@@ -11,7 +11,7 @@ language: dutch
 
 Een professionele e-mail lijkt simpel, maar in de praktijk kost hij vaak dertig minuten: de onderwerpregel bedenken, een opening die de lezer vasthoudt, de boodschap kort maar volledig houden, en dan een duidelijke volgende stap. En toch wordt de e-mail vaak te lang, of zo droog dat er geen antwoord komt.
 
-Daarom gebruiken steeds meer mensen een AI-e-mailgenerator: jij vertelt het onderwerp en het doel, Penlix schrijft een kant-en-klare, professionele e-mail. In dit artikel zie je hoe dat werkt — en welke e-mailtypes Penlix kan schrijven.
+Daarom gebruiken steeds meer mensen een AI-e-mailgenerator: jij vertelt het onderwerp en het doel, Penlix schrijft een kant-en-klare, professionele e-mail. In dit artikel zie je hoe dat werkt — en welke e-mailtypes Penlix kan schrijven. Dezelfde aanpak werkt in andere talen, zoals [zakelijke e-mails in het Japans](/blog/bijinesu-meiru-no-kakikata).
 
 ## 9 e-mailtypes in Penlix
 
@@ -79,13 +79,15 @@ Deze follow-up werkt omdat hij drie dingen doet: zachtjes herinneren, de kern ko
 - **Versturen zonder nalezen.** Eén verkeerde naam of datum haalt de geloofwaardigheid van de hele e-mail onderuit.
 - **Iedereen dezelfde e-mail.** De template mag hetzelfde zijn, maar de e-mail moet elke keer nieuw voelen — met de naam, het bedrijf en het probleem van die klant.
 
+Voor lezers in het Verenigd Koninkrijk gelden andere conventies — zie [formele Britse Engelse e-mails](/blog/formal-british-english-emails).
+
 ## Veelgestelde vragen
 
 **Wat kost een e-mail?**
 1 credit per generatie. Gratis registratie geeft 20 credits; [abonnementen](/pricing) beginnen bij $4,99 voor 50 credits.
 
 **Schrijft Penlix ook in het Nederlands?**
-Ja. Kies Nederlands als taal in de generator. Penlix schrijft in 23 talen, waaronder Engels, Duits en Frans.
+Ja. Kies Nederlands als taal in de generator. Penlix schrijft in 23 talen — zie bijvoorbeeld [professionele e-mails in het Frans](/blog/emails-professionnels-en-francais).
 
 **Kan ik een e-mail dicteren in plaats van typen?**
 Ja, met spraakinvoer: druk op de knop "Spreken" en dicteer je onderwerp. Je woorden komen in de prompt terecht.

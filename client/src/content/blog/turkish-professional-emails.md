@@ -11,7 +11,7 @@ language: turkish
 
 Profesyonel bir e-posta yazmak, özellikle Türkçe'de, her zaman kolay değildir. Hitap nasıl olmalı — "Sayın" mı, "Merhaba" mı? Konu satırı ne kadar kısa olmalı? Teklif nasıl sunulmalı, kapanış nasıl olmalı? Bir de müşteri, iş başvurusu ya da özür e-postası söz konusuysa, her kelime önem kazanır.
 
-Penlix'in Email (E-posta) tipi tam bunun için var. E-posta türünü seçin, kime ve ne hakkında yazdığınızı söyleyin — Penlix dakikalar içinde profesyonel bir e-posta taslağı hazırlar.
+Penlix'in Email (E-posta) tipi tam bunun için var. E-posta türünü seçin, kime ve ne hakkında yazdığınızı söyleyin — Penlix dakikalar içinde profesyonel bir e-posta taslağı hazırlar. Aynı araç başka dillerde de yazar — örneğin [Fransızca profesyonel e-posta](/blog/emails-professionnels-en-francais).
 
 ## Penlix'te 9 e-posta türü
 
@@ -31,7 +31,7 @@ Doğru türü seçmek, e-postanın tonunu ve yapısını baştan doğru kurar. �
 
 ## Kullanımı — 4 adım
 
-**Adım 1: Dili Türkçe olarak seçin.** Generator sayfasında dili Turkish olarak ayarlayın. Penlix seçtiğiniz dilde yazar.
+**Adım 1: Dili Türkçe olarak seçin.** Generator sayfasında dili Turkish olarak ayarlayın. Penlix seçtiğiniz dilde yazar. İngiltere'deki okuyuculara yazıyorsanız [resmî İngiliz İngilizcesi e-postalar](/blog/formal-british-english-emails) için dili English (UK) olarak ayarlayın.
 
 **Adım 2: Email tipini ve alt türü seçin.** İçerik tipi olarak Email'i, ardından durumunuza uyan alt türü seçin — örneğin bir müşteriye ilk kez yazıyorsanız Cold Outreach.
 
@@ -66,7 +66,7 @@ Yukarıdaki örnek, anlatım amaçlı bir örnektir; gerçek sonuç prompt'a ve 
 ## SSS
 
 **Türkçe e-postalar doğal mı olur?**
-Evet. Dil Turkish seçildiğinde e-posta Türkçe yazılır. İsim ve özel terimleri prompt'ta doğru yazmanız iyi olur.
+Evet. Dil Turkish seçildiğinde e-posta Türkçe yazılır. İsim ve özel terimleri prompt'ta doğru yazmanız iyi olur. Araç başka dillerde de yazar — örneğin [Japonca iş e-postası](/blog/bijinesu-meiru-no-kakikata) da aynı adımlarla hazırlanır.
 
 **Bir üretim kaç kredi?**
 Genellikle 1 kredi. Ücretsiz kayıtta 20 kredi verilir; [fiyatlandırma](/pricing) $4.99 karşılığında 50 krediden başlar.

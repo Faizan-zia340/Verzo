@@ -15,7 +15,7 @@ Tipe Blog di Penlix memperpendek proses itu. Pilih bahasa Indonesian, tulis topi
 
 ## Cara menggunakannya — 4 langkah
 
-**Langkah 1: Pilih bahasa Indonesian.** Di halaman Generator, atur bahasa ke Indonesian. Penlix menulis dalam bahasa yang Anda pilih.
+**Langkah 1: Pilih bahasa Indonesian.** Di halaman Generator, atur bahasa ke Indonesian. Penlix menulis dalam bahasa yang Anda pilih. Penlix juga mendukung bahasa lain — misalnya, Anda bisa [menulis blog bahasa Bengali](/blog/bengali-blog-writing) dengan cara yang sama.
 
 **Langkah 2: Pilih tipe Blog.** Pilih Blog sebagai tipe konten. Anda akan mendapat artikel lengkap dengan pembuka, isi yang terstruktur, dan penutup.
 
@@ -26,7 +26,7 @@ Tipe Blog di Penlix memperpendek proses itu. Pilih bahasa Indonesian, tulis topi
 ## Yang Anda dapatkan di setiap artikel
 
 - **Artikel blog lengkap** — pembuka yang menarik, isi yang terorganisir, dan penutup.
-- **Paket SEO** — meta title, meta description, dan 5 keyword, sehingga artikel siap diterbitkan.
+- **Paket SEO** — meta title, meta description, dan 5 keyword, sehingga artikel siap diterbitkan. Kalau Anda bertanya-tanya [apakah konten AI merugikan SEO?](/blog/does-ai-generated-content-hurt-seo), jawabannya ada di sana.
 - **Skor Cek Realitas** — Kemanusiaan, Ketajaman, dan Tanpa Klise, masing-masing dari 10. Ini adalah Penlix menilai drafnya sendiri — bukan peninjau kedua — jadi skor rendah adalah isyarat untuk generate ulang atau menyetel ulang, bukan jaminan.
 - **Pemilih font** — ubah font artikel di kartu hasil, lalu salin atau ekspor sebagai TXT, PDF, atau DOCX.
 
@@ -52,7 +52,7 @@ Penlix juga bisa menulis blog dari foto. Unggah satu foto, pilih Blog — prompt
 ## Pertanyaan yang Sering Diajukan
 
 **Apakah tulisan bahasa Indonesianya terdengar natural?**
-Ya. Jika bahasa diatur ke Indonesian, artikel ditulis dalam bahasa Indonesia. Nama atau istilah khusus sebaiknya ditulis dengan benar di prompt.
+Ya. Jika bahasa diatur ke Indonesian, artikel ditulis dalam bahasa Indonesia. Nama atau istilah khusus sebaiknya ditulis dengan benar di prompt. Bahasa lain juga tersedia — Anda juga bisa [menulis blog bahasa Arab](/blog/arabic-blog-writing) dengan langkah yang sama.
 
 **Berapa biaya satu kali generate?**
 Biasanya 1 kredit. Pendaftaran gratis memberi 20 kredit; [harga](/pricing) mulai dari $4.99 untuk 50 kredit.

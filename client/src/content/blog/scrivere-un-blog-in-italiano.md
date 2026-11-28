@@ -11,7 +11,7 @@ language: italian
 
 Scrivere un articolo di blog in italiano richiede tempo: l'idea, la struttura, l'introduzione che trattiene il lettore, e poi il controllo finale. Per chi gestisce un negozio, un'attività o un progetto personale, è spesso la parte che viene rimandata — e il blog resta vuoto per mesi.
 
-Con Penlix, il processo cambia. Descrivi l'argomento in italiano e la Penlix scrive l'articolo completo: introduzione, corpo organizzato e conclusione. E non solo il testo: ogni generazione include anche un pacchetto SEO e un controllo di qualità.
+Con Penlix, il processo cambia. Descrivi l'argomento in italiano e la Penlix scrive l'articolo completo: introduzione, corpo organizzato e conclusione. Penlix scrive in molte lingue — puoi anche [scrivere un blog in tedesco](/blog/blog-auf-deutsch-schreiben) scegliendo la lingua nel generatore. E non solo il testo: ogni generazione include anche un pacchetto SEO e un controllo di qualità.
 
 ## Come funziona — 4 passi
 
@@ -57,13 +57,13 @@ Se hai una foto ma non le parole, usa la generazione da immagine: carica una fot
 1 credito per generazione. La registrazione gratuita include 20 crediti; i [piani](/pricing) partono da $4,99 per 50 crediti.
 
 **Penlix scrive davvero in italiano corretto?**
-Sì. Seleziona la lingua Italiano nel generatore. Penlix scrive in 23 lingue in totale, tra cui inglese, spagnolo e francese.
+Sì. Seleziona la lingua Italiano nel generatore. Penlix scrive in 23 lingue in totale, tra cui inglese, spagnolo e francese. Per esempio, puoi anche [scrivere un blog in spagnolo](/blog/blog-en-espanol-latinoamericano) con gli stessi passi.
 
 **Posso dettare l'articolo invece di scriverlo?**
 Sì, con l'input vocale: premi il pulsante "Parla" e detta l'argomento. Le tue parole finiscono nel prompt.
 
 **L'articolo è pronto per Google?**
-Arriva con meta titolo, meta descrizione e parole chiave. Prima di pubblicare, verifica comunque che i fatti siano corretti — l'IA scrive bene, ma la responsabilità dei contenuti è tua.
+Arriva con meta titolo, meta descrizione e parole chiave. Prima di pubblicare, verifica comunque che i fatti siano corretti — l'IA scrive bene, ma la responsabilità dei contenuti è tua. Se ti chiedi se [i contenuti generati dall'IA danneggiano la SEO?](/blog/does-ai-generated-content-hurt-seo), trovi la risposta in un articolo dedicato.
 
 **Posso generare da un PDF?**
 Sì, nella pagina /pdf: carica un PDF e Penlix ne estrae il testo e lo analizza. È una funzione separata dal generatore di blog.

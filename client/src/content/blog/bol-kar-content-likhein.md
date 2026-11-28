@@ -20,7 +20,7 @@ Aik aur faida: voice input aap ki chuni hui language ke hisaab se sunta hai. Aga
 
 ## 4 steps: bolna se blog tak
 
-**Marhala 1: Language chunein.** Generator mein apni language select karein — English, Roman Urdu (Karachi ya Lahore), ya Urdu. Voice input isi language mein sunega.
+**Marhala 1: Language chunein.** Generator mein apni language select karein — English, Roman Urdu (Karachi ya Lahore), ya Urdu. Voice input isi language mein sunega. Roman Urdu select karne ke baad aap [Roman Urdu mein blog likhna](/blog/roman-urdu-blog-writer) bol kar bhi shuru kar sakte hain.
 
 **Marhala 2: Speak dabayein.** Prompt ke paas Speak (mic) ka button hai. Us par click karein — browser aap se microphone ki ijazat maangega, pehli dafa Allow kar dein.
 
@@ -42,7 +42,7 @@ Aik aur faida: voice input aap ki chuni hui language ke hisaab se sunta hai. Aga
 
 **Prompt mein aaya:** "Lahore ke khane par Roman Urdu mein blog likhein, tone friendly ho, aur har dish ke saath aik misaal ho."
 
-**Phir Generate:** Penlix ne is prompt par poora blog likha — nihari, paye aur lassi par alag headings, har dish ke saath aik misaal, aur aakhir mein reader se sawal. Bolne mein ye prompt 10 second ka tha; type karne mein aik minute lagta.
+**Phir Generate:** Penlix ne is prompt par poora blog likha — nihari, paye aur lassi par alag headings, har dish ke saath aik misaal, aur aakhir mein reader se sawal. Bolne mein ye prompt 10 second ka tha; type karne mein aik minute lagta. Lahore ke lehje mein social media ke liye bhi likh sakte hain — dekhein [Lahori style social posts](/blog/lahori-roman-urdu-social-posts).
 
 ## Aam ghaltiyan — in se bachein
 
@@ -54,7 +54,7 @@ Aik aur faida: voice input aap ki chuni hui language ke hisaab se sunta hai. Aga
 
 ## Voice input kab istemal karein, kab nahi
 
-**Behtareen hai jab:** aap chalte phirte idea note kar rahe hon, mobile par hon, ya type karna mushkil lagta ho. Khayal bol kar prompt banna sab se tez tareeqa hai.
+**Behtareen hai jab:** aap chalte phirte idea note kar rahe hon, mobile par hon, ya type karna mushkil lagta ho. Khayal bol kar prompt banna sab se tez tareeqa hai. Bol kar sirf blog hi nahi — aap [muft AI email generator](/blog/free-ai-email-generator) se email bhi likhwa sakte hain.
 
 **Type karna behtar hai jab:** prompt mein koi khaas naam, number ya link ho — ye bol kar aksar ghalat sunai dete hain. Aise lafz type kar lein, baaki bol kar batayein.
 
@@ -77,4 +77,4 @@ Nahi. Bolna muft hai — credit sirf Generate par lagta hai, aam tor par 1 credi
 
 ## Shuru karein
 
-Agli dafa jab koi idea aaye to type karne ke bajaye bol kar batayein — [Penlix par free signup karein](/register), Speak dabayein, aur apna pehla voice prompt aaj hi aazmayein.
+Agli dafa jab koi idea aaye to type karne ke bajaye bol kar batayein — [Penlix par free signup karein](/register), Speak dabayein, aur apna pehla voice prompt aaj hi aazmayein. Taiyar hain? [Penlix par bol kar content likhna shuru karein](/) — Speak dabayein aur apna pehla voice prompt aaj hi aazmayein.

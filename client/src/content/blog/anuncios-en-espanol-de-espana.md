@@ -11,13 +11,13 @@ language: spanish_spain
 
 Un anuncio no es un artículo corto: tiene que enganchar en la primera línea, decir el beneficio en dos frases y cerrar con una llamada a la acción clara. Y en español de España, además, el tono importa — un "vosotros" bien puesto, un "vale" en el momento justo y un registro que suene natural para lectores de Madrid, Barcelona o Sevilla. Escribirlo a mano para cada campaña lleva demasiado tiempo.
 
-Con Penlix eliges el tipo de contenido "Anuncio" y el idioma "Español (España)", escribes tu producto y tu oferta, y obtienes textos publicitarios en español peninsular listos para usar.
+Con Penlix eliges el tipo de contenido "Anuncio" y el idioma "Español (España)", escribes tu producto y tu oferta, y obtienes textos publicitarios en español peninsular listos para usar. Y si tu público está en Latinoamérica, también puedes [escribir un blog en español latinoamericano](/blog/blog-en-espanol-latinoamericano) con el mismo generador.
 
 ## Cómo funciona — 4 pasos
 
 **Paso 1: Elige el tipo de contenido "Anuncio".** En la página del Generador, selecciona Ad como tipo de contenido.
 
-**Paso 2: Elige el idioma español de España.** Selecciona Spanish (Spain) en la lista de idiomas, para que el texto use el español peninsular.
+**Paso 2: Elige el idioma español de España.** Selecciona Spanish (Spain) en la lista de idiomas, para que el texto use el español peninsular. Si tu campaña va dirigida a otro público, también puedes [escribir anuncios en suajili](/blog/swahili-ad-copy) eligiendo Swahili en la misma lista.
 
 **Paso 3: Escribe el producto, la oferta y la audiencia.** ¿Qué vendes? ¿Cuál es la oferta? ¿Para quién? Ejemplo: "zapatillas de running con un 20% de descuento" para "jóvenes de 20 a 35 años". Añade el precio, el enlace y la fecha límite si la hay.
 
@@ -68,7 +68,7 @@ Sí. Sube una foto del producto, elige Ad y puedes dejar el prompt vacío — Pe
 ## Preguntas frecuentes
 
 **¿Penlix escribe en español de España?**
-Sí. Elige Spanish (Spain) como idioma y el texto saldrá en español peninsular.
+Sí. Elige Spanish (Spain) como idioma y el texto saldrá en español peninsular. El generador también sirve para [escribir anuncios en chino](/blog/xie-zhongwen-guanggao-wenan) y en otros idiomas.
 
 **¿Cuánto cuesta un anuncio?**
 Normalmente 1 crédito por generación. El registro gratuito incluye 20 créditos; los [precios](/pricing) empiezan en $4.99 por 50 créditos.

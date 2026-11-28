@@ -21,17 +21,17 @@ Penlix mein Roman Urdu ke do dialects hain — Karachi aur Lahore. Ye sirf label
 
 **Lahore dialect** Punjabi-influenced hai — "yaara", "ki gal", "dass", "sohna" — naram aur purana lehja.
 
-Audience ke hisaab se chunein — ghalat dialect se blog ajeeb lagta hai.
+Audience ke hisaab se chunein — ghalat dialect se blog ajeeb lagta hai. Ye dialects Roman Urdu ke andar ka farq hai; script ka farq alag hai — [Roman Urdu aur Urdu script ka farq](/blog/urdu-content-generator) yahan samjhein.
 
 ## Kya waqai kaam karta hai — 4 cheezein
 
-**1. Specific prompt.** Topic, audience aur tone — teeno likhein. "Karachi ki garmi par blog likhein" se behtar hai: "Karachi ki garmi mein bachon ki sehat par 800 words ka blog, tone friendly, har tip ke saath aik misaal." Specific prompt se specific output milta hai.
+**1. Specific prompt.** Topic, audience aur tone — teeno likhein. "Karachi ki garmi par blog likhein" se behtar hai: "Karachi ki garmi mein bachon ki sehat par 800 words ka blog, tone friendly, har tip ke saath aik misaal." Specific prompt se specific output milta hai. Step by step tareeqa yahan dekhein: [Roman Urdu mein blog kaise likhein](/blog/roman-urdu-blog-writer).
 
 **2. Sahi dialect.** Upar bataye gaye farq ke hisaab se dialect chunein. Agar aap Karachi ki audience ke liye likh rahe hain aur Lahore dialect select kar liya, to lafz ajeeb lagenge.
 
 **3. Output ki language check karein.** Ye sab se zaroori hai — Penlix bhi kabhi kabhi ghalat karta hai. 25 November 2026 ke test mein 6 mein se 4 outputs ghalat language mein aaye (French ka Roman Urdu mein, Spanish ka English mein). Generate karne ke baad pehle language dekhein; ghalat ho to dobara generate karein.
 
-**4. Human edit.** AI draft ko apni awaaz mein dhal lein — aik do jumle apne lafzon mein, headings check karein, phir publish karein. Bina parhe publish karna sab se bari ghalti hai.
+**4. Human edit.** AI draft ko apni awaaz mein dhal lein — aik do jumle apne lafzon mein, headings check karein, phir publish karein. Bina parhe publish karna sab se bari ghalti hai. Agar typing slow lagti hai, to [bol kar content likhna](/blog/bol-kar-content-likhein) bhi aik option hai — Speak button se bol kar prompt likhwayein.
 
 ## Misaal 1: Penlix ka asli Roman Urdu output — email
 

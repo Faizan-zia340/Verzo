@@ -37,7 +37,7 @@ Every one is a content problem, not a production problem — a human can write t
 
 ## What does not hurt your SEO
 
-AI content is safe when it answers a real reader's question, is edited by a human who checks the facts, and is original — your angle, your examples, your data. It must also be honest: no invented statistics, no fake reviews, no claims the product cannot back up.
+AI content is safe when it answers a real reader's question, is edited by a human who checks the facts, and is original — your angle, your examples, your data. It must also be honest: no invented statistics, no fake reviews, no claims the product cannot back up. Penlix works in many languages too — for example, an [AI blog writer in Roman Urdu](/blog/roman-urdu-blog-writer) follows the same helpful-content rule. The same applies to [Arabic blog writing with Penlix](/blog/arabic-blog-writing) — helpful, checked content ranks, whatever the language.
 
 Penlix's blog follows this rule: posts are fact-checked against the live product and examples are real outputs.
 
@@ -47,7 +47,7 @@ Penlix's blog follows this rule: posts are fact-checked against the live product
 
 **Step 2: Prompt with specifics.** Topic, audience and tone — a specific prompt beats a vague one every time.
 
-**Step 3: Generate.** On [Penlix](/register), a blog usually costs 1 credit, and free signup comes with 20 free credits.
+**Step 3: Generate.** On [Penlix](/register), a blog usually costs 1 credit, and free signup comes with 20 free credits. See [Penlix pricing and free credits](/pricing) for the full plans. You can even [write a blog from a photo](/blog/write-blog-from-a-photo) — upload an image and let Penlix draft from it.
 
 **Step 4: Read the Reality Check.** Penlix's AI scores its own output out of 10 on Human-ness, Punchiness and No-Cliché. It is self-scoring, not a second reviewer — a low score means regenerate or tune.
 
