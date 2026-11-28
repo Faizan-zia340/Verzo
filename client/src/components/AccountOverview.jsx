@@ -8,17 +8,61 @@ import {
 import { useAuth } from '../context/AuthContext.js';
 import { useCredits } from '../context/CreditContext.js';
 import api from '../services/api.js';
+import toast from 'react-hot-toast';
 import DashboardStats from './Dashboard.jsx';
 
 // Account overview: profile, credits, usage and recent generations in one
 // place. History itself lives in the History tab — this only previews the
 // last 3 items and links across, so there is no second history list.
 export default function AccountOverview({ onNavigate }) {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
   const { credits } = useCredits();
   const [recent, setRecent] = useState(null); // null = still loading
   const [total, setTotal] = useState(null);
   const [favorites, setFavorites] = useState(null);
+  // Edit profile: name applies at once; an email change needs the current
+  // password and only applies after the verification link is clicked.
+  const [editing, setEditing] = useState(false);
+  const [editName, setEditName] = useState('');
+  const [editEmail, setEditEmail] = useState('');
+  const [editPassword, setEditPassword] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [editError, setEditError] = useState('');
+
+  const startEditing = () => {
+    setEditName(user?.name || '');
+    setEditEmail(user?.email || '');
+    setEditPassword('');
+    setEditError('');
+    setEditing(true);
+  };
+
+  const emailChanged = editing && editEmail.trim().toLowerCase() !== (user?.email || '').toLowerCase();
+
+  const handleSaveProfile = async (e) => {
+    e.preventDefault();
+    if (!editName.trim()) { setEditError('Please enter your name.'); return; }
+    if (!editEmail.trim()) { setEditError('Please enter your email.'); return; }
+    if (emailChanged && !editPassword) { setEditError('Enter your current password to change your email.'); return; }
+    setSaving(true);
+    setEditError('');
+    try {
+      const { data } = await api.put('/user/profile', {
+        name: editName.trim(),
+        email: editEmail.trim(),
+        ...(emailChanged ? { currentPassword: editPassword } : {}),
+      });
+      // Merge into the stored user — the response is a partial profile,
+      // so keep isAdmin / twoFactorEnabled / isEmailVerified as they are.
+      setUser({ ...user, name: data.name, email: data.email, pendingEmail: data.pendingEmail || user?.pendingEmail });
+      toast.success(data.message || 'Profile updated.');
+      setEditing(false);
+    } catch (err) {
+      setEditError(err.response?.data?.message || 'Could not update your profile. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   useEffect(() => {
     let alive = true;
@@ -51,25 +95,70 @@ export default function AccountOverview({ onNavigate }) {
             <div className="w-11 h-11 rounded-full bg-teak-600 text-white flex items-center justify-center text-lg font-black">
               {(user?.name || 'P').charAt(0).toUpperCase()}
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="font-bold text-gray-900 dark:text-white truncate">{user?.name}</p>
               <p className="text-xs text-gray-500 dark:text-slate-400 truncate flex items-center gap-1">
                 <FiMail size={11} /> {user?.email}
               </p>
             </div>
+            {!editing && (
+              <button onClick={startEditing} className="text-xs font-semibold text-indigo-600 dark:text-ink-link hover:underline flex items-center gap-1 flex-shrink-0">
+                <FiEdit3 size={12} /> Edit
+              </button>
+            )}
           </div>
-          <div className="flex flex-wrap gap-2">
-            <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${
-              verified
-                ? 'bg-emerald-100 dark:bg-ink-raised text-emerald-700 dark:text-emerald-300'
-                : 'bg-amber-100 dark:bg-ink-raised text-amber-700 dark:text-amber-300'
-            }`}>
-              {verified ? <><FiCheckCircle size={12} /> Email verified</> : <><FiAlertCircle size={12} /> Email not verified</>}
-            </span>
-            <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-teak-100 dark:bg-ink-raised text-teak-700 dark:text-teak-400 capitalize">
-              <FiUser size={12} /> {plan} plan
-            </span>
-          </div>
+          {editing ? (
+            <form onSubmit={handleSaveProfile} className="space-y-3">
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1">Name</label>
+                <input value={editName} onChange={(e) => setEditName(e.target.value)} maxLength={50}
+                  className="w-full border border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-ink-page rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teak-500" />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1">Email</label>
+                <input type="email" value={editEmail} onChange={(e) => setEditEmail(e.target.value)}
+                  className="w-full border border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-ink-page rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teak-500" />
+              </div>
+              {emailChanged && (
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1">Current password</label>
+                  <input type="password" value={editPassword} onChange={(e) => setEditPassword(e.target.value)} placeholder="Required to change your email"
+                    className="w-full border border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-ink-page rounded-xl px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teak-500" />
+                </div>
+              )}
+              {editError && <p className="text-xs text-red-500 bg-red-50 dark:bg-ink-raised px-3 py-2 rounded-lg border border-red-100">{editError}</p>}
+              <div className="flex gap-2">
+                <button type="submit" disabled={saving}
+                  className="bg-teak-600 hover:bg-teak-700 disabled:opacity-60 text-white text-sm font-bold px-4 py-2 rounded-xl transition">
+                  {saving ? 'Saving…' : 'Save'}
+                </button>
+                <button type="button" onClick={() => setEditing(false)}
+                  className="bg-gray-100 dark:bg-ink-raised hover:bg-gray-200 dark:hover:bg-ink-raised text-gray-700 dark:text-slate-200 text-sm font-bold px-4 py-2 rounded-xl transition">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          ) : (
+            <>
+              <div className="flex flex-wrap gap-2">
+                <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${
+                  verified
+                    ? 'bg-emerald-100 dark:bg-ink-raised text-emerald-700 dark:text-emerald-300'
+                    : 'bg-amber-100 dark:bg-ink-raised text-amber-700 dark:text-amber-300'
+                }`}>
+                  {verified ? <><FiCheckCircle size={12} /> Email verified</> : <><FiAlertCircle size={12} /> Email not verified</>}
+                </span>
+                <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-teak-100 dark:bg-ink-raised text-teak-700 dark:text-teak-400 capitalize">
+                  <FiUser size={12} /> {plan} plan
+                </span>
+              </div>
+              {user?.pendingEmail && (
+                <p className="text-xs text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-ink-raised border border-amber-200 dark:border-amber-900/50 rounded-xl px-3 py-2 mt-3 leading-relaxed">
+                  Verification email sent to {user.pendingEmail} — your email changes once you confirm it.
+                </p>
+              )}
+            </>
+          )}
         </div>
 
         {/* Credits */}
