@@ -6,6 +6,10 @@ import api from '../services/api.js';
 
 const CATEGORIES = ['Bug', 'Suggestion', 'Other'];
 
+// Auth pages are vertically centered, so bottom padding cannot guarantee the
+// fixed pill clears the submit button on every viewport height — hide it here.
+const AUTH_ROUTES = ['/login', '/register', '/forgot-password', '/reset-password', '/verify-email'];
+
 // Floating feedback button on every page (temporary, for testing):
 // a tester — logged in or not — reports an issue from the page they are on.
 // The page is auto-filled from the current route; no credit is charged.
@@ -20,6 +24,8 @@ export default function FeedbackButton() {
   const [sent, setSent] = useState(false);
 
   const openForm = () => { setSent(false); setError(''); setOpen(true); };
+
+  if (AUTH_ROUTES.some((r) => pathname === r || pathname.startsWith(`${r}/`))) return null;
 
   const submit = async (e) => {
     e.preventDefault();
