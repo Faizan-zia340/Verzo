@@ -76,8 +76,10 @@ function RotatingLanguageLine() {
 }
 
 export default function Home() {
-  const { user, loading } = useAuth();
-  const loggedIn = !loading && !!user;
+  const { user } = useAuth();
+  // Cached session: CTAs show the right state at once, /auth/me
+  // validates in the background and flips them if the session is dead.
+  const loggedIn = !!user;
 
   return (
     <main className="bg-white dark:bg-ink-card min-h-screen overflow-hidden">
@@ -112,7 +114,7 @@ export default function Home() {
           </motion.div>
 
           <motion.div {...fade(0.2)} className="flex flex-col sm:flex-row gap-3 justify-center mb-10">
-            {!loading && (loggedIn ? (
+            {loggedIn ? (
               <Link to="/dashboard"
                 className="inline-flex items-center justify-center gap-2 bg-teak-600 hover:bg-teak-700 text-white px-8 py-4 rounded-xl font-bold text-base transition shadow-md shadow-teak-900/25">
                 Go to Dashboard <FiArrowRight size={16} />
@@ -128,7 +130,7 @@ export default function Home() {
                   Sign in
                 </Link>
               </>
-            ))}
+            )}
           </motion.div>
 
           <motion.div {...fade(0.26)} className="flex flex-wrap justify-center gap-5">
@@ -242,7 +244,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-teak-500/30 via-transparent to-transparent" />
           <div className="relative">
             <h2 className="text-4xl font-black text-white mb-3 tracking-tight">Ready to write smarter?</h2>
-            {!loading && (loggedIn ? (
+            {loggedIn ? (
               <>
                 <p className="text-teak-100 mb-8 max-w-xs mx-auto">Your dashboard is waiting — pick up where you left off.</p>
                 <Link to="/dashboard"
@@ -258,7 +260,7 @@ export default function Home() {
                   Create free account <FiArrowRight size={15} />
                 </Link>
               </>
-            ))}
+            )}
           </div>
         </motion.div>
       </section>
