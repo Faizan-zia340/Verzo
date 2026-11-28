@@ -21,6 +21,19 @@ const TRUST = [
   '20 free credits after email verification',
 ];
 
+const CheckList = ({ items, Icon, badge, text, className = '' }) => (
+  <div className={`space-y-3 ${className}`}>
+    {items.map((t) => (
+      <div key={t} className="flex items-center gap-3">
+        <div className={`w-5 h-5 rounded-full border flex items-center justify-center flex-shrink-0 ${badge}`}>
+          <Icon size={10} />
+        </div>
+        <span className={text}>{t}</span>
+      </div>
+    ))}
+  </div>
+);
+
 export default function Login() {
   const { login, verifyTwoFactor, setUser } = useAuth();
   const navigate = useNavigate();
@@ -100,28 +113,8 @@ export default function Login() {
           <p className="text-teak-300 text-sm mb-8 leading-relaxed">
             The AI platform that writes with precision, sells with psychology, and thinks like your best copywriter.
           </p>
-          <div className="space-y-3">
-            {FEATURES.map((f) => (
-              <div key={f} className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-teak-500/20 border border-teak-400/30 flex items-center justify-center flex-shrink-0">
-                  <FiCheck size={10} className="text-teak-400" />
-                </div>
-                <span className="text-gray-300 text-sm">{f}</span>
-              </div>
-            ))}
-          </div>
-
-          {/* Trust — security and data promises, Asan Tijarat sign-in pattern. */}
-          <div className="mt-8 pt-6 border-t border-white/10 space-y-3">
-            {TRUST.map((t) => (
-              <div key={t} className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center flex-shrink-0">
-                  <FiShield size={10} className="text-emerald-400" />
-                </div>
-                <span className="text-gray-400 text-xs">{t}</span>
-              </div>
-            ))}
-          </div>
+          <CheckList items={FEATURES} Icon={FiCheck} badge="bg-teak-500/20 border-teak-400/30 text-teak-400" text="text-gray-300 text-sm" />
+          <CheckList items={TRUST} Icon={FiShield} badge="bg-emerald-500/20 border-emerald-400/30 text-emerald-400" text="text-gray-400 text-xs" className="mt-8 pt-6 border-t border-white/10" />
         </div>
 
         <div className="bg-white/5 dark:bg-ink-card/5 border border-white/10 rounded-2xl p-5">

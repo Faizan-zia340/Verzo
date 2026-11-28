@@ -40,11 +40,8 @@ const TRUST = [
   'No credit card required',
 ];
 
-// The hero headline stays static (it is the page H1 for SEO). The line
-// below it rotates through 6 languages, one at a time — a live demo of
-// the multilingual claim, without hiding the main message. Only 6 of the
-// 23 languages rotate: all 23 would take over a minute per cycle and
-// most visitors never see the full loop.
+// Hero H1 stays static for SEO; this line rotates through 6 languages
+// (all 23 would take over a minute per cycle) as a live multilingual demo.
 const ROTATING_LINES = [
   'Write in English',
   'Roman Urdu mein likhein',
