@@ -355,6 +355,12 @@ export default function Generator() {
   const recognitionRef = useRef(null);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
+  // PDF attach: pages are rendered to images in the browser (pdf.js, loaded
+  // only when a PDF is attached) and the picked page becomes the image.
+  const [pdfFile, setPdfFile] = useState(null);
+  const [pdfPages, setPdfPages] = useState([]); // [{ n, thumb, file }]
+  const [pdfPageCount, setPdfPageCount] = useState(0);
+  const [pdfLoading, setPdfLoading] = useState(false);
   // Listen (text-to-speech): reads the output aloud with device voices.
   const [ttsSupported, setTtsSupported] = useState(false);
   const [voices, setVoices] = useState([]);
@@ -477,6 +483,7 @@ export default function Generator() {
       return;
     }
     if (imagePreview) URL.revokeObjectURL(imagePreview);
+    setPdfFile(null); setPdfPages([]); setPdfPageCount(0); // a direct image replaces any PDF
     setImageFile(f);
     setImagePreview(URL.createObjectURL(f));
   };
@@ -485,6 +492,41 @@ export default function Generator() {
     if (imagePreview) URL.revokeObjectURL(imagePreview);
     setImagePreview('');
   };
+
+  // ── PDF attach — pages become images ──────────────────────────
+  // Renders the first 10 pages to JPEGs (pdf.js, dynamically imported so
+  // the main bundle stays small). The picked page is sent as the image
+  // through the existing with-image flow — no server change needed.
+  const MAX_PDF_PAGES = 10;
+  const handlePdfSelect = async (e) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (f.type !== 'application/pdf') { toast.error('Use a PDF file.'); return; }
+    if (f.size > 10 * 1024 * 1024) { toast.error('PDF is too large. Maximum is 10 MB.'); return; }
+    setPdfLoading(true);
+    try {
+      const pdfjs = await import('pdfjs-dist');
+      pdfjs.GlobalWorkerOptions.workerSrc = (await import('pdfjs-dist/build/pdf.worker.min.mjs?url')).default;
+      const pdf = await pdfjs.getDocument({ data: await f.arrayBuffer() }).promise;
+      const pages = [];
+      for (let n = 1; n <= Math.min(pdf.numPages, MAX_PDF_PAGES); n++) {
+        const page = await pdf.getPage(n);
+        const viewport = page.getViewport({ scale: 1.5 });
+        const canvas = document.createElement('canvas');
+        canvas.width = viewport.width; canvas.height = viewport.height;
+        await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+        const blob = await new Promise((res) => canvas.toBlob(res, 'image/jpeg', 0.85));
+        pages.push({ n, thumb: canvas.toDataURL('image/jpeg', 0.7), file: new File([blob], `${f.name.replace(/\.pdf$/i, '')}-p${n}.jpg`, { type: 'image/jpeg' }) });
+      }
+      setPdfFile(f); setPdfPages(pages); setPdfPageCount(pdf.numPages);
+      setImageFile(pages[0].file); setImagePreview(pages[0].thumb); // page 1 by default
+      if (pdf.numPages > MAX_PDF_PAGES) toast(`Showing the first ${MAX_PDF_PAGES} of ${pdf.numPages} pages — pick one.`);
+    } catch {
+      toast.error('Could not read this PDF. Try another file.');
+    }
+    setPdfLoading(false);
+  };
+  const clearPdf = () => { setPdfFile(null); setPdfPages([]); setPdfPageCount(0); clearImage(); };
 
   // ── Blog image picker ───────────────────────────────────────
   const handlePickImage = async (slot, optionIndex) => {
@@ -1026,10 +1068,16 @@ export default function Generator() {
                 className="w-full px-3 py-2.5 text-sm text-gray-800 dark:text-slate-100 bg-transparent border-0 focus:outline-none focus:ring-0 resize-none placeholder-gray-400 dark:placeholder-slate-500"
               />
               <div className="flex items-center justify-between px-2 pb-2">
-                <label title="JPG, PNG or WebP, max 5 MB" className="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg font-medium cursor-pointer text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-ink-raised transition">
-                  <FiImage size={14} /> {imagePreview ? 'Change image' : 'Add image'}
-                  <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImageSelect} className="hidden" />
-                </label>
+                <div className="flex items-center gap-1">
+                  <label title="JPG, PNG or WebP, max 5 MB" className="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg font-medium cursor-pointer text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-ink-raised transition">
+                    <FiImage size={14} /> {imagePreview && !pdfFile ? 'Change image' : 'Add image'}
+                    <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImageSelect} className="hidden" />
+                  </label>
+                  <label title="PDF, max 10 MB — its pages become images, pick one" className="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg font-medium cursor-pointer text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-ink-raised transition">
+                    <FiFileText size={14} /> {pdfFile ? 'Change PDF' : 'Add PDF'}
+                    <input type="file" accept="application/pdf" onChange={handlePdfSelect} className="hidden" />
+                  </label>
+                </div>
                 <button
                   type="button"
                   onClick={startVoice}
@@ -1044,6 +1092,31 @@ export default function Generator() {
                   <FiMic size={12} /> {listening ? 'Listening… tap to stop' : 'Speak'}
                 </button>
               </div>
+              {pdfLoading && (
+                <p className="px-3 pb-2.5 text-xs text-gray-500 dark:text-slate-400">Reading PDF pages…</p>
+              )}
+              {pdfFile && (
+                <div className="px-3 pb-2.5">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <p className="text-xs text-gray-500 dark:text-slate-400 truncate">{pdfFile.name} — pick a page ({pdfPageCount} pages)</p>
+                    <button type="button" onClick={clearPdf} className="flex items-center gap-1 text-xs text-red-600 dark:text-red-400 hover:text-red-800 font-medium flex-shrink-0 ml-2">
+                      <FiX size={12} /> Remove PDF
+                    </button>
+                  </div>
+                  <div className="flex gap-2 overflow-x-auto pb-1">
+                    {pdfPages.map((p) => (
+                      <button
+                        key={p.n} type="button" onClick={() => { setImageFile(p.file); setImagePreview(p.thumb); }}
+                        className={`flex-shrink-0 rounded-md overflow-hidden border-2 transition ${imageFile?.name === p.file.name ? 'border-teak-500' : 'border-gray-200 dark:border-slate-700 hover:border-teak-300'}`}
+                        title={`Page ${p.n}`}
+                      >
+                        <img src={p.thumb} alt={`PDF page ${p.n}`} className="w-14 h-[74px] object-cover" />
+                        <span className="block text-center text-[10px] text-gray-500 dark:text-slate-400 py-0.5 bg-white dark:bg-ink-card">p{p.n}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
            <div className="flex items-center justify-between mt-1.5 text-xs text-gray-400 dark:text-slate-500">
              <span>{form.prompt.length.toLocaleString()} characters</span>
