@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   FiZap, FiEdit3, FiTrendingUp, FiGlobe, FiFileText,
   FiImage, FiDownload, FiShare2, FiArrowRight, FiCheck, FiStar,
@@ -14,9 +15,9 @@ const fade = (delay = 0) => ({
 });
 
 const FEATURES = [
-  { icon: FiZap, title: 'Streaming AI Generation', desc: 'Watch your content appear word-by-word in real time — powered by Penlix AI with dual-agent quality scoring.', color: 'text-teak-600 dark:text-teak-400', bg: 'bg-teak-50 dark:bg-ink-raised', border: 'border-teak-100' },
+  { icon: FiZap, title: 'Streaming AI Generation', desc: 'Watch your content appear word-by-word in real time — with Reality Check scoring on every output.', color: 'text-teak-600 dark:text-teak-400', bg: 'bg-teak-50 dark:bg-ink-raised', border: 'border-teak-100' },
   { icon: FiGlobe, title: '23 Languages & Dialects', desc: 'English, Karachi/Lahore Urdu, Gulf Arabic, French, German, Hindi, Chinese, Japanese and many more.', color: 'text-violet-600 dark:text-violet-400', bg: 'bg-violet-50 dark:bg-ink-raised', border: 'border-violet-100 dark:border-slate-800' },
-  { icon: FiEdit3, title: 'One-Click Tuning', desc: 'Shorten, boost engagement, add professionalism or reduce hype — refine any output without spending credits.', color: 'text-sky-600 dark:text-sky-400', bg: 'bg-sky-50 dark:bg-ink-raised', border: 'border-sky-100 dark:border-slate-800' },
+  { icon: FiEdit3, title: 'One-Click Tuning', desc: 'Shorten, boost engagement, add professionalism or reduce hype — refine any output for 1 credit.', color: 'text-sky-600 dark:text-sky-400', bg: 'bg-sky-50 dark:bg-ink-raised', border: 'border-sky-100 dark:border-slate-800' },
   { icon: FiTrendingUp, title: 'SEO Package Built-in', desc: 'Every generation includes a meta title, meta description, and 5 targeted keywords — automatically.', color: 'text-emerald-600 dark:text-emerald-400', bg: 'bg-emerald-50 dark:bg-ink-raised', border: 'border-emerald-100 dark:border-slate-800' },
   { icon: FiFileText, title: 'PDF Deep Analyzer', desc: 'Upload any PDF — get structured study notes, chapter summaries, and a 10-question test bank instantly.', color: 'text-amber-600 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-ink-raised', border: 'border-amber-100 dark:border-slate-800' },
   { icon: FiImage, title: 'Inline Blog Images', desc: 'Real Unsplash photos downloaded, analyzed by Penlix Vision, and embedded at the perfect spots in your blog.', color: 'text-rose-600 dark:text-rose-400', bg: 'bg-rose-50 dark:bg-ink-raised', border: 'border-rose-100 dark:border-slate-800' },
@@ -27,17 +28,55 @@ const FEATURES = [
 
 const STATS = [
   { value: '23', label: 'Languages' },
-  { value: '5', label: 'Content types' },
-  { value: '4', label: 'Export formats' },
-  { value: '10s', label: 'Avg. gen time' },
+  { value: '8', label: 'Content types' },
+  { value: '30', label: 'Blog posts' },
+  { value: '20', label: 'Free credits' },
 ];
 
 const TRUST = [
   'Real-time streaming output',
-  'Dual-agent quality scoring',
+  'Reality Check scoring',
   'Auto-generated SEO metadata',
   'No credit card required',
 ];
+
+// The hero headline stays static (it is the page H1 for SEO). The line
+// below it rotates through 6 languages, one at a time — a live demo of
+// the multilingual claim, without hiding the main message. Only 6 of the
+// 23 languages rotate: all 23 would take over a minute per cycle and
+// most visitors never see the full loop.
+const ROTATING_LINES = [
+  'Write in English',
+  'Roman Urdu mein likhein',
+  'اردو میں لکھیں',
+  'Escribe en español',
+  'Écrivez en français',
+  'Schreiben Sie auf Deutsch',
+];
+
+function RotatingLanguageLine() {
+  const [index, setIndex] = useState(0);
+  useEffect(() => {
+    const timer = setInterval(() => setIndex((i) => (i + 1) % ROTATING_LINES.length), 2600);
+    return () => clearInterval(timer);
+  }, []);
+  return (
+    <span className="inline-flex items-center gap-2 text-base font-semibold text-teak-600 dark:text-teak-400">
+      <FiGlobe size={16} className="flex-shrink-0" />
+      <AnimatePresence mode="wait">
+        <motion.span
+          key={index}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.3 }}
+        >
+          {ROTATING_LINES[index]}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  );
+}
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -55,7 +94,7 @@ export default function Home() {
           <motion.div {...fade(0)}>
             <span className="inline-flex items-center gap-2 bg-white dark:bg-ink-card border border-teak-200 text-teak-700 dark:text-teak-400 text-xs font-semibold px-4 py-1.5 rounded-full mb-8 shadow-sm">
               <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-              Powered by Penlix AI · Dual-agent scoring
+              Powered by Penlix AI · Reality Check scoring
             </span>
           </motion.div>
 
@@ -66,10 +105,14 @@ export default function Home() {
             </span>
           </motion.h1>
 
-          <motion.p {...fade(0.14)} className="text-lg sm:text-xl text-gray-500 dark:text-slate-400 mb-10 max-w-xl mx-auto leading-relaxed">
+          <motion.p {...fade(0.14)} className="text-lg sm:text-xl text-gray-500 dark:text-slate-400 mb-4 max-w-xl mx-auto leading-relaxed">
             AI-powered blog posts, emails, ads, social content and product descriptions in 23 languages —
             with built-in SEO, Reality Check scoring, and inline images.
           </motion.p>
+
+          <motion.div {...fade(0.17)} className="mb-10">
+            <RotatingLanguageLine />
+          </motion.div>
 
           <motion.div {...fade(0.2)} className="flex flex-col sm:flex-row gap-3 justify-center mb-10">
             {!loading && (loggedIn ? (
@@ -99,21 +142,59 @@ export default function Home() {
             ))}
           </motion.div>
         </div>
+
+        {/* ── Stats strip, inside the hero (Asan Tijarat pattern) ── */}
+        <div className="max-w-3xl mx-auto px-4 mt-16 relative">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {STATS.map(({ value, label }, i) => (
+              <motion.div
+                key={label}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.3 + i * 0.07 }}
+                className="bg-white dark:bg-ink-card border border-gray-100 dark:border-slate-800 rounded-2xl p-6 text-center shadow-sm"
+              >
+                <p className="text-4xl font-black text-teak-600 dark:text-teak-400 mb-1.5">{value}</p>
+                <p className="text-xs text-gray-500 dark:text-slate-400 font-semibold uppercase tracking-wide">{label}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
       </section>
 
-      {/* ── Stats ──────────────────────────────────────────────── */}
-      <section className="max-w-3xl mx-auto px-4 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {STATS.map(({ value, label }, i) => (
+      {/* ── How It Works ───────────────────────────────────────── */}
+      <section className="max-w-4xl mx-auto px-4 py-16">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}
+          className="text-center mb-12"
+        >
+          <h2 className="text-4xl font-black text-gray-950 dark:text-white mb-4 tracking-tight">
+            How it works
+          </h2>
+          <p className="text-gray-500 dark:text-slate-400 max-w-md mx-auto text-base leading-relaxed">
+            Three steps, no learning curve. From sign-up to published content in minutes.
+          </p>
+        </motion.div>
+
+        <div className="relative grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="hidden md:block absolute top-8 left-[18%] right-[18%] border-t-2 border-dashed border-teak-200 dark:border-teak-800" aria-hidden="true" />
+          {[
+            { step: 1, title: 'Create your account', desc: 'Sign up, verify your email and get 20 free credits. No credit card required.' },
+            { step: 2, title: 'Describe what you need', desc: 'Pick a content type, a language and a topic — then write one short prompt.' },
+            { step: 3, title: 'Generate & export', desc: 'Watch it stream in, check the Reality Check score, then download as PDF, DOCX or TXT.' },
+          ].map(({ step, title, desc }, i) => (
             <motion.div
-              key={label}
-              initial={{ opacity: 0, y: 16 }}
+              key={step}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.1 + i * 0.07 }}
-              className="bg-white dark:bg-ink-card border border-gray-100 dark:border-slate-800 rounded-2xl p-6 text-center shadow-sm hover:shadow-md transition"
+              transition={{ duration: 0.4, delay: 0.1 + i * 0.08 }}
+              className="relative bg-white dark:bg-ink-card border border-gray-100 dark:border-slate-800 rounded-2xl p-6 text-center shadow-sm"
             >
-              <p className="text-4xl font-black text-teak-600 dark:text-teak-400 mb-1.5">{value}</p>
-              <p className="text-xs text-gray-500 dark:text-slate-400 font-semibold uppercase tracking-wide">{label}</p>
+              <div className="w-11 h-11 mx-auto mb-4 rounded-full bg-teak-600 text-white flex items-center justify-center text-base font-black shadow-md shadow-teak-900/25">
+                {step}
+              </div>
+              <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1.5 leading-snug">{title}</h3>
+              <p className="text-xs text-gray-500 dark:text-slate-400 leading-relaxed">{desc}</p>
             </motion.div>
           ))}
         </div>
@@ -174,7 +255,7 @@ export default function Home() {
               </>
             ) : (
               <>
-                <p className="text-teak-100 mb-8 max-w-xs mx-auto">Get 20 free credits instantly. No credit card required.</p>
+                <p className="text-teak-100 mb-8 max-w-xs mx-auto">Get 20 free credits. No credit card required.</p>
                 <Link to="/register"
                   className="inline-flex items-center gap-2 bg-white dark:bg-ink-card text-teak-700 dark:text-teak-400 font-bold px-8 py-4 rounded-xl hover:bg-teak-50 dark:hover:bg-ink-raised transition shadow-lg text-sm">
                   Create free account <FiArrowRight size={15} />
