@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
+import lazyWithRetry from './utils/lazyWithRetry.js';
 import { Toaster } from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthProvider, useAuth } from './context/AuthContext.js';
@@ -12,20 +13,20 @@ import Home from './pages/Home.jsx';
 // every other page loads on demand so the first visit only downloads the
 // code it needs. Before this, all 15 pages shipped in one ~1.2 MB bundle
 // and the site felt slow to load, especially on phones.
-const Login = lazy(() => import('./pages/Login.jsx'));
-const Register = lazy(() => import('./pages/Register.jsx'));
-const ForgotPassword = lazy(() => import('./pages/ForgotPassword.jsx'));
-const ResetPassword = lazy(() => import('./pages/ResetPassword.jsx'));
-const VerifyEmail = lazy(() => import('./pages/VerifyEmail.jsx'));
-const Dashboard = lazy(() => import('./pages/Dashboard.jsx'));
-const Pricing = lazy(() => import('./pages/Pricing.jsx'));
-const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess.jsx'));
-const Admin = lazy(() => import('./pages/Admin.jsx'));
-const PDFAnalyzer = lazy(() => import('./pages/PDFAnalyzer.jsx'));
-const Privacy = lazy(() => import('./pages/Privacy.jsx'));
-const BlogList = lazy(() => import('./pages/BlogList.jsx'));
-const BlogPost = lazy(() => import('./pages/BlogPost.jsx'));
-const NotFound = lazy(() => import('./pages/NotFound.jsx'));
+const Login = lazy(lazyWithRetry(() => import('./pages/Login.jsx')));
+const Register = lazy(lazyWithRetry(() => import('./pages/Register.jsx')));
+const ForgotPassword = lazy(lazyWithRetry(() => import('./pages/ForgotPassword.jsx')));
+const ResetPassword = lazy(lazyWithRetry(() => import('./pages/ResetPassword.jsx')));
+const VerifyEmail = lazy(lazyWithRetry(() => import('./pages/VerifyEmail.jsx')));
+const Dashboard = lazy(lazyWithRetry(() => import('./pages/Dashboard.jsx')));
+const Pricing = lazy(lazyWithRetry(() => import('./pages/Pricing.jsx')));
+const PaymentSuccess = lazy(lazyWithRetry(() => import('./pages/PaymentSuccess.jsx')));
+const Admin = lazy(lazyWithRetry(() => import('./pages/Admin.jsx')));
+const PDFAnalyzer = lazy(lazyWithRetry(() => import('./pages/PDFAnalyzer.jsx')));
+const Privacy = lazy(lazyWithRetry(() => import('./pages/Privacy.jsx')));
+const BlogList = lazy(lazyWithRetry(() => import('./pages/BlogList.jsx')));
+const BlogPost = lazy(lazyWithRetry(() => import('./pages/BlogPost.jsx')));
+const NotFound = lazy(lazyWithRetry(() => import('./pages/NotFound.jsx')));
 
 const pageVariants = {
   initial: { opacity: 0, y: 10 },
