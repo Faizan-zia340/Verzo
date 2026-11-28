@@ -1,4 +1,5 @@
 import getClient, { MODEL, API_VERSION } from '../config/gemini.js';
+import logger from './logger.js';
 
 const getVisionModel = () => {
   const genAI = getClient();
@@ -87,46 +88,51 @@ afterParagraph must be between 0 and ${pCount - 1}.`
  * Returns array of enriched image objects with base64 dataUrls and metadata.
  */
 export const fetchAndAnalyzeImages = async (keywords = []) => {
-  if (!process.env.UNSPLASH_ACCESS_KEY || !keywords.length) return [];
+  if (!process.env.UNSPLASH_ACCESS_KEY) { logger.warn('Blog images skipped: UNSPLASH_ACCESS_KEY not set'); return []; }
+  if (!keywords.length) { logger.warn('Blog images skipped: no keywords'); return []; }
 
-  try {
-    const query = keywords.slice(0, 2).join(' ');
-    const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=6&orientation=landscape`;
-    const res = await fetch(url, {
-      headers: { Authorization: `Client-ID ${process.env.UNSPLASH_ACCESS_KEY}` },
-    });
-    if (!res.ok) return [];
+  const query = keywords.slice(0, 2).join(' ');
+  const url = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=6&orientation=landscape`;
+  // One retry: a transient search/download failure must not silently mean no photos.
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      const res = await fetch(url, {
+        headers: { Authorization: `Client-ID ${process.env.UNSPLASH_ACCESS_KEY}` },
+      });
+      if (!res.ok) { logger.warn({ status: res.status, attempt }, 'Unsplash search failed'); continue; }
 
-    const data = await res.json();
-    const photos = (data.results || []).slice(0, 6);
-    if (!photos.length) return [];
+      const data = await res.json();
+      const photos = (data.results || []).slice(0, 6);
+      if (!photos.length) { logger.warn({ query }, 'Unsplash returned no photos'); return []; }
 
-    // Download + analyze all images in parallel
-    const settled = await Promise.allSettled(
-      photos.map(async (photo) => {
-        const { base64, mimeType, dataUrl } = await downloadImageAsBase64(photo.urls.small);
-        const analysis = await analyzeImage(base64, mimeType);
-        return {
-          dataUrl,
-          url: photo.urls.small,
-          thumb: photo.urls.thumb,
-          alt: analysis.description || photo.alt_description || query,
-          credit: `Photo by ${photo.user.name} on Unsplash`,
-          creditUrl: `${photo.links.html}?utm_source=ai_content&utm_medium=referral`,
-          photographer: photo.user.name,
-          photographerUrl: `${photo.user.links.html}?utm_source=ai_content&utm_medium=referral`,
-          extractedText: analysis.extractedText || '',
-          geminiDescription: analysis.description || '',
-        };
-      })
-    );
+      // Download + analyze all images in parallel
+      const settled = await Promise.allSettled(
+        photos.map(async (photo) => {
+          const { base64, mimeType, dataUrl } = await downloadImageAsBase64(photo.urls.small);
+          const analysis = await analyzeImage(base64, mimeType);
+          return {
+            dataUrl,
+            url: photo.urls.small,
+            thumb: photo.urls.thumb,
+            alt: analysis.description || photo.alt_description || query,
+            credit: `Photo by ${photo.user.name} on Unsplash`,
+            creditUrl: `${photo.links.html}?utm_source=ai_content&utm_medium=referral`,
+            photographer: photo.user.name,
+            photographerUrl: `${photo.user.links.html}?utm_source=ai_content&utm_medium=referral`,
+            extractedText: analysis.extractedText || '',
+            geminiDescription: analysis.description || '',
+          };
+        })
+      );
 
-    return settled
-      .filter((r) => r.status === 'fulfilled')
-      .map((r) => r.value);
-  } catch {
-    return [];
+      const ok = settled.filter((r) => r.status === 'fulfilled').map((r) => r.value);
+      if (!ok.length) { logger.warn({ attempt }, 'All blog photo downloads failed'); continue; }
+      return ok;
+    } catch (err) {
+      logger.warn({ err: err.message, attempt }, 'Blog image fetch failed');
+    }
   }
+  return [];
 };
 
 /**

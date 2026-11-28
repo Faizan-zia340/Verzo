@@ -32,6 +32,17 @@ const normalizeSubtype = (type, subtype) => {
   return allowed.includes(subtype) ? subtype : '';
 };
 
+// SEO keywords drive the Unsplash search; when the SEO step yields none
+// (failed call), fall back to the topic/prompt words so the blog still gets
+// photos instead of silently shipping with none.
+const blogKeywords = (seoData, prompt, details = {}) => {
+  const fromSeo = seoData?.imageKeywords || seoData?.keywords || [];
+  if (fromSeo.length) return fromSeo;
+  const stop = new Set(['write', 'short', 'long', 'blog', 'about', 'with', 'your', 'this', 'that', 'and', 'the', 'for', 'how', 'what']);
+  const text = `${details.topic || ''} ${prompt || ''}`.toLowerCase().replace(/[^a-z0-9 ]/g, ' ');
+  return [...new Set(text.split(/\s+/).filter((w) => w.length > 2 && !stop.has(w)))].slice(0, 4);
+};
+
 /**
  * Splits Gemini output into clean blog content + structured Reality Check data.
  * Returns { cleanContent, realityCheck } where realityCheck may be null.
@@ -84,7 +95,7 @@ const generateContentData = async ({ type, prompt, tone = 'professional', length
   );
   const { cleanContent, realityCheck } = parseRealityCheck(rawOutput);
   const seoData = await generateSEO(cleanContent);
-  const keywords = seoData?.imageKeywords || seoData?.keywords || [];
+  const keywords = blogKeywords(seoData, prompt, details);
 
   let images = [];
   let imageOptions = [];
@@ -253,7 +264,7 @@ export const streamGenerate = asyncHandler(async (req, res) => {
     // Post-generation: SEO + images + save
     try {
       const seoData = await generateSEO(cleanContent);
-      const keywords = seoData?.imageKeywords || seoData?.keywords || [];
+      const keywords = blogKeywords(seoData, prompt, details);
 
       let images = [];
       let imageOptions = [];
@@ -335,7 +346,7 @@ export const generate = asyncHandler(async (req, res) => {
 
 
     const seoData = await generateSEO(cleanContent);
-    const keywords = seoData?.imageKeywords || seoData?.keywords || [];
+    const keywords = blogKeywords(seoData, prompt, details);
 
     let images = [];
     let imageOptions = [];
@@ -412,7 +423,7 @@ export const generateFromImage = asyncHandler(async (req, res) => {
     const { cleanContent, realityCheck } = parseRealityCheck(rawOutput);
 
     const seoData = await generateSEO(cleanContent);
-    const keywords = seoData?.imageKeywords || seoData?.keywords || [];
+    const keywords = blogKeywords(seoData, prompt, details);
 
     let images = [];
     let imageOptions = [];
