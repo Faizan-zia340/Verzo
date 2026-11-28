@@ -1,4 +1,5 @@
 import React from 'react';
+import { reportCrash } from '../utils/crashReport';
 
 // Root error boundary: catches render crashes anywhere in the app and
 // shows a recoverable screen instead of a blank white page. Class
@@ -17,6 +18,8 @@ class ErrorBoundary extends React.Component {
     // Log for diagnostics; the user only ever sees the fallback UI.
     // eslint-disable-next-line no-console
     console.error('Penlix crashed:', error, info?.componentStack);
+    // Send one sanitised report to the admin feedback list (fire-and-forget).
+    reportCrash(error, info);
   }
 
   handleReload = () => {
