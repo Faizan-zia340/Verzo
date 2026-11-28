@@ -58,7 +58,16 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
-  return <AuthContext.Provider value={{ user, setUser, loading, login, register, logout, verifyTwoFactor, toggleTwoFactor }}>{children}</AuthContext.Provider>;
+  // setUser exposed to consumers persists to localStorage, so a verified
+  // user (VerifyEmail) or any other setUser caller survives a reload.
+  // Internal calls below use the raw setter + their own storage writes.
+  const persistUser = (next) => {
+    if (next) localStorage.setItem('user', JSON.stringify(next));
+    else localStorage.removeItem('user');
+    setUser(next);
+  };
+
+  return <AuthContext.Provider value={{ user, setUser: persistUser, loading, login, register, logout, verifyTwoFactor, toggleTwoFactor }}>{children}</AuthContext.Provider>;
 }
 
 export const useAuth = () => useContext(AuthContext);

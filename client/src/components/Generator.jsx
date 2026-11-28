@@ -205,6 +205,10 @@ const TEMPLATES = [
       type: 'email', subtype: 'cold_outreach', tone: 'professional', length: 'short', language: 'english_us', format: 'paragraphs',
       prompt: 'Write a cold outreach email to a potential B2B SaaS client. Include a personalized opener, state the value proposition in 2 sentences, and close with a soft CTA to schedule a 15-minute discovery call. Keep it under 150 words.',
       purpose: 'cold-outreach',
+      // Required details for cold-outreach (company, senderName, audience,
+      // applyLink-or-contact) — without these Generate blocks the template.
+      company: 'Acme Corp', senderName: 'Faizan Zia',
+      audience: 'B2B SaaS decision-makers', contact: 'hello@acme.com',
     },
   },
   {
@@ -325,10 +329,15 @@ const selectClass = 'w-full border border-gray-200 dark:border-slate-800 rounded
 
 const stripMarkers = (text) => text.replace(/\[IMAGE:\d+\]/g, '').replace(/\n{3,}/g, '\n\n').trim();
 
+// Escape user/AI text before it is written into export HTML — a <script>
+// or <img onerror> in a prompt or AI output must never execute in the
+// print window or the downloaded document.
+const escapeHtml = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
 const hasInlineImages = (text) => /\[IMAGE:\d+\]/.test(text);
 
 export default function Generator() {
-  const { deductCredit, credits } = useCredits();
+  const { deductCredit, fetchCredits, credits } = useCredits();
   const [form, setForm] = useState({ type: 'blog', subtype: '', prompt: '', tone: 'professional', length: 'medium', language: 'english_us', format: 'paragraphs', ...DETAILS_DEFAULTS });
   const [output, setOutput] = useState('');
   const [seoData, setSeoData] = useState(null);
@@ -607,6 +616,7 @@ export default function Generator() {
         setRealityCheck(data.realityCheck || null);
         setQualityReport(data.qualityReport || null);
         deductCredit(1);
+        fetchCredits(); // reconcile the Dashboard credit card with the server
         setLoading(false);
         toast.success(data.contextUsed ? '1 credit used — answered from your saved knowledge!' : '1 credit used — content ready!', { id: ragToast });
       } catch {
@@ -648,6 +658,7 @@ export default function Generator() {
         setRealityCheck(data.realityCheck || null);
         setQualityReport(data.qualityReport || null);
         deductCredit(1);
+        fetchCredits(); // reconcile the Dashboard credit card with the server
         setLoading(false);
         toast.success('1 credit used — content ready!', { id: genToast });
       } catch {
@@ -660,15 +671,21 @@ export default function Generator() {
     }
 
     const genToast = toast.loading('Generating content...');
+    // Abort the stream if it stalls — a generation must fail visibly,
+    // never hang with a spinner forever. 120s covers slow generations.
+    const controller = new AbortController();
+    const streamTimer = setTimeout(() => controller.abort(), 120000);
     try {
       const response = await fetch(apiUrl('/api/generate/stream'), {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
+        signal: controller.signal,
       });
 
       if (!response.ok) {
+        clearTimeout(streamTimer);
         const err = await response.json().catch(() => ({}));
         const msg = err.message || 'Generation failed. Please try again.';
         setError(msg);
@@ -708,6 +725,7 @@ export default function Generator() {
               if (parsed.contentWithImages) setOutput(parsed.contentWithImages);
               setFetchingImages(false);
               deductCredit(1);
+              fetchCredits(); // reconcile the Dashboard credit card with the server
               finished = true;
               setLoading(false);
               toast.success('1 credit used — content ready!', { id: genToast });
@@ -721,13 +739,22 @@ export default function Generator() {
           } catch {}
         }
       }
+      clearTimeout(streamTimer);
       if (!finished) {
+        // Stream ended without a done event: the output is incomplete, so
+        // discard it instead of leaving a silent partial result as final.
+        const msg = 'Generation stopped before it finished. Please try again.';
+        setOutput('');
+        setError(msg);
         setLoading(false);
         setFetchingImages(false);
-        toast.dismiss(genToast);
+        toast.error(msg, { id: genToast });
       }
-    } catch {
-      const msg = 'Network error. Please check your connection.';
+    } catch (err) {
+      clearTimeout(streamTimer);
+      const msg = err?.name === 'AbortError'
+        ? 'Generation timed out. Please try again.'
+        : 'Network error. Please check your connection.';
       setError(msg);
       toast.error(msg, { id: genToast });
       setLoading(false);
@@ -816,26 +843,26 @@ export default function Generator() {
           const img = shownImages[parseInt(match[1])];
           if (img?.dataUrl) {
             body += `<div style="margin:14px 0;page-break-inside:avoid;">`;
-            body += `<img src="${img.dataUrl}" style="max-width:100%;border-radius:4px;" alt="${img.alt || ''}"/>`;
-            body += `<p style="font-size:8pt;color:#999;margin:3px 0;">${img.credit || ''}</p>`;
-            if (img.extractedText) body += `<p style="font-size:8pt;color:#666;font-style:italic;">Text in image (EN): "${img.extractedText}"</p>`;
+            body += `<img src="${escapeHtml(img.dataUrl)}" style="max-width:100%;border-radius:4px;" alt="${escapeHtml(img.alt)}"/>`;
+            body += `<p style="font-size:8pt;color:#999;margin:3px 0;">${escapeHtml(img.credit)}</p>`;
+            if (img.extractedText) body += `<p style="font-size:8pt;color:#666;font-style:italic;">Text in image (EN): "${escapeHtml(img.extractedText)}"</p>`;
             body += `</div>`;
           }
         } else {
-          body += `<span>${part.replace(/\n/g, '<br/>')}</span>`;
+          body += `<span>${escapeHtml(part).replace(/\n/g, '<br/>')}</span>`;
         }
       }
       return body;
     }
-    return stripMarkers(output).replace(/\n/g, '<br/>');
+    return escapeHtml(stripMarkers(output)).replace(/\n/g, '<br/>');
   };
 
   // Full export document in the chosen content font, with the right text
   // direction. Shared by the PDF (print) and DOCX downloads.
   const exportDocHtml = () => {
     const fontLink = font ? `<link rel="stylesheet" href="${googleFontsUrl(font)}">` : '';
-    const seoLine = seoData?.title ? `<hr/><p style="color:#8b6f47;"><b>SEO:</b> ${seoData.title}</p>` : '';
-    return `<html><head><meta charset="utf-8">${fontLink}<style>body{font-family:${stack};font-size:11pt;line-height:${lineHeight || 1.6};margin:2cm;} h1{color:#8b6f47;} p{margin:0.5em 0;}</style></head><body dir="${dir}"><h1>${form.type.toUpperCase()} Content</h1><p><b>Prompt:</b> ${form.prompt}</p><hr/>${exportBodyHtml()}${seoLine}</body></html>`;
+    const seoLine = seoData?.title ? `<hr/><p style="color:#8b6f47;"><b>SEO:</b> ${escapeHtml(seoData.title)}</p>` : '';
+    return `<html><head><meta charset="utf-8">${fontLink}<style>body{font-family:${stack};font-size:11pt;line-height:${lineHeight || 1.6};margin:2cm;} h1{color:#8b6f47;} p{margin:0.5em 0;}</style></head><body dir="${dir}"><h1>${form.type.toUpperCase()} Content</h1><p><b>Prompt:</b> ${escapeHtml(form.prompt)}</p><hr/>${exportBodyHtml()}${seoLine}</body></html>`;
   };
 
   // jsPDF's built-in fonts are Latin-only and it cannot shape Arabic-script

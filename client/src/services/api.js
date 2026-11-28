@@ -4,6 +4,7 @@ const api = axios.create({
   baseURL: `${import.meta.env.VITE_API_URL || ''}/api`,
   headers: { 'Content-Type': 'application/json' },
   withCredentials: true,
+  timeout: 30000, // never hang forever on a stalled request
 });
 
 // Public pages where a logged-out visitor must NOT be bounced to /login.

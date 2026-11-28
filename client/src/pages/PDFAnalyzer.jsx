@@ -3,10 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FiUpload, FiFileText, FiX, FiDownload, FiCopy, FiCheck, FiBook, FiHelpCircle } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import { apiUrl } from '../services/apiUrl.js';
+import { useCredits } from '../context/CreditContext.js';
 import { jsPDF } from 'jspdf';
 import Seo from '../components/Seo.jsx';
 
 export default function PDFAnalyzer() {
+  const { fetchCredits } = useCredits();
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -32,6 +34,10 @@ export default function PDFAnalyzer() {
     if (!file) return;
     setLoading(true); setError(''); setResult(null);
     const analyzeToast = toast.loading('Analyzing PDF — this may take a moment...');
+    // Abort if the analysis stalls — fail visibly, never hang. 120s covers
+    // large PDFs; analysis costs 1 credit, so refresh the balance on success.
+    const controller = new AbortController();
+    const analyzeTimer = setTimeout(() => controller.abort(), 120000);
     try {
       const formData = new FormData();
       formData.append('pdf', file);
@@ -39,16 +45,20 @@ export default function PDFAnalyzer() {
         method: 'POST',
         credentials: 'include',
         body: formData,
+        signal: controller.signal,
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Analysis failed');
       setResult(data);
+      fetchCredits();
       toast.success(`Analysis complete — ${data.pages} pages processed`, { id: analyzeToast });
       setTab('notes');
     } catch (err) {
-      setError(err.message);
-      toast.error(err.message, { id: analyzeToast });
+      const msg = err?.name === 'AbortError' ? 'Analysis timed out. Please try again.' : err.message;
+      setError(msg);
+      toast.error(msg, { id: analyzeToast });
     } finally {
+      clearTimeout(analyzeTimer);
       setLoading(false);
     }
   };

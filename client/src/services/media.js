@@ -7,6 +7,7 @@ import axios from 'axios';
 const mediaApi = axios.create({
   baseURL: `${import.meta.env.VITE_API_URL || ''}/api`,
   withCredentials: true,
+  timeout: 60000, // uploads can be slow; still never hang forever
 });
 
 // Upload one compressed image/audio file. Returns

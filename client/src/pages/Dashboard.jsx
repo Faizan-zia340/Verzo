@@ -60,6 +60,8 @@ export default function Dashboard() {
       const { data } = await api.post('/auth/resend-verification');
       toast.success(data?.message || 'Verification email sent.');
       setResent(true);
+      // Re-enable after 60s so the user can resend if the email never arrived.
+      setTimeout(() => setResent(false), 60000);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Could not send the verification email. Please try again.');
     } finally {
