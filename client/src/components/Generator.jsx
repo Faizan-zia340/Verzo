@@ -8,7 +8,7 @@ import { scriptOf, googleFontsUrl, useContentFont } from '../utils/fonts.js';
 import {
   FiZap, FiCopy, FiDownload, FiCheck, FiHome, FiSmartphone, FiMail,
   FiAlertCircle, FiRefreshCw, FiSliders, FiFileText, FiShare2, FiImage,
-  FiMic, FiUpload, FiX, FiBriefcase, FiDatabase,
+  FiMic, FiX, FiBriefcase, FiDatabase,
   FiVolume2, FiPlay, FiPause, FiSquare,
 } from 'react-icons/fi';
 import { FaXTwitter, FaLinkedinIn, FaFacebookF } from 'react-icons/fa6';
@@ -931,8 +931,9 @@ export default function Generator() {
       <div className="lg:col-span-2 bg-white dark:bg-ink-card rounded-2xl shadow-sm border border-gray-100 dark:border-slate-800 p-6 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto">
         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-5">Generate Content</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Row 1: Type, Tone, Length, Format */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {/* Row 1: Type, Tone, Length, Format — 2 columns: the form panel is
+              narrow, 4 across truncated the values ("Profi", "Med", "Para"). */}
+          <div className="grid grid-cols-2 gap-3">
             {[
               { name: 'type', label: 'Type', options: TYPES },
               { name: 'tone', label: 'Tone', options: TONES.map((t) => ({ value: t, label: t.charAt(0).toUpperCase() + t.slice(1) })) },
@@ -1006,29 +1007,44 @@ export default function Generator() {
             </div>
           )}
 
-          {/* Prompt + voice input */}
+          {/* Prompt — image attach + voice input live INSIDE the box (ChatGPT-style) */}
           <div>
-            <div className="flex items-center justify-between gap-2 mb-1">
-              <label className="block text-xs font-medium text-gray-600 dark:text-slate-400">Prompt</label>
-              <button
-                type="button"
-                onClick={startVoice}
-                disabled={loading}
-                title={voiceSupported ? (listening ? 'Tap to stop listening' : 'Tap and speak your prompt') : 'Voice input is not supported in this browser — try Chrome'}
-                className={`flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-lg font-medium transition ${
-                  listening
-                    ? 'bg-red-100 dark:bg-ink-raised text-red-700 dark:text-red-300 animate-pulse'
-                    : 'bg-teak-50 dark:bg-ink-raised text-teak-700 dark:text-teak-400 hover:bg-teak-100 dark:hover:bg-ink-raised'
-                } disabled:opacity-40`}
-              >
-                <FiMic size={12} /> {listening ? 'Listening… tap to stop' : 'Speak'}
-              </button>
+            <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">Prompt</label>
+            <div className="border border-gray-200 dark:border-slate-800 rounded-lg bg-white dark:bg-ink-card focus-within:ring-2 focus-within:ring-teak-500 focus-within:border-teak-500">
+              {imagePreview && (
+                <div className="flex items-center gap-2 px-3 pt-2.5">
+                  <img src={imagePreview} alt="Upload preview" className="w-14 h-10 object-cover rounded-md border border-gray-200 dark:border-slate-800" />
+                  <span className="text-xs text-gray-600 dark:text-slate-400 truncate flex-1">{imageFile?.name}</span>
+                  <button type="button" onClick={clearImage} className="text-red-600 dark:text-red-400 hover:text-red-800 flex-shrink-0" title="Remove image">
+                    <FiX size={14} />
+                  </button>
+                </div>
+              )}
+              <textarea
+                name="prompt" value={form.prompt} onChange={handleChange} rows={4} required={!imageFile}
+                placeholder="Describe what you want to generate, or pick a quick template above... (or tap Speak and say it — with a photo attached, you can leave this blank)"
+                className="w-full px-3 py-2.5 text-sm text-gray-800 dark:text-slate-100 bg-transparent border-0 focus:outline-none focus:ring-0 resize-none placeholder-gray-400 dark:placeholder-slate-500"
+              />
+              <div className="flex items-center justify-between px-2 pb-2">
+                <label title="JPG, PNG or WebP, max 5 MB" className="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg font-medium cursor-pointer text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-ink-raised transition">
+                  <FiImage size={14} /> {imagePreview ? 'Change image' : 'Add image'}
+                  <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImageSelect} className="hidden" />
+                </label>
+                <button
+                  type="button"
+                  onClick={startVoice}
+                  disabled={loading}
+                  title={voiceSupported ? (listening ? 'Tap to stop listening' : 'Tap and speak your prompt') : 'Voice input is not supported in this browser — try Chrome'}
+                  className={`flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg font-medium transition ${
+                    listening
+                      ? 'bg-red-100 dark:bg-ink-raised text-red-700 dark:text-red-300 animate-pulse'
+                      : 'bg-teak-50 dark:bg-ink-raised text-teak-700 dark:text-teak-400 hover:bg-teak-100 dark:hover:bg-ink-raised'
+                  } disabled:opacity-40`}
+                >
+                  <FiMic size={12} /> {listening ? 'Listening… tap to stop' : 'Speak'}
+                </button>
+              </div>
             </div>
-            <textarea
-              name="prompt" value={form.prompt} onChange={handleChange} rows={4} required={!imageFile}
-              placeholder="Describe what you want to generate, or pick a quick template above... (or tap Speak and say it — with a photo attached, you can leave this blank)"
-              className="w-full border border-gray-200 dark:border-slate-800 rounded-lg px-3 py-2.5 text-sm text-gray-800 dark:text-slate-100 bg-white dark:bg-ink-card focus:outline-none focus:ring-2 focus:ring-teak-500 focus:border-teak-500 resize-none placeholder-gray-400 dark:placeholder-slate-500"
-            />
            <div className="flex items-center justify-between mt-1.5 text-xs text-gray-400 dark:text-slate-500">
              <span>{form.prompt.length.toLocaleString()} characters</span>
              <span>{form.prompt.trim() ? form.prompt.trim().split(/\s+/).length.toLocaleString() : 0} words</span>
@@ -1052,30 +1068,6 @@ export default function Generator() {
                 />
                 <p className="text-xs text-gray-400 dark:text-slate-500 mt-1.5">RAG answers your prompt directly from saved knowledge, so it skips the type details below.</p>
               </div>
-            )}
-          </div>
-
-          {/* Image input — optional context for the generation */}
-          <div>
-            <label className="block text-xs font-medium text-gray-600 dark:text-slate-400 mb-1">
-              Image (optional) <span className="text-gray-400 dark:text-slate-500 font-normal">— JPG, PNG or WebP, max 5 MB. The AI writes about what is in your photo.</span>
-            </label>
-            {imagePreview ? (
-              <div className="flex items-start gap-3">
-                <img src={imagePreview} alt="Upload preview" className="w-28 h-20 object-cover rounded-lg border border-gray-200 dark:border-slate-800" />
-                <div className="flex flex-col gap-1.5 min-w-0">
-                  <p className="text-xs text-gray-600 dark:text-slate-400 truncate max-w-full">{imageFile?.name}</p>
-                  <button type="button" onClick={clearImage} className="flex items-center gap-1 text-xs text-red-600 dark:text-red-400 hover:text-red-800 font-medium w-fit">
-                    <FiX size={12} /> Remove image
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <label className="flex items-center justify-center gap-2 w-full border border-dashed border-gray-300 dark:border-slate-700 rounded-lg px-3 py-3 text-sm text-gray-500 dark:text-slate-400 hover:border-teak-400 hover:text-teak-600 dark:hover:text-teak-400 transition cursor-pointer">
-                <FiUpload size={14} />
-                <span>Upload an image to write about</span>
-                <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleImageSelect} className="hidden" />
-              </label>
             )}
           </div>
 
