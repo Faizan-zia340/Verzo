@@ -1,13 +1,32 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FiArrowRight, FiClock, FiEdit3 } from 'react-icons/fi';
+import { FiArrowRight, FiClock, FiEdit3, FiX } from 'react-icons/fi';
 import { POSTS, readingTime } from '../content/blog/index.js';
 import { setPageMeta } from '../utils/pageMeta.js';
 
 const formatDate = (date) =>
   new Date(date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 
+// Group a post into one of the four browse cards. Roman Urdu posts either
+// carry a roman-urdu language value or none at all (the early posts were
+// authored before the language field existed).
+const languageGroup = (post) => {
+  const lang = (post.language || '').toLowerCase();
+  if (lang === 'urdu') return 'urdu';
+  if (lang.startsWith('english')) return 'english';
+  if (lang === '' || lang.includes('roman')) return 'roman-urdu';
+  return 'more';
+};
+
+const GROUPS = [
+  { id: 'roman-urdu', name: 'Roman Urdu', note: 'Guides in Roman Urdu' },
+  { id: 'urdu', name: 'Urdu', note: 'Guides in Urdu script' },
+  { id: 'english', name: 'English', note: 'Guides in English' },
+  { id: 'more', name: 'More languages', note: 'Arabic, Spanish, French and more' },
+];
+
 export default function BlogList() {
+  const [filter, setFilter] = useState(null);
   useEffect(() => {
     setPageMeta(
       'Blog — Penlix | AI Content Guides',
@@ -15,6 +34,9 @@ export default function BlogList() {
     );
     window.scrollTo(0, 0);
   }, []);
+
+  const visiblePosts = filter ? POSTS.filter((p) => languageGroup(p) === filter) : POSTS;
+  const activeGroup = GROUPS.find((g) => g.id === filter);
 
   return (
     <main className="bg-white dark:bg-ink-page min-h-screen">
@@ -32,8 +54,64 @@ export default function BlogList() {
           </p>
         </div>
 
+        {/* ── Browse by language — collage cards (Asan Tijarat pattern) ── */}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-12">
+          {GROUPS.map((group) => {
+            const posts = POSTS.filter((p) => languageGroup(p) === group.id);
+            const active = filter === group.id;
+            return (
+              <button
+                key={group.id}
+                type="button"
+                onClick={() => setFilter(active ? null : group.id)}
+                aria-pressed={active}
+                className={`text-left bg-white dark:bg-ink-card border rounded-2xl p-5 transition hover:shadow-md dark:hover:shadow-none ${
+                  active
+                    ? 'border-teak-500 dark:border-teak-400 ring-2 ring-teak-500/30'
+                    : 'border-gray-200 dark:border-slate-800 hover:border-teak-300 dark:hover:border-teak-700'
+                }`}
+              >
+                {/* 2x2 title tiles stand in for the photo collage — the blog has no per-post photos. */}
+                <div className="grid grid-cols-2 gap-2 mb-4">
+                  {posts.slice(0, 4).map((post) => (
+                    <div
+                      key={post.slug}
+                      className="bg-teak-50 dark:bg-ink-raised rounded-lg px-2.5 py-2 min-h-[52px] flex items-center"
+                    >
+                      <span className="text-[11px] font-semibold text-teak-700 dark:text-teak-300 leading-snug line-clamp-2">
+                        {post.title}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <h2 className="text-base font-bold text-gray-900 dark:text-white leading-snug">
+                  {group.name}
+                </h2>
+                <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
+                  {posts.length} {posts.length === 1 ? 'guide' : 'guides'} · {group.note}
+                </p>
+              </button>
+            );
+          })}
+        </div>
+
+        {activeGroup && (
+          <div className="flex items-center gap-3 mb-8">
+            <p className="text-sm text-gray-600 dark:text-slate-300">
+              Showing <span className="font-bold text-gray-900 dark:text-white">{visiblePosts.length}</span> {activeGroup.name} {visiblePosts.length === 1 ? 'guide' : 'guides'}
+            </p>
+            <button
+              type="button"
+              onClick={() => setFilter(null)}
+              className="inline-flex items-center gap-1 text-xs font-semibold text-teak-700 dark:text-teak-300 hover:text-teak-800 dark:hover:text-teak-200"
+            >
+              <FiX size={12} /> Show all
+            </button>
+          </div>
+        )}
+
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {POSTS.map((post) => (
+          {visiblePosts.map((post) => (
             <Link
               key={post.slug}
               to={`/blog/${post.slug}`}

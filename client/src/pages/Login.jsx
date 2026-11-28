@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.js';
 import toast from 'react-hot-toast';
-import { FiAlertCircle, FiRefreshCw, FiCheck, FiArrowLeft } from 'react-icons/fi';
+import { FiAlertCircle, FiRefreshCw, FiCheck, FiArrowLeft, FiShield } from 'react-icons/fi';
 import Seo from '../components/Seo.jsx';
 
 const DB_ERROR_KEYWORDS = ['database', 'unreachable', 'temporarily', 'buffering'];
@@ -13,6 +13,12 @@ const FEATURES = [
   'Reality Check scoring on every output',
   'SEO package included with every generation',
   'Inline images with Penlix Vision analysis',
+];
+
+const TRUST = [
+  'Protected by login lockout and two-step verification',
+  'Your data stays yours — download it anytime',
+  '20 free credits after email verification',
 ];
 
 export default function Login() {
@@ -101,6 +107,18 @@ export default function Login() {
                   <FiCheck size={10} className="text-teak-400" />
                 </div>
                 <span className="text-gray-300 text-sm">{f}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Trust — security and data promises, Asan Tijarat sign-in pattern. */}
+          <div className="mt-8 pt-6 border-t border-white/10 space-y-3">
+            {TRUST.map((t) => (
+              <div key={t} className="flex items-center gap-3">
+                <div className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-400/30 flex items-center justify-center flex-shrink-0">
+                  <FiShield size={10} className="text-emerald-400" />
+                </div>
+                <span className="text-gray-400 text-xs">{t}</span>
               </div>
             ))}
           </div>
