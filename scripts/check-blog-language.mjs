@@ -15,6 +15,15 @@
 //   3. English "**Step N:**" label        (must be translated, e.g. "Marhala 1")
 //   4. Untranslated "Reality Check" name or its English criteria
 //      ("Human-ness", "Punchiness", "No-Cliché")
+//   7. English fragments inside Roman Urdu sentences (blocklist).
+//      Roman Urdu is Latin-script, so Rules 1–6 cannot see English
+//      words mixed into a Roman Urdu sentence ("Step by step tareeqa",
+//      "Specific prompt", "Output ki language") — the sentence still
+//      carries Roman Urdu marker words, so the English-block heuristic
+//      passes it. The blocklist holds the English phrases fixed out of
+//      the Roman Urdu posts (see fix/roman-urdu-fragments); any of them
+//      in a Roman Urdu post's prose is a violation. Quoted verbatim
+//      outputs (blockquote lines) and frontmatter are skipped.
 //   6. Frontmatter title/description in the wrong language. The
 //      title and description are what the blog list and the post
 //      itself show, so an English title on a Roman Urdu/Urdu post is
@@ -102,6 +111,27 @@ const ROMAN_URDU_LANGUAGES = new Set([
   'roman-urdu', 'roman_urdu', 'roman_urdu_karachi', 'roman_urdu_lahore',
 ]);
 
+// Rule 7 blocklist: English words/phrases that were fixed out of the
+// Roman Urdu posts (see fix/roman-urdu-fragments). Each pattern is
+// word-boundary matched against the lowercased, markdown-stripped line.
+// Deliberately NOT in here: loanwords and product terms that stay
+// (blog, email, prompt, tone, topic, dialect, label, generate, publish,
+// mobile, spelling, SEO, AI, Google, Chrome/Edge, file formats, and
+// the brand name Penlix) and quoted verbatim outputs (skipped by the
+// blockquote guard in the loop, not by this list).
+const ROMAN_URDU_FRAGMENT_PATTERNS = [
+  /\bstep by step\b/, /\bsteps\b/, /\bspecific\b/, /\boutputs?\b/,
+  /\bhuman edit\b/, /\bvague\b/, /\benglish drift\b/, /\bknown bug\b/,
+  /\binvent\b/, /\bexamples?\b/, /\bsituation\b/, /\blength short\b/,
+  /\bsample\b/, /\bshorten\b/, /\bnext step\b/, /\bend par\b/,
+  /\bproofread\b/, /\bcredibility\b/, /\bgeneric\b/, /\btranscript\b/,
+  /\bspeech recognition\b/, /\bstructure\b/, /\bconvert\b/, /\bdepend\b/,
+  /\bquality\b/, /\btransliteration\b/, /\bconversion\b/, /\bselect\b/,
+  /\bheadings?\b/, /\blists\b/, /\bdirection\b/, /\bformat\b/,
+  /\bright-to-left\b/, /\bvs\b/, /\bfresh\b/, /\bwinter\b/,
+  /\bminutes\b/, /\btopic:/,
+];
+
 const violations = [];
 
 function fail(file, lineNo, rule, text) {
@@ -146,13 +176,15 @@ for (const file of readdirSync(BLOG_DIR).filter((f) => f.endsWith('.md')).sort()
 
   // Rule 6: frontmatter title/description in the wrong language.
   // Parse the frontmatter fields (title, description, language).
+  // postLang is hoisted so Rule 7 can tell Roman Urdu posts apart.
   const front = content.match(/^---\n([\s\S]*?)\n---/);
+  let postLang = '';
   if (front) {
     const getField = (name) => {
       const m = front[1].match(new RegExp(`^${name}:\\s*['"]?(.*?)['"]?\\s*$`, 'm'));
       return m ? m[1].trim() : '';
     };
-    const postLang = getField('language');
+    postLang = getField('language');
     const title = getField('title');
     const description = getField('description');
     const checkField = (fieldName, value) => {
@@ -178,6 +210,10 @@ for (const file of readdirSync(BLOG_DIR).filter((f) => f.endsWith('.md')).sort()
     checkField('title', title);
     checkField('description', description);
   }
+
+  // Rule 7 applies to Roman Urdu posts only (explicit language field,
+  // or no language field — the site renders those as Roman Urdu).
+  const isRomanUrduPost = ROMAN_URDU_LANGUAGES.has(postLang) || !postLang;
 
   let inFrontmatter = false;
   let inCodeFence = false;
@@ -233,6 +269,17 @@ for (const file of readdirSync(BLOG_DIR).filter((f) => f.endsWith('.md')).sort()
     }
     if (/\bhuman-ness\b/i.test(line) || /\bpunchiness\b/i.test(line) || /\bno-clich[eé]\b/i.test(line)) {
       fail(file, lineNo, 'english-reality-check-criteria', line);
+    }
+    // Rule 7: English fragments inside Roman Urdu sentences (blocklist).
+    // Blockquote lines are verbatim product outputs, not author prose.
+    if (isRomanUrduPost && !line.startsWith('>')) {
+      const plain = stripMarkdown(line).toLowerCase();
+      for (const pattern of ROMAN_URDU_FRAGMENT_PATTERNS) {
+        if (pattern.test(plain)) {
+          fail(file, lineNo, 'roman-urdu-english-fragment', line);
+          break;
+        }
+      }
     }
 
     // Rule 5: 3+ consecutive English prose lines. Short lines (a greeting,

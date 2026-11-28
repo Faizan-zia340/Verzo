@@ -13,11 +13,11 @@ Lahore di gal hi hor ay — khana, galliyan, dosti, te hasna-khedna. Jado tusi s
 
 Penlix da Social type isse layi ay. Language vich Roman Urdu (Lahore) chuno, topic likho, te kuch second vich tyaar post mil jayegi — Lahori lehje vich, tuhade style de mutabik. Hor lehje vich vi ohi tareeqa chalda ay — misal layi, [Gulf Arabic mein social captions](/blog/gulf-arabic-social-captions) vekho.
 
-## Tareeqa — 4 steps
+## Tareeqa — 4 marhale
 
-**Marhala 1: Language chuno — Roman Urdu (Lahore).** Generator vich language Roman Urdu (Lahore) select karo. Penlix tuhadi chuni hoyi language vich likhega.
+**Marhala 1: Language chuno — Roman Urdu (Lahore).** Generator vich language Roman Urdu (Lahore) chuno. Penlix tuhadi chuni hoyi language vich likhega.
 
-**Marhala 2: Social type chuno.** Content type vich Social select karo. Is naal blog ya email nahi, social media layi chhota jeha post banega.
+**Marhala 2: Social type chuno.** Content type vich Social chuno. Is naal blog ya email nahi, social media layi chhota jeha post banega.
 
 **Marhala 3: Topic te andaaz likho.** Prompt vich likho ke kis bare post chahidi ay te kis lehje vich. Misal: "Lahore de food street bare Instagram post likho, mazedaar tone vich, pehli line sawal naal shuru karo, te aakhir vich logan nu comment karan da kaho."
 
@@ -35,17 +35,17 @@ Penlix da Social type isse layi ay. Language vich Roman Urdu (Lahore) chuno, top
 
 - **Audience daso.** "Lahore de students layi" ya "food lovers layi" — audience likhan naal post di zubaan te misalan badal jandiyan ne.
 - **Lahore diyan misalan mango.** "Har point naal Lahore di aik misaal deyo" likho — nihari, paye, lassi, ya Liberty di sair — post vich jaan aa jandi ay.
-- **Length short rakho.** Social post chhota hi changa lagda ay. Length short te rakho.
+- **Lambai chhoti rakho.** Social post chhota hi changa lagda ay. Lambai chhoti te rakho.
 - **Voice input vi use kar sakde o.** Je type karna slow lagda ay, [bol kar content likhna](/blog/bol-kar-content-likhein) — Speak button dabao te bol ke prompt deyo. Chrome te Edge vich chalda ay; tuhadi awaaz record nahi hondi te kise server te nahi jandi.
 - **Generate to baad aik vaari parh lo.** Naam, jagah te number theek ne ya nahi — post karan to pehlan check kar lo.
 
-## Misal: prompt te post (sample)
+## Misal: prompt te post (namuna)
 
-**Prompt (sample):** "Lahore de winter vich chai da maza bare Instagram post likho, friendly tone vich, pehli line sawal naal."
+**Prompt (namuna):** "Lahore di sardi vich chai da maza bare Instagram post likho, friendly tone vich, pehli line sawal naal."
 
-**Post (sample):** "Thand vich garam chai da cup — hor ki chahida ay? Lahore di sardi te doodh patti, dono ikathe hon taan maza hi hor ay. Aaj shaam chai piyo te thand nu bhula deyo. Tusi chai kinjh peende o — doodh patti ya green tea? Comment vich daso!"
+**Post (namuna):** "Thand vich garam chai da cup — hor ki chahida ay? Lahore di sardi te doodh patti, dono ikathe hon taan maza hi hor ay. Aaj shaam chai piyo te thand nu bhula deyo. Tusi chai kinjh peende o — doodh patti ya green tea? Comment vich daso!"
 
-Eh sample ay — asal result tuhade prompt te setting mutabik badal sakda ay.
+Eh namuna ay — asal result tuhade prompt te setting mutabik badal sakda ay.
 
 ## Aam ghaltiyan — in to bacho
 
@@ -57,7 +57,7 @@ Eh sample ay — asal result tuhade prompt te setting mutabik badal sakda ay.
 ## Aksar Pooche Jane Wale Sawalat
 
 **Lahori Roman Urdu vich post natural lagdi ay?**
-Ji. Je language Roman Urdu (Lahore) select karo, taan post ohi lehje vich likhi jandi ay. Khaas naam ya jagah prompt vich theek likh deyo. Hor languages vich vi likh sakde o — [Hindi mein social media content](/blog/hindi-mein-social-media-content) vekho.
+Ji. Je language Roman Urdu (Lahore) chuno, taan post ohi lehje vich likhi jandi ay. Khaas naam ya jagah prompt vich theek likh deyo. Hor languages vich vi likh sakde o — [Hindi mein social media content](/blog/hindi-mein-social-media-content) vekho.
 
 **Aik generation da ki kharcha ay?**
 Aam tor te 1 credit. Free signup naal 20 credits milde ne; [pricing](/pricing) $4.99 to 50 credits to shuru hondi ay.
@@ -69,7 +69,7 @@ Ji. Speak button naal bol ke prompt de sakde o. Chrome te Edge vich chalda ay.
 Ji. Photo upload karo te Blog ya social content banao. JPG, PNG ya WebP, 5 MB tak.
 
 **Post nu edit kar sakda aan?**
-Ji, bilkul. Post nu copy karo ya TXT, PDF ya DOCX vich export karo. Output card te font vi badal sakde o.
+Ji, bilkul. Post nu copy karo ya TXT, PDF ya DOCX vich export karo. Natijay wala card te font vi badal sakde o.
 
 ## Ajj hi shuru karo
 
