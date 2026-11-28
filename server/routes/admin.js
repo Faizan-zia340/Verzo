@@ -13,6 +13,23 @@ import asyncHandler from '../utils/asyncHandler.js';
 const router = Router();
 router.use(protect, isAdmin);
 
+// Admin credit adjustments must be a finite, non-zero number within
+// -1000..1000. Pure, so it is unit-testable without a database.
+export const validateCreditAdjustment = (credits) => {
+  if (typeof credits !== 'number' || !Number.isFinite(credits)) return 'credits must be a finite number';
+  if (credits === 0) return 'credits must not be zero';
+  if (credits < -1000 || credits > 1000) return 'credits must be between -1000 and 1000';
+  return null;
+};
+
+// A deduction is a 'usage' record, a grant is a 'bonus' — never a bonus
+// with a negative amount. The signed amount is stored as-is.
+const creditLog = (credits, description) => ({
+  amount: credits,
+  type: credits > 0 ? 'bonus' : 'usage',
+  description: `${description}: ${credits > 0 ? '+' : ''}${credits} credits`,
+});
+
 // Stats overview
 router.get('/stats', asyncHandler(async (req, res) => {
   const [userCount, contextCount, totalGenerations, users] = await Promise.all([
@@ -46,19 +63,15 @@ router.get('/users', asyncHandler(async (req, res) => {
 // Adjust user credits by ID
 router.put('/users/:id/credits', asyncHandler(async (req, res) => {
   const { credits } = req.body;
-  if (typeof credits !== 'number') return res.status(400).json({ message: 'credits must be a number' });
+  const error = validateCreditAdjustment(credits);
+  if (error) return res.status(400).json({ message: error });
   const user = await User.findByIdAndUpdate(
     req.params.id,
     { $inc: { credits } },
     { new: true }
   ).select('name email credits');
   if (!user) return res.status(404).json({ message: 'User not found' });
-  await Credit.create({
-    user: user._id,
-    amount: credits,
-    type: credits > 0 ? 'bonus' : 'usage',
-    description: `Admin adjustment: ${credits > 0 ? '+' : ''}${credits} credits`,
-  });
+  await Credit.create({ user: user._id, ...creditLog(credits, 'Admin adjustment') });
   res.status(200).json({ message: 'Credits updated', user });
 }));
 
@@ -83,21 +96,18 @@ router.delete('/users/:id', asyncHandler(async (req, res) => {
 // Grant credits by email
 router.post('/grant-credits', asyncHandler(async (req, res) => {
   const { email, credits } = req.body;
-  if (typeof email !== 'string' || !email.trim() || typeof credits !== 'number' || credits === 0) {
+  if (typeof email !== 'string' || !email.trim()) {
     return res.status(400).json({ message: 'Valid email and non-zero credits required' });
   }
+  const error = validateCreditAdjustment(credits);
+  if (error) return res.status(400).json({ message: error });
   const user = await User.findOneAndUpdate(
     { email: email.toLowerCase().trim() },
     { $inc: { credits } },
     { new: true }
   ).select('name email credits');
   if (!user) return res.status(404).json({ message: 'No user found with that email' });
-  await Credit.create({
-    user: user._id,
-    amount: credits,
-    type: 'bonus',
-    description: `Admin grant by email: +${credits} credits`,
-  });
+  await Credit.create({ user: user._id, ...creditLog(credits, 'Admin grant by email') });
   res.status(200).json({ message: `Granted ${credits} credits to ${user.email}`, user });
 }));
 

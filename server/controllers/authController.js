@@ -207,23 +207,36 @@ export const resetPassword = asyncHandler(async (req, res) => {
   user.password = password;
   user.resetPasswordToken = undefined;
   user.resetPasswordExpires = undefined;
+  // Invalidate every JWT issued before this reset (auth middleware
+  // compares the token's iat against this timestamp).
+  user.passwordChangedAt = new Date();
   await user.save();
   res.status(200).json({ message: 'Password reset successfully. Please sign in.' });
 });
 
 // GET /api/auth/verify-email/:token — clicked from the verification email.
-// Grants the 20 signup credits, but only once and only to an account that
-// has not verified yet: the credit grant is a top-up to the free allowance
-// (never a reduction), so an account that already holds 20 or more gains
-// nothing by verifying again, and the cleared token cannot be reused.
+// Also resolves a pending email change: when the token matches a pending
+// address (userController.updateProfile), the new address is applied here
+// and only here — no signup-credit grant, the account is already verified.
 export const verifyEmail = asyncHandler(async (req, res) => {
   const tokenHash = crypto.createHash('sha256').update(req.params.token || '').digest('hex');
+  const now = new Date();
   const user = await User.findOne({
-    emailVerificationToken: tokenHash,
-    emailVerificationExpires: { $gt: new Date() },
+    $or: [
+      { emailVerificationToken: tokenHash, emailVerificationExpires: { $gt: now } },
+      { pendingEmailToken: tokenHash, pendingEmailExpires: { $gt: now } },
+    ],
   });
   if (!user) {
     return res.status(400).json({ message: 'Invalid or expired verification link' });
+  }
+  if (user.pendingEmailToken === tokenHash && user.pendingEmail) {
+    user.email = user.pendingEmail;
+    user.pendingEmail = undefined;
+    user.pendingEmailToken = undefined;
+    user.pendingEmailExpires = undefined;
+    await user.save();
+    return res.status(200).json({ user: formatUser(user), message: 'Email updated successfully.' });
   }
   if (user.isEmailVerified !== false) {
     return res.status(200).json({ user: formatUser(user), message: 'Email already verified.' });

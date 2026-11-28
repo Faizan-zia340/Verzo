@@ -170,6 +170,13 @@ export const generateSchema = Joi.object({
   })
   .messages({ 'any.custom': 'Missing required fields for {{#type}} content: {{#missing}}' });
 
+// RAG generation: the prompt is capped at 2000 characters so one
+// request cannot smuggle an unbounded prompt past the credit check.
+export const ragSchema = Joi.object({
+  userPrompt: Joi.string().trim().min(1).max(2000).required(),
+  topicKeywords: Joi.array().items(Joi.string().trim().max(100)).max(20).optional(),
+}).options({ stripUnknown: true });
+
 export const validate = (schema) => (req, res, next) => {
   const { error, value } = schema.validate(req.body);
   if (error) return res.status(400).json({ message: error.details[0].message });

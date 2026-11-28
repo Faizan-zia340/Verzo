@@ -10,9 +10,19 @@ import { deleteMedia, mediaResourceType } from '../utils/mediaStorage.js';
 
 const router = Router();
 
+// History paging: ?limit is capped at 100 so one request can never pull
+// an unbounded page; /export caps at 1000 rows for the same reason.
+export const MAX_HISTORY_LIMIT = 100;
+export const EXPORT_LIMIT = 1000;
+export const clampHistoryLimit = (raw, fallback = 10) => {
+  const n = parseInt(raw, 10);
+  if (!Number.isFinite(n) || n < 1) return fallback;
+  return Math.min(n, MAX_HISTORY_LIMIT);
+};
+
 router.get('/', protect, asyncHandler(async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
+  const page = Math.max(parseInt(req.query.page) || 1, 1);
+  const limit = clampHistoryLimit(req.query.limit);
   const skip = (page - 1) * limit;
   const favoriteOnly = req.query.favorite === 'true';
   const filter = { user: req.user._id, ...(favoriteOnly ? { favorite: true } : {}) };
@@ -29,7 +39,7 @@ router.get('/export', protect, asyncHandler(async (req, res) => {
   const format = req.query.format || 'csv';
   const favoriteOnly = req.query.favorite === 'true';
   const filter = { user: req.user._id, ...(favoriteOnly ? { favorite: true } : {}) };
-  const items = await Content.find(filter).sort({ createdAt: -1 }).lean();
+  const items = await Content.find(filter).sort({ createdAt: -1 }).limit(EXPORT_LIMIT).lean();
 
   if (format === 'csv') {
     const escapeCsv = (value) => `"${String(value ?? '').replace(/"/g, '""').replace(/\r?\n/g, ' ')}"`;

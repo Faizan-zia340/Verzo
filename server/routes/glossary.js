@@ -1,5 +1,8 @@
 import { Router } from 'express';
 import mongoose from 'mongoose';
+import { promises as fs } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import protect from '../middleware/auth.js';
 import isAdmin from '../middleware/isAdmin.js';
 import userRateLimit from '../middleware/userRateLimit.js';
@@ -9,10 +12,38 @@ import {
   validateSuggestionInput,
   canDecideSuggestion,
   glossarySnippet,
+  SUGGESTION_LANGUAGES,
 } from '../utils/suggestionValidation.js';
 
 const router = Router();
 const suggestLimit = userRateLimit(10, 'Suggestion');
+
+// The glossary lives in the client content folder; the server writes the
+// approved term straight into it (no more manual copy-paste).
+export const GLOSSARY_PATH = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  '../../client/src/content/glossary.json'
+);
+
+// Adds (or extends) one term in glossary.json, creating the file with an
+// empty `terms` map when it does not exist yet. `filePath` is only for
+// tests — production always uses GLOSSARY_PATH.
+export const persistApprovedTerm = async ({ word, language, suggestedTranslation }, filePath = GLOSSARY_PATH) => {
+  let glossary = { languages: SUGGESTION_LANGUAGES, terms: {} };
+  try {
+    glossary = JSON.parse(await fs.readFile(filePath, 'utf8'));
+  } catch (err) {
+    if (err.code !== 'ENOENT') throw err;
+  }
+  glossary.terms = glossary.terms || {};
+  const term = glossary.terms[word] || { translations: {} };
+  term.translations = term.translations || {};
+  term.translations[language] = suggestedTranslation;
+  glossary.terms[word] = term;
+  await fs.mkdir(path.dirname(filePath), { recursive: true });
+  await fs.writeFile(filePath, `${JSON.stringify(glossary, null, 2)}\n`);
+  return glossary.terms[word];
+};
 
 // Suggest a translation for a word. Free — no credit cost. One pending
 // suggestion per user per word+language; a repeat returns 409.
@@ -58,8 +89,9 @@ router.get('/suggestions', protect, isAdmin, asyncHandler(async (req, res) => {
 }));
 
 // Approve/reject share one flow: only a pending suggestion can be decided.
-// Approving does NOT edit glossary.json (a repo file) — the response
-// carries the exact JSON snippet for an admin to copy in by hand.
+// Approving writes the term into glossary.json first — if the write fails
+// the suggestion stays pending so the admin can retry. Rejecting stores
+// the reason on the record (from `reason` or `rejectReason`).
 const decide = (toStatus) => asyncHandler(async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
     return res.status(404).json({ message: 'Suggestion not found' });
@@ -67,10 +99,12 @@ const decide = (toStatus) => asyncHandler(async (req, res) => {
   const suggestion = await Suggestion.findById(req.params.id);
   const block = canDecideSuggestion(suggestion);
   if (block) return res.status(block.status).json({ message: block.message });
+  if (toStatus === 'approved') await persistApprovedTerm(suggestion);
   suggestion.status = toStatus;
   suggestion.reviewedBy = req.user._id;
   if (toStatus === 'rejected') {
-    suggestion.rejectReason = typeof req.body?.reason === 'string' ? req.body.reason.trim().slice(0, 300) : '';
+    const reason = req.body?.reason ?? req.body?.rejectReason;
+    suggestion.rejectReason = typeof reason === 'string' ? reason.trim().slice(0, 300) : '';
   }
   await suggestion.save();
   const out = suggestion.toObject();

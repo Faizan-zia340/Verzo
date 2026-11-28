@@ -1,0 +1,29 @@
+{
+  "languages": [
+    "english_us",
+    "english_uk",
+    "urdu",
+    "roman_urdu_karachi",
+    "roman_urdu_lahore",
+    "arabic_msa",
+    "arabic_gulf",
+    "persian",
+    "spanish_latam",
+    "spanish_spain",
+    "french",
+    "german",
+    "portuguese_brazil",
+    "italian",
+    "dutch",
+    "russian",
+    "hindi",
+    "chinese_simplified",
+    "japanese",
+    "korean",
+    "bengali",
+    "turkish",
+    "indonesian",
+    "swahili"
+  ],
+  "terms": {}
+}

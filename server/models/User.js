@@ -38,6 +38,17 @@ const userSchema = new mongoose.Schema({
   // never the raw token. Expires about 1 hour after it is issued.
   resetPasswordToken: { type: String },
   resetPasswordExpires: { type: Date },
+  // Last password change (set by resetPassword). Any JWT issued before
+  // this moment is stale — the auth middleware rejects it, so a reset
+  // invalidates every existing session.
+  passwordChangedAt: { type: Date },
+  // Pending email change: the new address is stored here and only
+  // becomes `email` after the verification link sent to it is clicked
+  // (see userController.js / authController.verifyEmail). Only the
+  // SHA-256 hash of the token is stored, never the raw token.
+  pendingEmail: { type: String, lowercase: true, trim: true },
+  pendingEmailToken: { type: String },
+  pendingEmailExpires: { type: Date },
   // Login lockout: 5 failed sign-in attempts lock the account for 15
   // minutes (see server/utils/loginSecurity.js). The counter resets when
   // the lock is set, and a successful sign-in clears both fields.
