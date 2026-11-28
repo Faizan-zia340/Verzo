@@ -717,6 +717,16 @@ function FeedbackList() {
       .finally(() => setLoading(false));
   }, []);
 
+  const markFixed = async (id) => {
+    try {
+      const { data } = await api.patch(`/feedback/${id}/resolve`);
+      setItems((list) => list.map((f) => (f._id === id ? { ...f, status: data.status, resolvedAt: data.resolvedAt } : f)));
+      toast.success(data.emailSent ? 'Marked as fixed — a thank-you email was sent' : 'Marked as fixed');
+    } catch {
+      toast.error('Could not mark as fixed.');
+    }
+  };
+
   const categoryBadge = (category) => ({
     Bug: 'bg-red-100 dark:bg-ink-raised text-red-700 dark:text-red-300 border-red-200 dark:border-red-900',
     Suggestion: 'bg-teak-100 dark:bg-ink-raised text-teak-700 dark:text-teak-400 border-teak-200',
@@ -766,6 +776,14 @@ function FeedbackList() {
                   {item.name || 'Anonymous'}
                   {item.user?.email ? ` · ${item.user.email}` : ''}
                 </p>
+                <div className="flex items-center gap-2 mt-2">
+                  <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full border ${item.status === 'resolved' ? 'bg-emerald-100 dark:bg-ink-raised text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900' : 'bg-amber-100 dark:bg-ink-raised text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-900'}`}>
+                    {item.status === 'resolved' ? 'Fixed' : 'Open'}
+                  </span>
+                  {item.status !== 'resolved' && (
+                    <button onClick={() => markFixed(item._id)} className="text-xs font-bold text-teak-700 dark:text-teak-400 hover:underline">Mark as fixed</button>
+                  )}
+                </div>
               </li>
             ))}
           </ul>
