@@ -7,6 +7,7 @@ import protect from '../middleware/auth.js';
 import isAdmin from '../middleware/isAdmin.js';
 import asyncHandler from '../utils/asyncHandler.js';
 import { validateFeedbackInput } from '../utils/feedbackValidation.js';
+import { sendFeedbackThanksEmail } from '../utils/sendEmail.js';
 
 const router = Router();
 
@@ -47,8 +48,30 @@ router.get('/', protect, isAdmin, asyncHandler(async (req, res) => {
     .sort({ createdAt: -1 })
     .limit(100)
     .populate('user', 'name email')
-    .select('page category message name user createdAt');
+    .select('page category message name user status resolvedAt createdAt');
   res.status(200).json(feedback);
 }));
+
+// Admin only: mark a report fixed and thank the reporter by email.
+// Idempotent: resolving twice sends no second email. Anonymous reports
+// (or a reporter without an email) just resolve, no email, no error.
+export const resolveFeedbackHandler = (sendMail = sendFeedbackThanksEmail) => asyncHandler(async (req, res) => {
+  const feedback = await Feedback.findById(req.params.id);
+  if (!feedback) return res.status(404).json({ message: 'Feedback not found.' });
+  if (feedback.status === 'resolved') return res.status(200).json({ ...feedback.toObject(), emailSent: false });
+  feedback.status = 'resolved';
+  feedback.resolvedAt = new Date();
+  await feedback.save();
+  let emailSent = false;
+  if (feedback.user) {
+    const user = await User.findById(feedback.user).select('name email');
+    if (user?.email) {
+      emailSent = await sendMail({ to: user.email, name: user.name || feedback.name, category: feedback.category, page: feedback.page });
+    }
+  }
+  res.status(200).json({ ...feedback.toObject(), emailSent });
+});
+
+router.patch('/:id/resolve', protect, isAdmin, resolveFeedbackHandler());
 
 export default router;

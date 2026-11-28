@@ -106,4 +106,39 @@ export const sendTwoFactorEmail = async ({ to, code }) => {
   }
 };
 
+// Thanks note when an admin marks a bug/suggestion report as fixed.
+// Same Resend HTTP API, same env vars, same warn-and-return-false behaviour.
+export const sendFeedbackThanksEmail = async ({ to, name, category, page }) => {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.EMAIL_FROM;
+  if (!apiKey || !from) {
+    logger.warn('Feedback thanks email not sent: RESEND_API_KEY or EMAIL_FROM is not set');
+    return false;
+  }
+  const kind = category === 'Bug' ? 'the bug you reported' : category === 'Suggestion' ? 'the suggestion you shared' : 'the feedback you shared';
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from,
+        to,
+        subject: 'Thanks for helping improve Penlix',
+        html: `<p>Hi ${name || 'there'},</p><p>Thank you for reporting ${kind} on ${page} — it has been fixed.</p><p>Your feedback makes Penlix better for everyone. Please keep sharing what you find.</p><p>— The Penlix team</p>`,
+      }),
+    });
+    if (!res.ok) {
+      logger.warn({ status: res.status }, 'Feedback thanks email was not accepted by the email service');
+      return false;
+    }
+    return true;
+  } catch (err) {
+    logger.warn({ err: err.message }, 'Feedback thanks email failed to send');
+    return false;
+  }
+};
+
 export default sendPasswordResetEmail;

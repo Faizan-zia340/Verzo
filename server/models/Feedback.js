@@ -8,6 +8,8 @@ const feedbackSchema = new mongoose.Schema({
   message: { type: String, required: true, trim: true, maxlength: 2000 },
   name: { type: String, default: '', trim: true, maxlength: 100 },
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+  status: { type: String, enum: ['open', 'resolved'], default: 'open', index: true },
+  resolvedAt: { type: Date, default: null },
 }, { timestamps: true });
 
 feedbackSchema.index({ createdAt: -1 });
