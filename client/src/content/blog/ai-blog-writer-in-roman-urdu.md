@@ -11,9 +11,9 @@ language: roman-urdu
 
 Roman Urdu Pakistan ki internet ki asli zabaan hai — WhatsApp, Facebook, YouTube, har jagah. Lekin blog likhne ki baari aaye to zyada tar AI tools Roman Urdu theek se likhte hi nahi — ya English mila dete hain, ya aise jumle banate hain jo koi Pakistani kabhi na bole.
 
-Is post mein hum dekhenge ke Roman Urdu mein AI blog writer se kya waqai kaam karta hai — Penlix ke asli outputs (24–25 November 2026 ke live tests), Karachi/Lahore dialects ka farq, aur bachne wali ghaltiyan. Kisi aur tool ka output yahan invent nahi kiya gaya.
+Is post mein hum dekhenge ke Roman Urdu mein AI blog writer se kya waqai kaam karta hai — Penlix ke asli natijay (24–25 November 2026 ke live tests), Karachi/Lahore dialects ka farq, aur bachne wali ghaltiyan. Kisi aur tool ka natija yahan banaya nahi gaya.
 
-## Karachi vs Lahore — dialect sirf label nahi
+## Karachi ya Lahore — dialect sirf label nahi
 
 Penlix mein Roman Urdu ke do dialects hain — Karachi aur Lahore. Ye sirf label nahi; dono ke peeche alag instructions hain, is liye lafz aur lehja waqai farq karte hain.
 
@@ -25,17 +25,17 @@ Audience ke hisaab se chunein — ghalat dialect se blog ajeeb lagta hai. Ye dia
 
 ## Kya waqai kaam karta hai — 4 cheezein
 
-**1. Specific prompt.** Topic, audience aur tone — teeno likhein. "Karachi ki garmi par blog likhein" se behtar hai: "Karachi ki garmi mein bachon ki sehat par 800 words ka blog, tone friendly, har tip ke saath aik misaal." Specific prompt se specific output milta hai. Step by step tareeqa yahan dekhein: [Roman Urdu mein blog kaise likhein](/blog/roman-urdu-blog-writer).
+**1. Khaas hidayat.** Topic, audience aur tone — teeno likhein. "Karachi ki garmi par blog likhein" se behtar hai: "Karachi ki garmi mein bachon ki sehat par 800 words ka blog, tone friendly, har tip ke saath aik misaal." Khaas hidayat se khaas natija milta hai. Marhala ba marhala tareeqa yahan dekhein: [Roman Urdu mein blog kaise likhein](/blog/roman-urdu-blog-writer).
 
-**2. Sahi dialect.** Upar bataye gaye farq ke hisaab se dialect chunein. Agar aap Karachi ki audience ke liye likh rahe hain aur Lahore dialect select kar liya, to lafz ajeeb lagenge.
+**2. Sahi dialect.** Upar bataye gaye farq ke hisaab se dialect chunein. Agar aap Karachi ki audience ke liye likh rahe hain aur Lahore dialect chun liya, to lafz ajeeb lagenge.
 
-**3. Output ki language check karein.** Ye sab se zaroori hai — Penlix bhi kabhi kabhi ghalat karta hai. 25 November 2026 ke test mein 6 mein se 4 outputs ghalat language mein aaye (French ka Roman Urdu mein, Spanish ka English mein). Generate karne ke baad pehle language dekhein; ghalat ho to dobara generate karein.
+**3. Natijay ki zaban check karein.** Ye sab se zaroori hai — Penlix bhi kabhi kabhi ghalat karta hai. 25 November 2026 ke test mein 6 mein se 4 natijay ghalat zaban mein aaye (French ka Roman Urdu mein, Spanish ka English mein). Generate karne ke baad pehle zaban dekhein; ghalat ho to dobara generate karein.
 
-**4. Human edit.** AI draft ko apni awaaz mein dhal lein — aik do jumle apne lafzon mein, headings check karein, phir publish karein. Bina parhe publish karna sab se bari ghalti hai. Agar typing slow lagti hai, to [bol kar content likhna](/blog/bol-kar-content-likhein) bhi aik option hai — Speak button se bol kar prompt likhwayein.
+**4. Khud tarmeem karein.** AI draft ko apni awaaz mein dhal lein — aik do jumle apne lafzon mein, surkhiyan check karein, phir publish karein. Bina parhe publish karna sab se bari ghalti hai. Agar typing slow lagti hai, to [bol kar content likhna](/blog/bol-kar-content-likhein) bhi aik option hai — Speak button se bol kar prompt likhwayein.
 
-## Misaal 1: Penlix ka asli Roman Urdu output — email
+## Misaal 1: Penlix ka asli Roman Urdu natija — email
 
-Ye Penlix ka asal output hai, 24 November 2026 ke test mein generate hua (email, Roman Urdu):
+Ye Penlix ka asal natija hai, 24 November 2026 ke test mein generate hua (email, Roman Urdu):
 
 > Subject: Karachi ki Garmi, Aapki Body ko Pani Chahiye
 >
@@ -53,11 +53,11 @@ Ye Penlix ka asal output hai, 24 November 2026 ke test mein generate hua (email,
 > Ayesha
 > Wellness Coach, Karachi
 
-Ye output theek hai: lehja natural hai, "hai na?" aur "pakki wali" Karachi style mein hain. Kamzori — "HydraLife" wali lines generic hain, human edit se behtar ho sakti hain.
+Ye natija theek hai: lehja natural hai, "hai na?" aur "pakki wali" Karachi style mein hain. Kamzori — "HydraLife" wali lines aam si hain, khud ki tarmeem se behtar ho sakti hain.
 
-## Misaal 2: Penlix ka asli Roman Urdu output — short post
+## Misaal 2: Penlix ka asli Roman Urdu natija — chhoti post
 
-Ye Penlix ka asal output hai, 25 November 2026 ke test mein generate hua (social post, Roman Urdu). Output ke upar wala "Agent 1" label hata diya gaya hai — wo Penlix ka aik known bug hai, content ka hissa nahi:
+Ye Penlix ka asal natija hai, 25 November 2026 ke test mein generate hua (social post, Roman Urdu). Natijay ke upar wala "Agent 1" label hata diya gaya hai — wo Penlix ki aik maloom kharabi hai, content ka hissa nahi:
 
 > Thakawat aur thakaan? Pani kam hai.
 >
@@ -69,22 +69,22 @@ Ye Penlix ka asal output hai, 25 November 2026 ke test mein generate hua (social
 >
 > Aaj se hi shuru karo, dekho kya kamaal hota hai!
 
-Chhoti post ke liye acha output hai — mukhtasar jumle, seedhi baat. Lekin blog ke liye lambi prompt chahiye hoti hai, warna sirf aik paragraph milta hai.
+Chhoti post ke liye acha natija hai — mukhtasar jumle, seedhi baat. Lekin blog ke liye lambi prompt chahiye hoti hai, warna sirf aik paragraph milta hai.
 
-## Misaal 3: Karachi vs Lahore — lafzon ka farq
+## Misaal 3: Karachi ya Lahore — lafzon ka farq
 
-Karachi aur Lahore dialects ke fresh outputs banane ki koshish ki gayi, lekin 25 November ki shaam Gemini ka free quota khatam tha — naye outputs nahi ban sake. Is liye farq unki asal instructions se dikhaya gaya hai:
+Karachi aur Lahore dialects ke taaza natijay banane ki koshish ki gayi, lekin 25 November ki shaam Gemini ka free quota khatam tha — naye natijay nahi ban sake. Is liye farq unki asal instructions se dikhaya gaya hai:
 
 **Karachi dialect ke lafz:** "yaar", "bhai", "masla", "seedha baat", "dhamaal", "tou phir", "bata na", "kya scene hai" — shehri, seedha, thoda tez andaaz.
 
 **Lahore dialect ke lafz:** "yaara", "ki gal", "dass", "sohna", "te phir", "wajib aa", "kurra" — naram, Punjabi rang, purana lehja.
 
-Farq saaf hai: aik baat, do lehje. "yaar, kya scene hai" wali audience ke liye Karachi, "yaara, ki gal hai" wali ke liye Lahore. Dialect badalne se sirf lafz nahi — poora lehja badal jata hai. Fresh dialect outputs quota wapas aate hi add kar diye jayenge.
+Farq saaf hai: aik baat, do lehje. "yaar, kya scene hai" wali audience ke liye Karachi, "yaara, ki gal hai" wali ke liye Lahore. Dialect badalne se sirf lafz nahi — poora lehja badal jata hai. Taaza dialect ke natijay quota wapas aate hi shaamil kar diye jayenge.
 
 ## Aam ghaltiyan — in se bachein
 
-1. **English drift:** Output Roman Urdu ki bajaye English mein aa jaye ya mix ho jaye. Generate karne ke baad language check karein — ye sab se aam masla hai.
-2. **Vague prompt:** Sirf "Roman Urdu mein blog likhein" likhne se generic output milta hai. Topic, audience aur tone — teeno likhein.
+1. **Angrezi ki taraf jhukao:** Natija Roman Urdu ki bajaye English mein aa jaye ya mix ho jaye. Generate karne ke baad zaban check karein — ye sab se aam masla hai.
+2. **Ghair wazeh hidayat:** Sirf "Roman Urdu mein blog likhein" likhne se aam sa natija milta hai. Topic, audience aur tone — teeno likhein.
 3. **Ghalat dialect:** Audience ka dialect na chunnay se blog ajeeb lagta hai.
 4. **Spelling mein be-tarteebi:** Aik hi blog mein "kya" aur "kia" dono — reader confuse hota hai. Aik style chunein.
 5. **Bina parhe publish karna:** AI kabhi topic se hat jata hai — publish se pehle poora blog khud parhein.
@@ -92,13 +92,13 @@ Farq saaf hai: aik baat, do lehje. "yaar, kya scene hai" wali audience ke liye K
 ## Aksar Pooche Jane Wale Sawalat
 
 **Kya Penlix Roman Urdu mein blog likh sakta hai?**
-Ji — Karachi aur Lahore dialects ke saath. Output ki language hamesha check karein; ghalat ho to dobara generate karein.
+Ji — Karachi aur Lahore dialects ke saath. Natijay ki zaban hamesha check karein; ghalat ho to dobara generate karein.
 
 **Karachi ya Lahore dialect — kaunsa chunein?**
-Audience ke hisaab se — Karachi ke liye Karachi dialect, Lahore ke liye Lahore. Lafzon ka farq Example 3 mein dikhaya gaya hai.
+Audience ke hisaab se — Karachi ke liye Karachi dialect, Lahore ke liye Lahore. Lafzon ka farq Misaal 3 mein dikhaya gaya hai.
 
-**Output English mein aa jaye to kya karein?**
-Dobara generate karein — prompt mein saaf likhein ke "poora output Roman Urdu mein ho". Phir bhi English aaye to language setting check karein.
+**Natija English mein aa jaye to kya karein?**
+Dobara generate karein — prompt mein saaf likhein ke "poora natija Roman Urdu mein ho". Phir bhi English aaye to zaban ki tartib check karein.
 
 **Roman Urdu blog likhna free hai?**
 Penlix par free signup ke saath [20 free credits](/register) milte hain — aik blog aam tor par 1 credit mein ban jata hai. [Pricing page](/pricing) par paid plans bhi hain.
